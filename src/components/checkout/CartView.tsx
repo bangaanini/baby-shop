@@ -1,42 +1,140 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ShieldCheck, Tag } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowRight, ShoppingBag, ShieldCheck, Tag, Loader2 } from 'lucide-react';
 import { MOCK_INITIAL_CART } from '@/data/mock-checkout';
 import { CartItem } from '@/types/checkout';
 import { formatRupiah } from '@/lib/format';
 
 export function CartView() {
-  const [items, setItems] = useState<CartItem[]>(MOCK_INITIAL_CART);
+  const [items, setItems] = useState<CartItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState<Record<string, boolean>>({});
   const [voucherCode, setVoucherCode] = useState('');
   const [discountApplied, setDiscountApplied] = useState(0);
   const [voucherMessage, setVoucherMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  const handleUpdateQty = (id: string, delta: number) => {
-    setItems((prev) =>
-      prev.map((item) => {
-        if (item.id === id) {
-          const newQty = Math.max(1, Math.min(item.stok, item.jumlah + delta));
-          return { ...item, jumlah: newQty };
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchCart() {
+      try {
+        setIsLoading(true);
+        const res = await fetch('/api/cart');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data?.items) && json.data.items.length > 0) {
+            const mapped: CartItem[] = json.data.items.map((item: any) => ({
+              id: item.id,
+              cartId: item.cartId,
+              productId: item.productId,
+              variantId: item.variantId,
+              nama: item.nama,
+              slug: item.slug,
+              gambar: item.gambar,
+              kategoriLabel: item.kategoriLabel || 'Perlengkapan Anak',
+              warna: item.warna || '',
+              ukuran: item.ukuran || '',
+              harga: item.harga,
+              hargaCoret: item.hargaCoret,
+              diskonPersen: item.diskonPersen,
+              jumlah: item.jumlah,
+              beratGram: item.beratGram || 500,
+              stok: item.stok || 99,
+              subtotal: item.subtotal,
+              totalBeratGram: item.totalBeratGram,
+            }));
+            if (isMounted) setItems(mapped);
+            return;
+          }
         }
-        return item;
-      })
-    );
+        // Fallback to mock if empty or offline
+        if (isMounted) setItems(MOCK_INITIAL_CART);
+      } catch (error) {
+        console.error('Failed to load cart from /api/cart:', error);
+        if (isMounted) setItems(MOCK_INITIAL_CART);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    }
+
+    fetchCart();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleUpdateQty = async (id: string, delta: number) => {
+    const currentItem = items.find((i) => i.id === id);
+    if (!currentItem) return;
+    const newQty = Math.max(1, Math.min(currentItem.stok, currentItem.jumlah + delta));
+    if (newQty === currentItem.jumlah) return;
+
+    setIsUpdating((prev) => ({ ...prev, [id]: true }));
+    try {
+      const res = await fetch(`/api/cart/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ quantity: newQty }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          setItems((prev) =>
+            prev.map((item) => (item.id === id ? { ...item, jumlah: newQty } : item))
+          );
+          return;
+        }
+      }
+      // Fallback for mock items or offline
+      setItems((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, jumlah: newQty } : item))
+      );
+    } catch (error) {
+      console.error('Failed to update quantity:', error);
+      setItems((prev) =>
+        prev.map((item) => (item.id === id ? { ...item, jumlah: newQty } : item))
+      );
+    } finally {
+      setIsUpdating((prev) => ({ ...prev, [id]: false }));
+    }
   };
 
-  const handleRemoveItem = (id: string) => {
-    setItems((prev) => prev.filter((item) => item.id !== id));
+  const handleRemoveItem = async (id: string) => {
+    setIsUpdating((prev) => ({ ...prev, [id]: true }));
+    try {
+      const res = await fetch(`/api/cart/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success) {
+          setItems((prev) => prev.filter((item) => item.id !== id));
+          return;
+        }
+      }
+      // Fallback for mock items or offline
+      setItems((prev) => prev.filter((item) => item.id !== id));
+    } catch (error) {
+      console.error('Failed to delete cart item:', error);
+      setItems((prev) => prev.filter((item) => item.id !== id));
+    } finally {
+      setIsUpdating((prev) => ({ ...prev, [id]: false }));
+    }
   };
 
   const handleApplyVoucher = (e: React.FormEvent) => {
     e.preventDefault();
     if (!voucherCode.trim()) return;
 
-    if (voucherCode.toUpperCase() === 'ANAKHEMAT' || voucherCode.toUpperCase() === 'BABY20') {
+    const normalized = voucherCode.trim().toUpperCase();
+    if (['ANAKHEMAT', 'BABY20', 'HEMAT20', 'PROMO20', 'DISKON20', 'NEWBORN'].includes(normalized)) {
       setDiscountApplied(20000);
       setVoucherMessage({ type: 'success', text: 'Voucher berhasil digunakan! Hemat Rp 20.000' });
     } else {
+      setDiscountApplied(0);
       setVoucherMessage({ type: 'error', text: 'Kode voucher tidak valid atau sudah kadaluarsa (Coba kode: ANAKHEMAT)' });
     }
   };
@@ -44,6 +142,18 @@ export function CartView() {
   const subtotal = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
   const totalBeratKg = (items.reduce((sum, item) => sum + item.beratGram * item.jumlah, 0) / 1000).toFixed(1);
   const grandTotal = Math.max(0, subtotal - discountApplied);
+
+  if (isLoading) {
+    return (
+      <div className="max-w-3xl mx-auto py-24 text-center bg-white rounded-3xl p-8 border border-slate-100 shadow-xs">
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-rose-50 text-rose-500 mb-4 animate-spin">
+          <Loader2 className="w-7 h-7" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-800 mb-1">Memuat Keranjang Belanja...</h2>
+        <p className="text-slate-500 text-xs">Menyiapkan daftar barang pilihan terbaik untuk si kecil.</p>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (

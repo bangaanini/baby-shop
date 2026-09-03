@@ -1,6 +1,8 @@
 export interface CartItem {
   id: string;
+  cartId?: string;
   productId: string;
+  variantId?: string | null;
   nama: string;
   slug: string;
   gambar: string;
@@ -9,9 +11,12 @@ export interface CartItem {
   ukuran: string;
   harga: number;
   hargaCoret?: number;
+  diskonPersen?: number;
   jumlah: number;
   beratGram: number;
   stok: number;
+  subtotal?: number;
+  totalBeratGram?: number;
 }
 
 export interface ShippingAddress {

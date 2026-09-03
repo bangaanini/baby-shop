@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -19,6 +19,7 @@ import {
   AlertCircle,
   QrCode,
   Building2,
+  Loader2,
 } from 'lucide-react';
 import {
   MOCK_INITIAL_CART,
@@ -26,7 +27,7 @@ import {
   MOCK_COURIERS,
   MOCK_PAYMENT_METHODS,
 } from '@/data/mock-checkout';
-import { ShippingAddress, CourierService, PaymentMethod } from '@/types/checkout';
+import { CartItem, ShippingAddress, CourierService, PaymentMethod } from '@/types/checkout';
 import { formatRupiah } from '@/lib/format';
 
 type Step = 1 | 2 | 3 | 4;
@@ -36,6 +37,20 @@ export function CheckoutStepper() {
 
   // Current active step
   const [currentStep, setCurrentStep] = useState<Step>(1);
+
+  // Cart & items state
+  const [items, setItems] = useState<CartItem[]>(MOCK_INITIAL_CART);
+  const [cartId, setCartId] = useState<string | null>(null);
+  const [isLoadingCart, setIsLoadingCart] = useState(true);
+
+  // Voucher state
+  const [voucherApplied, setVoucherApplied] = useState(true);
+  const [voucherCode, setVoucherCode] = useState('ANAKHEMAT');
+
+  // Calculation & submission states
+  const [isCalculating, setIsCalculating] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // User selections
   const [addresses, setAddresses] = useState<ShippingAddress[]>(MOCK_SAVED_ADDRESSES);
@@ -67,14 +82,168 @@ export function CheckoutStepper() {
   const selectedCourier = MOCK_COURIERS.find((c) => c.id === selectedCourierId) || MOCK_COURIERS[0];
   const selectedPayment = MOCK_PAYMENT_METHODS.find((p) => p.id === selectedPaymentId) || MOCK_PAYMENT_METHODS[0];
 
-  // Price Computations
-  const subtotal = MOCK_INITIAL_CART.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
-  const totalBeratGram = MOCK_INITIAL_CART.reduce((sum, item) => sum + item.beratGram * item.jumlah, 0);
-  const totalBeratKg = Math.ceil(totalBeratGram / 1000);
-  const ongkirFinal = selectedCourier.ongkir * Math.max(1, totalBeratKg);
-  const diskonVoucher = 20000; // Promo Hemat
-  const biayaLayanan = 1000;
-  const totalBayar = subtotal + ongkirFinal + biayaLayanan - diskonVoucher;
+  // Fallback initial computations
+  const fallbackSubtotal = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
+  const fallbackTotalBeratGram = items.reduce((sum, item) => sum + (item.beratGram || 500) * item.jumlah, 0);
+  const fallbackTotalBeratKg = Math.max(1, Math.ceil(fallbackTotalBeratGram / 1000));
+  const fallbackOngkir = (selectedCourier?.ongkir || 20000) * fallbackTotalBeratKg;
+  const fallbackDiskonVoucher = voucherApplied ? 20000 : 0;
+  const fallbackBiayaLayanan = 1000;
+  const fallbackTotalBayar = Math.max(0, fallbackSubtotal + fallbackOngkir + fallbackBiayaLayanan - fallbackDiskonVoucher);
+
+  const [calcSummary, setCalcSummary] = useState({
+    subtotal: fallbackSubtotal,
+    totalBeratGram: fallbackTotalBeratGram,
+    totalBeratKg: fallbackTotalBeratKg,
+    ongkir: fallbackOngkir,
+    diskonVoucher: fallbackDiskonVoucher,
+    biayaLayanan: fallbackBiayaLayanan,
+    totalBayar: fallbackTotalBayar,
+  });
+
+  // 1. Fetch live cart items from GET /api/cart on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchCart() {
+      try {
+        setIsLoadingCart(true);
+        const res = await fetch('/api/cart');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            if (json.data.cartId) {
+              setCartId(json.data.cartId);
+            }
+            if (Array.isArray(json.data.items) && json.data.items.length > 0) {
+              const mapped: CartItem[] = json.data.items.map((item: any) => ({
+                id: item.id,
+                cartId: item.cartId,
+                productId: item.productId,
+                variantId: item.variantId,
+                nama: item.nama,
+                slug: item.slug,
+                gambar: item.gambar,
+                kategoriLabel: item.kategoriLabel || 'Perlengkapan Anak',
+                warna: item.warna || '',
+                ukuran: item.ukuran || '',
+                harga: item.harga,
+                hargaCoret: item.hargaCoret,
+                diskonPersen: item.diskonPersen,
+                jumlah: item.jumlah,
+                beratGram: item.beratGram || 500,
+                stok: item.stok || 99,
+                subtotal: item.subtotal,
+                totalBeratGram: item.totalBeratGram,
+              }));
+              if (isMounted) setItems(mapped);
+              return;
+            }
+          }
+        }
+        if (isMounted) setItems(MOCK_INITIAL_CART);
+      } catch (error) {
+        console.error('Failed to load cart for checkout:', error);
+        if (isMounted) setItems(MOCK_INITIAL_CART);
+      } finally {
+        if (isMounted) setIsLoadingCart(false);
+      }
+    }
+
+    fetchCart();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // 2. Whenever items, courier, or voucher changes, call POST /api/checkout/calculate
+  useEffect(() => {
+    let isMounted = true;
+    async function runCalculation() {
+      if (!items || items.length === 0) return;
+      setIsCalculating(true);
+      try {
+        const res = await fetch('/api/checkout/calculate', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            items: items.map((i) => ({
+              productId: i.productId,
+              variantId: i.variantId || null,
+              quantity: i.jumlah,
+            })),
+            courierCode: selectedCourier.kodeKurir,
+            courierService: selectedCourier.layanan,
+            voucherCode: voucherApplied ? (voucherCode || 'ANAKHEMAT') : undefined,
+          }),
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            if (isMounted) {
+              setCalcSummary({
+                subtotal: json.data.subtotalProduk,
+                totalBeratGram: json.data.totalBeratGram,
+                totalBeratKg: json.data.totalBeratKg,
+                ongkir: json.data.ongkir,
+                diskonVoucher: json.data.diskonVoucher,
+                biayaLayanan: json.data.biayaLayanan,
+                totalBayar: json.data.totalBayar,
+              });
+            }
+            return;
+          }
+        }
+
+        // Fallback calculation for mock items or offline
+        const sub = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
+        const weight = items.reduce((sum, item) => sum + (item.beratGram || 500) * item.jumlah, 0);
+        const weightKg = Math.max(1, Math.ceil(weight / 1000));
+        const ongk = (selectedCourier?.ongkir || 20000) * weightKg;
+        const disc = voucherApplied ? 20000 : 0;
+        const fee = 1000;
+        const total = Math.max(0, sub + ongk + fee - disc);
+        if (isMounted) {
+          setCalcSummary({
+            subtotal: sub,
+            totalBeratGram: weight,
+            totalBeratKg: weightKg,
+            ongkir: ongk,
+            diskonVoucher: disc,
+            biayaLayanan: fee,
+            totalBayar: total,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to calculate order:', error);
+        const sub = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
+        const weight = items.reduce((sum, item) => sum + (item.beratGram || 500) * item.jumlah, 0);
+        const weightKg = Math.max(1, Math.ceil(weight / 1000));
+        const ongk = (selectedCourier?.ongkir || 20000) * weightKg;
+        const disc = voucherApplied ? 20000 : 0;
+        const fee = 1000;
+        const total = Math.max(0, sub + ongk + fee - disc);
+        if (isMounted) {
+          setCalcSummary({
+            subtotal: sub,
+            totalBeratGram: weight,
+            totalBeratKg: weightKg,
+            ongkir: ongk,
+            diskonVoucher: disc,
+            biayaLayanan: fee,
+            totalBayar: total,
+          });
+        }
+      } finally {
+        if (isMounted) setIsCalculating(false);
+      }
+    }
+
+    runCalculation();
+    return () => {
+      isMounted = false;
+    };
+  }, [items, selectedCourier.id, selectedCourier.layanan, selectedCourier.kodeKurir, voucherApplied, voucherCode]);
 
   const handleAddNewAddress = (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,11 +267,58 @@ export function CheckoutStepper() {
     setShowAddAddress(false);
   };
 
-  const handlePlaceOrder = () => {
-    const generatedCode = `BK-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}-${Math.floor(100000 + Math.random() * 900000)}`;
-    setOrderCode(generatedCode);
-    setIsOrderPlaced(true);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const handlePlaceOrder = async () => {
+    setErrorMessage(null);
+    setIsSubmitting(true);
+
+    const fullShippingAddress = `${selectedAddress.alamatLengkap}, ${
+      selectedAddress.kecamatan ? selectedAddress.kecamatan + ', ' : ''
+    }${selectedAddress.kotaKabupaten}, ${selectedAddress.provinsi} ${selectedAddress.kodePos}`;
+
+    const orderPayload = {
+      recipientName: selectedAddress.namaPenerima,
+      recipientPhone: selectedAddress.telepon,
+      shippingAddress: fullShippingAddress,
+      courierCode: selectedCourier.kodeKurir,
+      courierService: selectedCourier.layanan,
+      paymentMethod: selectedPayment.nama,
+      notes: buyerNotes || undefined,
+      voucherCode: voucherApplied ? (voucherCode || 'ANAKHEMAT') : undefined,
+      cartId: cartId || undefined,
+      items: items.map((i) => ({
+        productId: i.productId,
+        variantId: i.variantId || null,
+        quantity: i.jumlah,
+      })),
+    };
+
+    try {
+      const res = await fetch('/api/checkout/order', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(orderPayload),
+      });
+
+      const json = await res.json();
+
+      if (res.ok && json.success && json.data) {
+        const createdInvoice = json.data.invoiceNumber || json.data.orderId;
+        setOrderCode(createdInvoice);
+        setIsOrderPlaced(true);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        return;
+      }
+
+      // If backend returns an error message
+      const errText =
+        json.error || 'Terjadi kendala saat memproses pesanan Anda. Silakan periksa kembali data Anda.';
+      setErrorMessage(errText);
+    } catch (error: any) {
+      console.error('Error placing order:', error);
+      setErrorMessage(error?.message || 'Gagal terhubung ke server pembayaran. Silakan periksa koneksi internet Anda.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCopyCode = () => {
@@ -150,7 +366,7 @@ export function CheckoutStepper() {
               </div>
               <div className="flex justify-between">
                 <span>Total Pembayaran:</span>
-                <strong className="text-rose-600 font-bold text-sm">{formatRupiah(totalBayar)}</strong>
+                <strong className="text-rose-600 font-bold text-sm">{formatRupiah(calcSummary.totalBayar)}</strong>
               </div>
               <div className="flex justify-between">
                 <span>Kurir Pengiriman:</span>
@@ -216,14 +432,13 @@ export function CheckoutStepper() {
               <button
                 key={s.step}
                 type="button"
-                onClick={() => isDone && setCurrentStep(s.step as Step)}
-                disabled={!isDone && !isCurrent}
+                onClick={() => setCurrentStep(s.step as Step)}
                 className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all ${
                   isCurrent
-                    ? 'bg-rose-50 text-rose-600 font-bold'
+                    ? 'text-rose-600 font-bold bg-rose-50/50'
                     : isDone
-                    ? 'text-slate-700 hover:bg-slate-50 cursor-pointer font-medium'
-                    : 'text-slate-300 opacity-60'
+                    ? 'text-emerald-600 font-medium'
+                    : 'text-slate-400 font-normal hover:text-slate-600'
                 }`}
               >
                 <div
@@ -250,6 +465,21 @@ export function CheckoutStepper() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Left 2 Cols: Step Specific Content */}
         <div className="lg:col-span-2 space-y-6">
+          {/* Error Banner if any */}
+          {errorMessage && (
+            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 shrink-0 text-rose-500" />
+              <span className="flex-1">{errorMessage}</span>
+              <button
+                type="button"
+                onClick={() => setErrorMessage(null)}
+                className="text-rose-400 hover:text-rose-600 font-bold text-sm"
+              >
+                ×
+              </button>
+            </div>
+          )}
+
           {/* STEP 1: PILIH ALAMAT PENGIRIMAN */}
           {currentStep === 1 && (
             <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs">
@@ -273,24 +503,27 @@ export function CheckoutStepper() {
 
               {/* Form Tambah Alamat Baru */}
               {showAddAddress && (
-                <form onSubmit={handleAddNewAddress} className="mb-6 p-5 bg-rose-50/40 rounded-2xl border border-rose-200 space-y-4">
-                  <h3 className="text-xs font-bold uppercase tracking-wider text-rose-700">Form Alamat Pengiriman Baru</h3>
+                <form
+                  onSubmit={handleAddNewAddress}
+                  className="mb-6 p-4 sm:p-5 bg-rose-50/40 rounded-2xl border border-rose-100 space-y-3"
+                >
+                  <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Tambah Alamat Baru</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="text-[11px] font-semibold text-slate-600 block mb-1">Nama Penerima</label>
                       <input
                         type="text"
                         required
-                        placeholder="Contoh: Bunda Sarah"
+                        placeholder="Contoh: Sarah Azhari"
                         value={newAddressForm.namaPenerima}
                         onChange={(e) => setNewAddressForm({ ...newAddressForm, namaPenerima: e.target.value })}
                         className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-rose-500"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-600 block mb-1">Nomor Telepon / WhatsApp</label>
+                      <label className="text-[11px] font-semibold text-slate-600 block mb-1">Nomor WhatsApp / Telepon</label>
                       <input
-                        type="text"
+                        type="tel"
                         required
                         placeholder="0812-xxxx-xxxx"
                         value={newAddressForm.telepon}
@@ -353,17 +586,17 @@ export function CheckoutStepper() {
                     </div>
                   </div>
 
-                  <div className="flex gap-2 justify-end pt-2">
+                  <div className="flex justify-end gap-2 pt-2">
                     <button
                       type="button"
                       onClick={() => setShowAddAddress(false)}
-                      className="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl"
+                      className="px-3.5 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-xl"
                     >
                       Batal
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-2 bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold rounded-xl shadow-xs"
+                      className="px-4 py-1.5 text-xs font-bold bg-rose-500 hover:bg-rose-600 text-white rounded-xl shadow-xs"
                     >
                       Simpan Alamat
                     </button>
@@ -372,9 +605,10 @@ export function CheckoutStepper() {
               )}
 
               {/* Daftar Alamat Tersimpan */}
-              <div className="space-y-3">
+              <div className="space-y-3 mb-6">
                 {addresses.map((addr) => {
                   const isSelected = addr.id === selectedAddressId;
+
                   return (
                     <div
                       key={addr.id}
@@ -388,21 +622,19 @@ export function CheckoutStepper() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
                           <span className="font-bold text-sm text-slate-800">{addr.namaPenerima}</span>
-                          <span className="text-xs text-slate-500 font-mono">({addr.telepon})</span>
-                          <span className="text-[10px] bg-slate-100 text-slate-600 font-semibold px-2 py-0.5 rounded-md">
+                          <span className="text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
                             {addr.labelAlamat}
                           </span>
                           {addr.isUtama && (
-                            <span className="text-[10px] bg-rose-100 text-rose-700 font-bold px-2 py-0.5 rounded-md">
-                              Alamat Utama
+                            <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
+                              Utama
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-slate-600 leading-relaxed">
-                          {addr.alamatLengkap}
-                        </p>
+                        <p className="text-xs text-slate-500">{addr.telepon}</p>
+                        <p className="text-xs text-slate-600 leading-relaxed pt-1">{addr.alamatLengkap}</p>
                         <p className="text-[11px] text-slate-400">
-                          {addr.kecamatan}, {addr.kotaKabupaten}, {addr.provinsi} {addr.kodePos}
+                          {addr.kecamatan ? addr.kecamatan + ', ' : ''}{addr.kotaKabupaten}, {addr.provinsi} {addr.kodePos}
                         </p>
                       </div>
 
@@ -420,20 +652,20 @@ export function CheckoutStepper() {
                 })}
               </div>
 
-              <div className="mt-6 flex justify-end">
+              <div className="flex justify-end">
                 <button
                   type="button"
                   onClick={() => setCurrentStep(2)}
                   className="px-6 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center gap-2"
                 >
-                  <span>Lanjut Pilih Kurir Pengiriman</span>
+                  <span>Pilih Jasa Pengiriman</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 2: PILIH KURIR & ONGKIR OTOMATIS */}
+          {/* STEP 2: PILIH JASA KURIR & PENGIRIMAN */}
           {currentStep === 2 && (
             <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs">
               <div className="pb-4 border-b border-slate-100 mb-5">
@@ -442,14 +674,14 @@ export function CheckoutStepper() {
                   <span>Langkah 2: Pilih Jasa Kurir & Ongkir Otomatis</span>
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Kirim ke: <strong className="text-slate-700">{selectedAddress.kotaKabupaten}, {selectedAddress.provinsi}</strong> (Berat: {totalBeratKg} kg)
+                  Kirim ke: <strong className="text-slate-700">{selectedAddress.kotaKabupaten}, {selectedAddress.provinsi}</strong> (Berat: {calcSummary.totalBeratKg} kg)
                 </p>
               </div>
 
               <div className="space-y-3 mb-6">
                 {MOCK_COURIERS.map((courier) => {
                   const isSelected = courier.id === selectedCourierId;
-                  const calculatedCost = courier.ongkir * Math.max(1, totalBeratKg);
+                  const calculatedCost = courier.ongkir * Math.max(1, calcSummary.totalBeratKg);
 
                   return (
                     <div
@@ -526,22 +758,22 @@ export function CheckoutStepper() {
                   onClick={() => setCurrentStep(3)}
                   className="px-6 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center gap-2"
                 >
-                  <span>Lanjut ke Metode Pembayaran</span>
+                  <span>Lanjut ke Pembayaran</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
             </div>
           )}
 
-          {/* STEP 3: PILIH METODE PEMBAYARAN */}
+          {/* STEP 3: METODE PEMBAYARAN */}
           {currentStep === 3 && (
             <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs">
               <div className="pb-4 border-b border-slate-100 mb-5">
                 <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
                   <CreditCard className="w-5 h-5 text-rose-500" />
-                  <span>Langkah 3: Pilih Metode Pembayaran Terpercaya</span>
+                  <span>Langkah 3: Pilih Metode Pembayaran Terverifikasi</span>
                 </h2>
-                <p className="text-xs text-slate-500">Semua transaksi diproses secara instan & otomatis 24 jam</p>
+                <p className="text-xs text-slate-500">Semua transaksi diamankan dengan enkripsi SSL 256-bit standar perbankan</p>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -667,10 +899,10 @@ export function CheckoutStepper() {
               {/* Daftar Barang yang Dibeli */}
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3">
-                  Barang yang Dibeli ({MOCK_INITIAL_CART.reduce((s, i) => s + i.jumlah, 0)} Item):
+                  Barang yang Dibeli ({items.reduce((s, i) => s + i.jumlah, 0)} Item):
                 </h3>
                 <div className="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden">
-                  {MOCK_INITIAL_CART.map((item) => (
+                  {items.map((item) => (
                     <div key={item.id} className="p-3.5 flex items-center justify-between gap-4 bg-white">
                       <div className="flex items-center gap-3">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -682,7 +914,7 @@ export function CheckoutStepper() {
                         <div>
                           <h4 className="text-xs font-bold text-slate-800 line-clamp-1">{item.nama}</h4>
                           <span className="text-[11px] text-slate-400">
-                            {item.jumlah} x {formatRupiah(item.harga)} ({item.warna}, {item.ukuran})
+                            {item.jumlah} x {formatRupiah(item.harga)} {item.warna || item.ukuran ? `(${[item.warna, item.ukuran].filter(Boolean).join(', ')})` : ''}
                           </span>
                         </div>
                       </div>
@@ -704,11 +936,21 @@ export function CheckoutStepper() {
                 </button>
                 <button
                   type="button"
+                  disabled={isSubmitting}
                   onClick={handlePlaceOrder}
-                  className="px-8 py-3.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-sm rounded-2xl shadow-lg transition-all flex items-center gap-2 hover:scale-105"
+                  className="px-8 py-3.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 disabled:opacity-75 disabled:cursor-not-allowed text-white font-black text-sm rounded-2xl shadow-lg transition-all flex items-center gap-2 hover:scale-105"
                 >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Bayar Sekarang ({formatRupiah(totalBayar)})</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Memproses Pesanan...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      <span>Bayar Sekarang ({formatRupiah(calcSummary.totalBayar)})</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>
@@ -725,26 +967,26 @@ export function CheckoutStepper() {
             <div className="space-y-2.5 text-xs text-slate-600 mb-5">
               <div className="flex justify-between">
                 <span>Total Harga Barang</span>
-                <span className="font-semibold text-slate-800">{formatRupiah(subtotal)}</span>
+                <span className="font-semibold text-slate-800">{formatRupiah(calcSummary.subtotal)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Ongkos Kirim ({totalBeratKg} kg)</span>
-                <span className="font-semibold text-slate-800">{formatRupiah(ongkirFinal)}</span>
+                <span>Ongkos Kirim ({calcSummary.totalBeratKg} kg)</span>
+                <span className="font-semibold text-slate-800">{formatRupiah(calcSummary.ongkir)}</span>
               </div>
               <div className="flex justify-between text-emerald-600 font-semibold">
                 <span>Diskon Promo Hemat</span>
-                <span>-{formatRupiah(diskonVoucher)}</span>
+                <span>-{formatRupiah(calcSummary.diskonVoucher)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Biaya Layanan</span>
-                <span className="text-slate-800">{formatRupiah(biayaLayanan)}</span>
+                <span className="text-slate-800">{formatRupiah(calcSummary.biayaLayanan)}</span>
               </div>
             </div>
 
             <div className="pt-4 border-t border-slate-100 mb-6">
               <div className="flex items-baseline justify-between">
                 <span className="text-xs text-slate-500 font-medium">Total Tagihan:</span>
-                <span className="text-xl font-black text-rose-600">{formatRupiah(totalBayar)}</span>
+                <span className="text-xl font-black text-rose-600">{formatRupiah(calcSummary.totalBayar)}</span>
               </div>
             </div>
 
@@ -760,11 +1002,21 @@ export function CheckoutStepper() {
             ) : (
               <button
                 type="button"
+                disabled={isSubmitting}
                 onClick={handlePlaceOrder}
-                className="w-full py-3.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-black text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 disabled:opacity-75 disabled:cursor-not-allowed text-white font-black text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
               >
-                <span>Bayar Sekarang</span>
-                <Sparkles className="w-4 h-4" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Memproses Pesanan...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Bayar Sekarang</span>
+                    <Sparkles className="w-4 h-4" />
+                  </>
+                )}
               </button>
             )}
 
