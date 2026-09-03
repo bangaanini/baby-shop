@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Baby, Shirt, Gamepad2, Sparkles, ArrowRight, ShieldCheck, Truck, RotateCcw } from 'lucide-react';
+import { CategoryItem } from '@/types/product';
 import { MOCK_CATEGORIES } from '@/data/mock-products';
 
 export function HeroBanner() {
@@ -61,7 +62,13 @@ export function HeroBanner() {
   );
 }
 
-export function CategorySection() {
+interface CategorySectionProps {
+  categories?: CategoryItem[];
+}
+
+export function CategorySection({ categories }: CategorySectionProps = {}) {
+  const displayCategories = categories && categories.length > 0 ? categories : MOCK_CATEGORIES;
+
   return (
     <div className="mb-12">
       <div className="flex items-center justify-between mb-4">
@@ -72,16 +79,17 @@ export function CategorySection() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {MOCK_CATEGORIES.map((cat) => (
+        {displayCategories.map((cat) => (
           <Link
             key={cat.id}
             href={`/kategori/${cat.slug}`}
             className="group p-5 rounded-2xl bg-white border border-slate-100 hover:border-rose-200 shadow-xs hover:shadow-md transition-all flex items-start gap-4"
           >
-            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${cat.warnaBg} group-hover:scale-110 transition-transform`}>
+            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shrink-0 ${cat.warnaBg || 'bg-rose-100 text-rose-700'} group-hover:scale-110 transition-transform`}>
               {cat.slug === 'perlengkapan' && <Baby className="w-6 h-6" />}
               {cat.slug === 'pakaian' && <Shirt className="w-6 h-6" />}
               {cat.slug === 'mainan' && <Gamepad2 className="w-6 h-6" />}
+              {!['perlengkapan', 'pakaian', 'mainan'].includes(cat.slug) && <Sparkles className="w-6 h-6" />}
             </div>
             <div>
               <h3 className="text-sm sm:text-base font-bold text-slate-800 group-hover:text-rose-600 transition-colors">

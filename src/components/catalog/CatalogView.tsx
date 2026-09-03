@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Search,
@@ -14,25 +14,38 @@ import {
   Gamepad2,
   Check,
   Star,
+  Loader2,
 } from 'lucide-react';
-import { Product } from '@/types/product';
+import { Product, CategoryItem } from '@/types/product';
 import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '@/data/mock-products';
 import { ProductCard } from '@/components/product/ProductCard';
-import { formatRupiah } from '@/lib/format';
+import { mapDbProductToProduct, mapDbCategoryToCategoryItem } from '@/lib/mappers';
 
 type SortOption = 'rekomendasi' | 'terpopuler' | 'terbaru' | 'harga-asc' | 'harga-desc' | 'rating';
 
-export function CatalogView() {
+interface CatalogViewProps {
+  initialCategory?: string;
+}
+
+export function CatalogView({ initialCategory: initialCategoryProp }: CatalogViewProps = {}) {
   const searchParams = useSearchParams();
   const router = useRouter();
 
   // URL query params initialization
-  const initialCategory = searchParams.get('kategori') || 'semua';
+  const initialCategory = initialCategoryProp || searchParams.get('kategori') || 'semua';
   const initialQuery = searchParams.get('q') || '';
   const initialSort = (searchParams.get('sort') as SortOption) || 'rekomendasi';
 
-  // Component state
-  const [searchQuery, setSearchQuery] = useState(initialQuery);
+  // Categories & Products state
+  const [categories, setCategories] = useState<CategoryItem[]>(MOCK_CATEGORIES);
+  const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+  const [totalCount, setTotalCount] = useState<number>(MOCK_PRODUCTS.length);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Filter & Search state
+  const [searchInput, setSearchInput] = useState<string>(initialQuery);
+  const [debouncedSearchQuery, setDebouncedSearchQuery] = useState<string>(initialQuery);
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [selectedSort, setSelectedSort] = useState<SortOption>(initialSort);
   const [minPrice, setMinPrice] = useState<number | ''>('');
@@ -40,64 +53,117 @@ export function CatalogView() {
   const [minRating, setMinRating] = useState<number>(0);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
 
-  // Filter & Sort Logic
-  const filteredProducts = useMemo(() => {
-    return MOCK_PRODUCTS.filter((product) => {
-      // 1. Search Query Filter
-      if (searchQuery.trim() !== '') {
-        const q = searchQuery.toLowerCase();
-        const matchName = product.nama.toLowerCase().includes(q);
-        const matchDesc = product.deskripsi.toLowerCase().includes(q);
-        const matchCategory = product.kategoriLabel.toLowerCase().includes(q);
-        const matchBahan = product.bahan?.toLowerCase().includes(q);
-        if (!matchName && !matchDesc && !matchCategory && !matchBahan) {
+  // Keep URL parameters in sync when initial values change
+  useEffect(() => {
+    const cat = searchParams.get('kategori');
+    if (cat) setSelectedCategory(cat);
+    const q = searchParams.get('q');
+    if (q) {
+      setSearchInput(q);
+      setDebouncedSearchQuery(q);
+    }
+    const sort = searchParams.get('sort') as SortOption;
+    if (sort) setSelectedSort(sort);
+  }, [searchParams]);
+
+  // Debounce search input (350ms)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchQuery(searchInput);
+    }, 350);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
+
+  // Fetch Categories on mount
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchCategories() {
+      try {
+        const res = await fetch('/api/categories');
+        const json = await res.json();
+        if (isMounted && json.success && Array.isArray(json.data) && json.data.length > 0) {
+          setCategories(json.data.map(mapDbCategoryToCategoryItem));
+        }
+      } catch (err) {
+        console.error('Failed to fetch categories from API:', err);
+      }
+    }
+    fetchCategories();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Fetch Products dynamically based on filters
+  const fetchProducts = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const params = new URLSearchParams();
+      if (debouncedSearchQuery.trim()) {
+        params.set('q', debouncedSearchQuery.trim());
+      }
+      if (selectedCategory && selectedCategory !== 'semua') {
+        params.set('kategori', selectedCategory);
+      }
+      if (selectedSort) {
+        params.set('sort', selectedSort);
+      }
+      if (minPrice !== '') {
+        params.set('minPrice', String(minPrice));
+      }
+      if (maxPrice !== '') {
+        params.set('maxPrice', String(maxPrice));
+      }
+      if (minRating > 0) {
+        params.set('minRating', String(minRating));
+      }
+      params.set('limit', '50');
+
+      const res = await fetch(`/api/products?${params.toString()}`);
+      const json = await res.json();
+
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || 'Gagal memuat produk dari server');
+      }
+
+      const fetchedProducts: Product[] = (json.data || []).map(mapDbProductToProduct);
+      setProducts(fetchedProducts);
+      setTotalCount(json.pagination?.total ?? fetchedProducts.length);
+    } catch (err: any) {
+      console.error('Error fetching catalog products:', err);
+      setError(err.message || 'Terjadi kesalahan saat memuat katalog produk');
+      // Fallback filter over mock products on network error
+      const filteredMock = MOCK_PRODUCTS.filter((product) => {
+        if (debouncedSearchQuery.trim()) {
+          const q = debouncedSearchQuery.toLowerCase();
+          const matchName = product.nama.toLowerCase().includes(q);
+          const matchDesc = product.deskripsi.toLowerCase().includes(q);
+          if (!matchName && !matchDesc) return false;
+        }
+        if (selectedCategory !== 'semua' && product.kategori !== selectedCategory) {
           return false;
         }
-      }
+        if (minPrice !== '' && product.harga < minPrice) return false;
+        if (maxPrice !== '' && product.harga > maxPrice) return false;
+        if (minRating > 0 && product.rating < minRating) return false;
+        return true;
+      });
+      setProducts(filteredMock);
+      setTotalCount(filteredMock.length);
+    } finally {
+      setLoading(false);
+    }
+  }, [debouncedSearchQuery, selectedCategory, selectedSort, minPrice, maxPrice, minRating]);
 
-      // 2. Category Filter
-      if (selectedCategory !== 'semua') {
-        if (product.kategori !== selectedCategory) {
-          return false;
-        }
-      }
-
-      // 3. Price Filter
-      if (minPrice !== '' && product.harga < minPrice) {
-        return false;
-      }
-      if (maxPrice !== '' && product.harga > maxPrice) {
-        return false;
-      }
-
-      // 4. Rating Filter
-      if (minRating > 0 && product.rating < minRating) {
-        return false;
-      }
-
-      return true;
-    }).sort((a, b) => {
-      switch (selectedSort) {
-        case 'terpopuler':
-          return b.terjual - a.terjual;
-        case 'terbaru':
-          return (b.isTerbaru ? 1 : 0) - (a.isTerbaru ? 1 : 0);
-        case 'harga-asc':
-          return a.harga - b.harga;
-        case 'harga-desc':
-          return b.harga - a.harga;
-        case 'rating':
-          return b.rating - a.rating;
-        case 'rekomendasi':
-        default:
-          return (b.isRekomendasi ? 1 : 0) - (a.isRekomendasi ? 1 : 0);
-      }
-    });
-  }, [searchQuery, selectedCategory, selectedSort, minPrice, maxPrice, minRating]);
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   // Reset all filters
   const handleResetFilter = () => {
-    setSearchQuery('');
+    setSearchInput('');
+    setDebouncedSearchQuery('');
     setSelectedCategory('semua');
     setSelectedSort('rekomendasi');
     setMinPrice('');
@@ -106,7 +172,7 @@ export function CatalogView() {
   };
 
   const hasActiveFilters =
-    searchQuery !== '' ||
+    searchInput !== '' ||
     selectedCategory !== 'semua' ||
     minPrice !== '' ||
     maxPrice !== '' ||
@@ -131,16 +197,19 @@ export function CatalogView() {
           <div className="relative">
             <input
               type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Ketik nama produk, misal: stroller, piyama, botol susu, balok kayu..."
               className="w-full pl-11 pr-10 py-3.5 rounded-2xl border border-rose-200 bg-rose-50/20 text-sm focus:outline-none focus:border-rose-500 focus:ring-4 focus:ring-rose-100 transition-all text-slate-800 placeholder-slate-400"
             />
             <Search className="w-5 h-5 text-rose-500 absolute left-4 top-1/2 -translate-y-1/2" />
-            {searchQuery && (
+            {searchInput && (
               <button
                 type="button"
-                onClick={() => setSearchQuery('')}
+                onClick={() => {
+                  setSearchInput('');
+                  setDebouncedSearchQuery('');
+                }}
                 className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
                 title="Hapus pencarian"
               >
@@ -161,9 +230,9 @@ export function CatalogView() {
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
             }`}
           >
-            Semua ({MOCK_PRODUCTS.length})
+            Semua
           </button>
-          {MOCK_CATEGORIES.map((cat) => (
+          {categories.map((cat) => (
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.slug)}
@@ -176,6 +245,9 @@ export function CatalogView() {
               {cat.slug === 'perlengkapan' && <Baby className="w-3.5 h-3.5" />}
               {cat.slug === 'pakaian' && <Shirt className="w-3.5 h-3.5" />}
               {cat.slug === 'mainan' && <Gamepad2 className="w-3.5 h-3.5" />}
+              {!['perlengkapan', 'pakaian', 'mainan'].includes(cat.slug) && (
+                <Sparkles className="w-3.5 h-3.5" />
+              )}
               <span>{cat.nama.split('&')[0].trim()}</span>
             </button>
           ))}
@@ -221,7 +293,7 @@ export function CatalogView() {
                     Semua Kategori
                   </span>
                 </label>
-                {MOCK_CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <label key={cat.id} className="flex items-center gap-2 cursor-pointer p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
                     <input
                       type="radio"
@@ -314,12 +386,12 @@ export function CatalogView() {
               </button>
 
               <p className="text-xs sm:text-sm text-slate-600">
-                Menampilkan <span className="font-bold text-slate-800">{filteredProducts.length}</span> produk
+                Menampilkan <span className="font-bold text-slate-800">{totalCount}</span> produk
                 {selectedCategory !== 'semua' && (
                   <span> dalam <span className="font-semibold text-rose-600">{selectedCategory}</span></span>
                 )}
-                {searchQuery && (
-                  <span> untuk &ldquo;<span className="font-semibold text-rose-600">{searchQuery}</span>&rdquo;</span>
+                {debouncedSearchQuery && (
+                  <span> untuk &ldquo;<span className="font-semibold text-rose-600">{debouncedSearchQuery}</span>&rdquo;</span>
                 )}
               </p>
             </div>
@@ -366,7 +438,7 @@ export function CatalogView() {
                   className="w-full text-xs p-2 border border-slate-200 rounded-xl"
                 >
                   <option value="semua">Semua Kategori</option>
-                  {MOCK_CATEGORIES.map((cat) => (
+                  {categories.map((cat) => (
                     <option key={cat.id} value={cat.slug}>{cat.nama}</option>
                   ))}
                 </select>
@@ -414,10 +486,27 @@ export function CatalogView() {
             </div>
           )}
 
-          {/* Grid Products */}
-          {filteredProducts.length > 0 ? (
+          {/* Loading Skeleton / Spinner State */}
+          {loading ? (
+            <div className="space-y-4">
+              <div className="flex items-center justify-center py-10 gap-3 text-rose-500 font-medium text-sm">
+                <Loader2 className="w-6 h-6 animate-spin" />
+                <span>Memuat daftar produk...</span>
+              </div>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
+                {[1, 2, 3, 4, 5, 6].map((idx) => (
+                  <div key={idx} className="bg-white rounded-2xl border border-slate-100 p-4 animate-pulse">
+                    <div className="aspect-square bg-slate-100 rounded-xl mb-3" />
+                    <div className="h-4 bg-slate-100 rounded-md w-3/4 mb-2" />
+                    <div className="h-3 bg-slate-100 rounded-md w-1/2 mb-4" />
+                    <div className="h-5 bg-slate-100 rounded-md w-2/3" />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : products.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
-              {filteredProducts.map((product) => (
+              {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>

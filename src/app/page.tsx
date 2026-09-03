@@ -7,9 +7,34 @@ import {
   RecommendedSection,
   PromoSection,
 } from '@/components/home/HomeSections';
-import { MOCK_PRODUCTS } from '@/data/mock-products';
+import { productService } from '@/server/services/product.service';
+import { MOCK_PRODUCTS, MOCK_CATEGORIES } from '@/data/mock-products';
+import { Product, CategoryItem } from '@/types/product';
+import { mapDbProductToProduct, mapDbCategoryToCategoryItem } from '@/lib/mappers';
 
-export default function Home() {
+export const revalidate = 60;
+
+export default async function Home() {
+  let products: Product[] = MOCK_PRODUCTS;
+  let categories: CategoryItem[] = MOCK_CATEGORIES;
+
+  try {
+    const [productsResult, categoriesResult] = await Promise.all([
+      productService.getProducts({ limit: 50 }),
+      productService.getCategories(),
+    ]);
+
+    if (productsResult?.items && productsResult.items.length > 0) {
+      products = productsResult.items.map(mapDbProductToProduct);
+    }
+
+    if (categoriesResult && categoriesResult.length > 0) {
+      categories = categoriesResult.map(mapDbCategoryToCategoryItem);
+    }
+  } catch (error) {
+    console.error('Failed to load products/categories in Home page:', error);
+  }
+
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50 text-slate-800">
       <Navbar />
@@ -19,19 +44,19 @@ export default function Home() {
         <HeroBanner />
 
         {/* 3 Kategori Utama */}
-        <CategorySection />
+        <CategorySection categories={categories} />
 
         {/* 1. Bagian Promo Hemat Rutin (Flash Sale) */}
-        <PromoSection products={MOCK_PRODUCTS} />
+        <PromoSection products={products} />
 
         {/* 2. Bagian Produk Populer */}
-        <PopularSection products={MOCK_PRODUCTS} />
+        <PopularSection products={products} />
 
         {/* 3. Bagian Produk Terbaru */}
-        <NewArrivalsSection products={MOCK_PRODUCTS} />
+        <NewArrivalsSection products={products} />
 
         {/* 4. Bagian Rekomendasi untuk Anak */}
-        <RecommendedSection products={MOCK_PRODUCTS} />
+        <RecommendedSection products={products} />
       </main>
 
       <Footer />

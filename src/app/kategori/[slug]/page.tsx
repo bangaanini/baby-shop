@@ -36,7 +36,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
       <Navbar />
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <Suspense fallback={<div className="py-20 text-center text-slate-400">Memuat kategori...</div>}>
-          <CatalogView />
+          <CatalogView initialCategory={slug} />
         </Suspense>
       </main>
       <Footer />
