@@ -79,7 +79,7 @@ export interface DetailedOrder extends Order {
   updatedAt: Date;
 }
 
-function formatOrderRecord(record: any): DetailedOrder {
+export function formatOrderRecord(record: any): DetailedOrder {
   const badge = getStatusBadge(record.status);
 
   const items: OrderItem[] = (record.items || []).map((item: any) => ({
