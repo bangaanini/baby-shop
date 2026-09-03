@@ -12,6 +12,7 @@
     "db:seed": "npx tsx src/db/seed.ts"
   },
   "dependencies": {
+    "better-auth": "^1.7.2",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.40.0",

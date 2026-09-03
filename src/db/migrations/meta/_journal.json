@@ -8,6 +8,13 @@
       "when": 1788454542266,
       "tag": "0000_acoustic_namorita",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788457470684,
+      "tag": "0001_blushing_mandrill",
+      "breakpoints": true
     }
   ]
 }

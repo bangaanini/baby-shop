@@ -6,7 +6,7 @@ import { productsTable, productVariantsTable } from './products';
 export const ordersTable = pgTable('orders', {
   id: uuid('id').defaultRandom().primaryKey(),
   invoice_number: varchar('invoice_number', { length: 50 }).notNull().unique(),
-  user_id: uuid('user_id').references(() => usersTable.id, { onDelete: 'set null' }),
+  user_id: text('user_id').references(() => usersTable.id, { onDelete: 'set null' }),
   status: varchar('status', { length: 50 }).default('menunggu_pembayaran').notNull(),
   recipient_name: varchar('recipient_name', { length: 150 }).notNull(),
   recipient_phone: varchar('recipient_phone', { length: 50 }).notNull(),

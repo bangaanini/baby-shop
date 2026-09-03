@@ -1,19 +1,21 @@
-import { pgTable, uuid, varchar, text, boolean, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, varchar, boolean, timestamp, uuid } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-export const usersTable = pgTable('users', {
-  id: uuid('id').defaultRandom().primaryKey(),
+export const usersTable = pgTable('user', {
+  id: text('id').primaryKey(),
   name: varchar('name', { length: 150 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
+  emailVerified: boolean('email_verified').default(false).notNull(),
+  image: text('image'),
   phone: varchar('phone', { length: 50 }),
   role: varchar('role', { length: 20 }).default('buyer').notNull(),
-  avatar_url: text('avatar_url'),
-  created_at: timestamp('created_at').defaultNow().notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const addressesTable = pgTable('addresses', {
   id: uuid('id').defaultRandom().primaryKey(),
-  user_id: uuid('user_id')
+  userId: text('user_id')
     .references(() => usersTable.id, { onDelete: 'cascade' })
     .notNull(),
   recipient_name: varchar('recipient_name', { length: 150 }).notNull(),
@@ -33,7 +35,10 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
 
 export const addressesRelations = relations(addressesTable, ({ one }) => ({
   user: one(usersTable, {
-    fields: [addressesTable.user_id],
+    fields: [addressesTable.userId],
     references: [usersTable.id],
   }),
 }));
+
+// Better Auth alias
+export const user = usersTable;

@@ -1,11 +1,11 @@
-import { pgTable, uuid, integer, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, uuid, integer, timestamp, text } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { usersTable } from './users';
 import { productsTable, productVariantsTable } from './products';
 
 export const cartsTable = pgTable('carts', {
   id: uuid('id').defaultRandom().primaryKey(),
-  user_id: uuid('user_id').references(() => usersTable.id, { onDelete: 'cascade' }),
+  user_id: text('user_id').references(() => usersTable.id, { onDelete: 'cascade' }),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
 });

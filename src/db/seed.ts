@@ -62,6 +62,9 @@ async function seed() {
   try {
     // 1. Clean existing tables (in foreign key safe order)
     console.log('🧹 Cleaning existing table records...');
+    await db.delete(schema.sessionsTable);
+    await db.delete(schema.accountsTable);
+    await db.delete(schema.verificationsTable);
     await db.delete(schema.trackingHistoryTable);
     await db.delete(schema.orderItemsTable);
     await db.delete(schema.ordersTable);
@@ -184,22 +187,24 @@ async function seed() {
     const [buyerUser] = await db
       .insert(schema.usersTable)
       .values({
+        id: 'user_buyer_demo_1',
         name: 'Bunda Sarah Clarissa',
         email: 'sarah.clarissa@example.com',
         phone: '0812-3456-7890',
         role: 'buyer',
-        avatar_url: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=60',
+        image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=60',
       })
       .returning({ id: schema.usersTable.id, email: schema.usersTable.email });
 
     const [adminUser] = await db
       .insert(schema.usersTable)
       .values({
+        id: 'user_admin_demo_1',
         name: 'Admin BabyKids',
         email: 'admin@babykids.id',
         phone: '0811-0000-0000',
         role: 'admin',
-        avatar_url: null,
+        image: null,
       })
       .returning({ id: schema.usersTable.id, email: schema.usersTable.email });
 
@@ -208,7 +213,7 @@ async function seed() {
     // Seed Saved Addresses for demo buyer
     for (const addr of MOCK_SAVED_ADDRESSES) {
       await db.insert(schema.addressesTable).values({
-        user_id: buyerUser.id,
+        userId: buyerUser.id,
         recipient_name: addr.namaPenerima,
         phone: addr.telepon,
         label: addr.labelAlamat,
