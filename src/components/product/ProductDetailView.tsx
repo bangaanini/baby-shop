@@ -17,6 +17,8 @@ import {
   Sparkles,
   ArrowRight,
   ChevronRight,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/product';
 import { formatRupiah } from '@/lib/format';
@@ -38,10 +40,17 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
   const [quantity, setQuantity] = useState<number>(1);
   const [isWishlist, setIsWishlist] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const [isAddingToCart, setIsAddingToCart] = useState<boolean>(false);
+  const [isBuyingNow, setIsBuyingNow] = useState<boolean>(false);
 
   // Available unique colors and sizes from variants
-  const availableColors = Array.from(new Set(product.varian?.map((v) => v.warna) || []));
-  const availableSizes = Array.from(new Set(product.varian?.map((v) => v.ukuran) || []));
+  const availableColors = Array.from(
+    new Set((product.varian?.map((v) => v.warna) || []).filter(Boolean))
+  );
+  const availableSizes = Array.from(
+    new Set((product.varian?.map((v) => v.ukuran) || []).filter(Boolean))
+  );
 
   const [selectedColor, setSelectedColor] = useState<string>(
     product.varian && product.varian.length > 0 ? product.varian[0].warna : ''
@@ -52,8 +61,9 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
   const handleColorChange = (warna: string) => {
     setSelectedColor(warna);
-    const matched = product.varian?.find((v) => v.warna === warna && v.ukuran === selectedSize)
-      || product.varian?.find((v) => v.warna === warna);
+    const matched =
+      product.varian?.find((v) => v.warna === warna && v.ukuran === selectedSize) ||
+      product.varian?.find((v) => v.warna === warna);
     if (matched) {
       setSelectedVariant(matched);
       if (matched.ukuran) setSelectedSize(matched.ukuran);
@@ -62,51 +72,127 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
   const handleSizeChange = (ukuran: string) => {
     setSelectedSize(ukuran);
-    const matched = product.varian?.find((v) => v.ukuran === ukuran && v.warna === selectedColor)
-      || product.varian?.find((v) => v.ukuran === ukuran);
+    const matched =
+      product.varian?.find((v) => v.ukuran === ukuran && v.warna === selectedColor) ||
+      product.varian?.find((v) => v.ukuran === ukuran);
     if (matched) {
       setSelectedVariant(matched);
       if (matched.warna) setSelectedColor(matched.warna);
     }
   };
 
-  const showToast = (msg: string) => {
+  const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToastMessage(msg);
+    setToastType(type);
     setTimeout(() => {
       setToastMessage(null);
-    }, 3000);
+    }, 4000);
   };
 
-  const handleAddToCart = () => {
-    showToast(`🎉 Berhasil menambahkan ${quantity}x "${product.nama}" ke keranjang belanja!`);
+  const handleAddToCart = async () => {
+    if (isAddingToCart || isBuyingNow) return;
+    setIsAddingToCart(true);
+
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          variantId: selectedVariant?.id || undefined,
+          quantity,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        showToast(data?.error || 'Gagal menambahkan produk ke keranjang', 'error');
+        return;
+      }
+
+      showToast(`🎉 Berhasil menambahkan ${quantity}x "${product.nama}" ke keranjang belanja!`, 'success');
+    } catch (err: any) {
+      console.error('Error adding to cart:', err);
+      showToast('Terjadi kesalahan jaringan saat menambahkan ke keranjang', 'error');
+    } finally {
+      setIsAddingToCart(false);
+    }
   };
 
-  const handleBuyNow = () => {
-    router.push('/checkout');
+  const handleBuyNow = async () => {
+    if (isAddingToCart || isBuyingNow) return;
+    setIsBuyingNow(true);
+
+    try {
+      const res = await fetch('/api/cart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          productId: product.id,
+          variantId: selectedVariant?.id || undefined,
+          quantity,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || !data.success) {
+        showToast(data?.error || 'Gagal menambahkan produk ke keranjang', 'error');
+        setIsBuyingNow(false);
+        return;
+      }
+
+      router.push('/checkout');
+    } catch (err: any) {
+      console.error('Error in buy now:', err);
+      showToast('Terjadi kesalahan jaringan', 'error');
+      setIsBuyingNow(false);
+    }
   };
 
-  const galleryImages = [
-    product.gambar,
-    'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=500&auto=format&fit=crop&q=60',
-    'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=500&auto=format&fit=crop&q=60',
-    'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&auto=format&fit=crop&q=60',
-  ];
+  const galleryImages =
+    product.galeri && product.galeri.length > 0
+      ? Array.from(new Set([product.gambar, ...product.galeri.map((g) => g.url)])).filter(Boolean)
+      : [
+          product.gambar,
+          'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=500&auto=format&fit=crop&q=60',
+          'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&auto=format&fit=crop&q=60',
+        ].filter(Boolean);
 
+  const currentPrice = product.harga + (selectedVariant?.hargaTambahan || 0);
   const currentStock = selectedVariant ? selectedVariant.stok : product.stok;
 
   return (
     <div className="py-4">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border border-slate-700 animate-in fade-in slide-in-from-bottom-5">
-          <Check className="w-5 h-5 text-emerald-400 shrink-0" />
+        <div
+          className={`fixed bottom-6 right-6 z-50 text-white px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 border animate-in fade-in slide-in-from-bottom-5 ${
+            toastType === 'error'
+              ? 'bg-rose-900 border-rose-700'
+              : 'bg-slate-900 border-slate-700'
+          }`}
+        >
+          {toastType === 'error' ? (
+            <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />
+          ) : (
+            <Check className="w-5 h-5 text-emerald-400 shrink-0" />
+          )}
           <span className="text-xs sm:text-sm font-medium">{toastMessage}</span>
-          <Link
-            href="/keranjang"
-            className="text-xs font-bold text-rose-400 hover:text-rose-300 underline ml-2 whitespace-nowrap"
-          >
-            Lihat Keranjang
-          </Link>
+          {toastType !== 'error' && (
+            <Link
+              href="/keranjang"
+              className="text-xs font-bold text-rose-400 hover:text-rose-300 underline ml-2 whitespace-nowrap"
+            >
+              Lihat Keranjang
+            </Link>
+          )}
         </div>
       )}
 
@@ -220,7 +306,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
             <div className="p-4 sm:p-5 bg-gradient-to-r from-rose-50/70 via-pink-50/50 to-amber-50/40 rounded-2xl border border-rose-100 mb-6">
               <div className="flex items-baseline gap-3 flex-wrap">
                 <span className="text-2xl sm:text-3xl font-black text-rose-600">
-                  {formatRupiah(product.harga)}
+                  {formatRupiah(currentPrice)}
                 </span>
                 {product.hargaCoret && (
                   <span className="text-sm sm:text-base text-slate-400 line-through">
@@ -332,7 +418,9 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
-                <span className="text-xs text-slate-400">Total: <strong className="text-slate-800 font-bold">{formatRupiah(product.harga * quantity)}</strong></span>
+                <span className="text-xs text-slate-400">
+                  Total: <strong className="text-slate-800 font-bold">{formatRupiah(currentPrice * quantity)}</strong>
+                </span>
               </div>
 
               {/* Action Buttons */}
@@ -340,19 +428,39 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  className="py-3.5 px-5 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs sm:text-sm border border-rose-200 flex items-center justify-center gap-2 transition-all active:scale-95"
+                  disabled={isAddingToCart || isBuyingNow || currentStock <= 0}
+                  className="py-3.5 px-5 rounded-2xl bg-rose-50 hover:bg-rose-100 disabled:opacity-50 disabled:cursor-not-allowed text-rose-600 font-bold text-xs sm:text-sm border border-rose-200 flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
                 >
-                  <ShoppingBag className="w-4 h-4" />
-                  <span>Tambah ke Keranjang</span>
+                  {isAddingToCart ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Menambahkan...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag className="w-4 h-4" />
+                      <span>Tambah ke Keranjang</span>
+                    </>
+                  )}
                 </button>
 
                 <button
                   type="button"
                   onClick={handleBuyNow}
-                  className="py-3.5 px-5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95"
+                  disabled={isAddingToCart || isBuyingNow || currentStock <= 0}
+                  className="py-3.5 px-5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Beli Sekarang</span>
+                  {isBuyingNow ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Memproses...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4" />
+                      <span>Beli Sekarang</span>
+                    </>
+                  )}
                 </button>
               </div>
             </div>

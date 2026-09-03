@@ -3,7 +3,10 @@ import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Navbar, Footer } from '@/components/layout/NavbarFooter';
 import { ProductDetailView } from '@/components/product/ProductDetailView';
+import { productService } from '@/server/services/product.service';
+import { mapDbProductToProduct } from '@/lib/mappers';
 import { MOCK_PRODUCTS } from '@/data/mock-products';
+import { Product } from '@/types/product';
 
 interface ProductDetailPageProps {
   params: Promise<{
@@ -11,38 +14,87 @@ interface ProductDetailPageProps {
   }>;
 }
 
-export async function generateStaticParams() {
-  return MOCK_PRODUCTS.map((p) => ({
-    slug: p.slug,
-  }));
-}
+export const revalidate = 60;
 
 export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const product = MOCK_PRODUCTS.find((p) => p.slug === slug);
 
-  if (!product) {
+  try {
+    const dbProduct = await productService.getProductBySlug(slug);
+    if (dbProduct) {
+      const product = mapDbProductToProduct(dbProduct);
+      return {
+        title: `${product.nama} — BabyKids`,
+        description: product.deskripsi || `Beli ${product.nama} berkualitas hanya di BabyKids.`,
+        openGraph: {
+          title: `${product.nama} — BabyKids`,
+          description: product.deskripsi || `Beli ${product.nama} berkualitas hanya di BabyKids.`,
+          images: product.gambar ? [{ url: product.gambar }] : [],
+        },
+      };
+    }
+  } catch (error) {
+    console.error('Failed to generate metadata from DB:', error);
+  }
+
+  // Fallback to mock product
+  const mockProduct = MOCK_PRODUCTS.find((p) => p.slug === slug);
+  if (!mockProduct) {
     return { title: 'Produk Tidak Ditemukan — BabyKids' };
   }
 
   return {
-    title: `${product.nama} — BabyKids`,
-    description: product.deskripsi,
+    title: `${mockProduct.nama} — BabyKids`,
+    description: mockProduct.deskripsi,
   };
 }
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
   const { slug } = await params;
-  const product = MOCK_PRODUCTS.find((p) => p.slug === slug);
+  let product: Product | null = null;
+  let relatedProducts: Product[] = [];
+
+  try {
+    const dbProduct = await productService.getProductBySlug(slug);
+
+    if (dbProduct) {
+      product = mapDbProductToProduct(dbProduct);
+
+      const dbRelated = await productService.getRelatedProducts(
+        dbProduct.category_id,
+        dbProduct.id,
+        4
+      );
+
+      if (dbRelated && dbRelated.length > 0) {
+        relatedProducts = dbRelated.map(mapDbProductToProduct);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to fetch product from DB in ProductDetailPage:', error);
+  }
+
+  // Fallback to mock products if not found in DB
+  if (!product) {
+    const mockProduct = MOCK_PRODUCTS.find((p) => p.slug === slug);
+    if (mockProduct) {
+      product = mockProduct;
+      relatedProducts = MOCK_PRODUCTS.filter(
+        (p) => p.kategori === mockProduct.kategori && p.id !== mockProduct.id
+      ).slice(0, 4);
+    }
+  }
 
   if (!product) {
     notFound();
   }
 
-  // Find related products in the same category (excluding current product)
-  const relatedProducts = MOCK_PRODUCTS.filter(
-    (p) => p.kategori === product.kategori && p.id !== product.id
-  );
+  // If relatedProducts is still empty, try fallback
+  if (relatedProducts.length === 0) {
+    relatedProducts = MOCK_PRODUCTS.filter(
+      (p) => p.kategori === product?.kategori && p.id !== product?.id
+    ).slice(0, 4);
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50 text-slate-800">
