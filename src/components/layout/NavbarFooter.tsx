@@ -1,13 +1,57 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ShoppingBag, Search, User, ShieldCheck, Truck } from 'lucide-react';
+import {
+  ShoppingBag,
+  Search,
+  User,
+  ShieldCheck,
+  Truck,
+  LogOut,
+  Package,
+  ChevronDown,
+  LogIn,
+  Loader2,
+  Sparkles,
+} from 'lucide-react';
+import { useSession, signOut } from '@/lib/auth-client';
 
 export function Navbar() {
   const [navSearch, setNavSearch] = useState('');
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+
+  const { data: session, isPending } = useSession();
+  const user = session?.user as
+    | { id?: string; name?: string; email?: string; role?: string; phone?: string; image?: string }
+    | undefined;
+
+  const isAdmin = user?.role === 'admin';
+  const displayName = user?.name || 'Pengguna';
+  const firstName = displayName.split(' ')[0];
+
+  const getInitials = (name?: string) => {
+    if (!name) return 'U';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -15,6 +59,23 @@ export function Navbar() {
       router.push(`/katalog?q=${encodeURIComponent(navSearch.trim())}`);
     } else {
       router.push('/katalog');
+    }
+  };
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+      setUserMenuOpen(false);
+      router.push('/auth/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout error:', error);
+      setUserMenuOpen(false);
+      router.push('/auth/login');
+      router.refresh();
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -62,7 +123,7 @@ export function Navbar() {
           </form>
 
           {/* User & Cart Actions */}
-          <div className="flex items-center gap-2 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/keranjang"
               className="relative p-2 text-slate-700 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors flex items-center gap-1.5"
@@ -79,25 +140,128 @@ export function Navbar() {
 
             <div className="h-6 w-px bg-slate-200 hidden sm:block" />
 
-            <Link
-              href="/user/profil"
-              className="flex items-center gap-2 text-slate-700 hover:text-rose-600 px-3 py-1.5 rounded-full hover:bg-rose-50 text-sm font-medium transition-colors"
-            >
-              <div className="w-8 h-8 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center">
-                <User className="w-4 h-4" />
-              </div>
-              <div className="text-left hidden sm:block leading-tight">
-                <span className="text-xs block text-slate-400">Halo,</span>
-                <span className="text-xs font-bold text-slate-700">Akun Saya</span>
-              </div>
-            </Link>
+            {/* User Session Dropdown or Login Button */}
+            {isPending ? (
+              <div className="w-24 h-9 bg-rose-50 animate-pulse rounded-full" />
+            ) : user ? (
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setUserMenuOpen((prev) => !prev)}
+                  className="flex items-center gap-2 text-slate-700 hover:text-rose-600 p-1 sm:px-3 sm:py-1.5 rounded-full hover:bg-rose-50 text-sm font-medium transition-colors border border-transparent hover:border-rose-100"
+                  aria-expanded={userMenuOpen}
+                >
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 text-white font-bold text-xs flex items-center justify-center shadow-xs shrink-0">
+                    {getInitials(displayName)}
+                  </div>
+                  <div className="text-left hidden sm:block leading-tight max-w-[120px]">
+                    <span className="text-[10px] block text-slate-400">Halo,</span>
+                    <span className="text-xs font-bold text-slate-800 truncate block">
+                      {isAdmin ? 'Admin' : firstName}
+                    </span>
+                  </div>
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 text-slate-400 transition-transform hidden sm:block ${
+                      userMenuOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
 
-            <Link
-              href="/admin"
-              className="text-xs font-semibold px-2.5 py-1 rounded-md bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors hidden md:inline-block"
-            >
-              Admin Panel
-            </Link>
+                {/* Dropdown Menu */}
+                {userMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-xl border border-rose-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                    <div className="px-4 py-3 border-b border-slate-100">
+                      <div className="flex items-center gap-2.5 mb-1.5">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-rose-500 to-pink-500 text-white font-bold text-sm flex items-center justify-center shadow-xs shrink-0">
+                          {getInitials(displayName)}
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-xs font-bold text-slate-800 truncate">{displayName}</p>
+                          <p className="text-[11px] text-slate-400 truncate">{user.email}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1.5 mt-2">
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                            isAdmin
+                              ? 'bg-purple-100 text-purple-700'
+                              : 'bg-rose-100 text-rose-700'
+                          }`}
+                        >
+                          {isAdmin ? '🛡️ Administrator' : '👶 Member Pelanggan'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="py-1">
+                      <Link
+                        href="/user/profil"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                      >
+                        <User className="w-4 h-4 text-slate-400" />
+                        <span>Profil Saya</span>
+                      </Link>
+
+                      <Link
+                        href="/user/pesanan"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                      >
+                        <Package className="w-4 h-4 text-slate-400" />
+                        <span>Riwayat Pesanan</span>
+                      </Link>
+
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-purple-700 hover:bg-purple-50 transition-colors"
+                        >
+                          <ShieldCheck className="w-4 h-4 text-purple-600" />
+                          <span>Panel Admin</span>
+                        </Link>
+                      )}
+                    </div>
+
+                    <div className="border-t border-slate-100 pt-1 mt-1">
+                      <button
+                        type="button"
+                        disabled={isLoggingOut}
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2.5 px-4 py-2.5 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors text-left disabled:opacity-50 cursor-pointer"
+                      >
+                        {isLoggingOut ? (
+                          <Loader2 className="w-4 h-4 animate-spin text-rose-600" />
+                        ) : (
+                          <LogOut className="w-4 h-4 text-rose-600" />
+                        )}
+                        <span>{isLoggingOut ? 'Sedang Keluar...' : 'Keluar (Logout)'}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="flex items-center gap-1.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white text-xs font-bold px-3.5 py-2 rounded-full transition-all shadow-xs hover:shadow-md"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>Masuk / Daftar</span>
+              </Link>
+            )}
+
+            {/* Quick Admin shortcut if logged in as Admin */}
+            {user && isAdmin && (
+              <Link
+                href="/admin"
+                className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-purple-50 text-purple-700 hover:bg-purple-100 transition-colors hidden md:inline-flex items-center gap-1 border border-purple-200"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Admin Panel</span>
+              </Link>
+            )}
           </div>
         </div>
 
