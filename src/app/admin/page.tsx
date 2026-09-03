@@ -623,7 +623,7 @@ function AdminDashboardContent() {
                           className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white rounded-xl text-xs font-bold transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
                         >
                           {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
-                          <span>Konfirmasi & Proses</span>
+                          <span>Proses Pesanan</span>
                         </button>
                       )}
 
@@ -645,7 +645,7 @@ function AdminDashboardContent() {
                           >
                             {isUpdating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
                             <Send className="w-3 h-3" />
-                            <span>Kirim</span>
+                            <span>Kirim Barang</span>
                           </button>
                         </div>
                       )}
