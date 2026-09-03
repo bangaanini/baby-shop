@@ -15,6 +15,13 @@
       "when": 1788457470684,
       "tag": "0001_blushing_mandrill",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1788458011831,
+      "tag": "0002_sticky_ricochet",
+      "breakpoints": true
     }
   ]
 }

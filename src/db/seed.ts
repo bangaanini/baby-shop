@@ -3,6 +3,8 @@ dotenv.config();
 
 import { db, client } from './index';
 import * as schema from './schema';
+import { hashPassword } from 'better-auth/crypto';
+import { createLocalAccountIssuer } from 'better-auth';
 import { MOCK_CATEGORIES, MOCK_PRODUCTS } from '../data/mock-products';
 import { MOCK_SAVED_ADDRESSES, MOCK_INITIAL_CART } from '../data/mock-checkout';
 import { MOCK_ORDERS } from '../data/mock-orders';
@@ -182,8 +184,8 @@ async function seed() {
       `✅ Products seeded: ${productMap.size} products, ${totalVariants} variants, ${totalImages} images.`
     );
 
-    // 4. Seed Users (Demo Buyer & Admin) and Addresses
-    console.log('👤 Seeding demo users and addresses...');
+    // 4. Seed Users (Demo Buyer & Admin), Auth Accounts, and Addresses
+    console.log('👤 Seeding demo users, accounts, and addresses...');
     const [buyerUser] = await db
       .insert(schema.usersTable)
       .values({
@@ -196,11 +198,21 @@ async function seed() {
       })
       .returning({ id: schema.usersTable.id, email: schema.usersTable.email });
 
+    const buyerHashedPassword = await hashPassword('password123');
+    await db.insert(schema.accountsTable).values({
+      id: 'account_buyer_demo_1',
+      userId: buyerUser.id,
+      accountId: buyerUser.id,
+      providerId: 'credential',
+      issuer: createLocalAccountIssuer('credential'),
+      password: buyerHashedPassword,
+    });
+
     const [adminUser] = await db
       .insert(schema.usersTable)
       .values({
         id: 'user_admin_demo_1',
-        name: 'Admin BabyKids',
+        name: 'Admin Toko BabyKids',
         email: 'admin@babykids.id',
         phone: '0811-0000-0000',
         role: 'admin',
@@ -208,7 +220,17 @@ async function seed() {
       })
       .returning({ id: schema.usersTable.id, email: schema.usersTable.email });
 
-    console.log(`✅ Users created: Buyer (${buyerUser.email}), Admin (${adminUser.email}).`);
+    const adminHashedPassword = await hashPassword('admin123');
+    await db.insert(schema.accountsTable).values({
+      id: 'account_admin_demo_1',
+      userId: adminUser.id,
+      accountId: adminUser.id,
+      providerId: 'credential',
+      issuer: createLocalAccountIssuer('credential'),
+      password: adminHashedPassword,
+    });
+
+    console.log(`✅ Users & accounts created: Buyer (${buyerUser.email}), Admin (${adminUser.email}).`);
 
     // Seed Saved Addresses for demo buyer
     for (const addr of MOCK_SAVED_ADDRESSES) {
