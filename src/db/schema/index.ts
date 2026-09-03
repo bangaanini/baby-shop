@@ -1,2 +1,5 @@
-// Temporary placeholder schema for drizzle-orm
-export {};
+export * from './categories';
+export * from './products';
+export * from './users';
+export * from './carts';
+export * from './orders';
