@@ -1,0 +1,407 @@
+{
+  ".claude/skills/ngodingpakeai/SKILL.md": {
+    "summary": "Skill definisi untuk CLI NgodingPakeAI yang mengelola sinkronisasi context dan codebase memory."
+  },
+  ".ngodingpakeaiignore": {
+    "summary": "Konfigurasi berkas yang diabaikan saat pengindeksan NgodingPakeAI."
+  },
+  "AGENTS.md": {
+    "summary": "Petunjuk aturan dan alur kerja agen AI untuk sinkronisasi proyek dan integrasi NgodingPakeAI."
+  },
+  "eslint.config.mjs": {
+    "summary": "Konfigurasi ESLint untuk Next.js dan TypeScript."
+  },
+  "next-env.d.ts": {
+    "summary": "Tipe TypeScript bawaan Next.js untuk deklarasi global."
+  },
+  "next.config.ts": {
+    "summary": "Konfigurasi utama aplikasi Next.js."
+  },
+  "package-lock.json": {
+    "summary": "Kunci versi paket dependensi npm."
+  },
+  "package.json": {
+    "summary": "Manifest proyek npm yang mencakup dependencies Next.js, React, Tailwind CSS, dan Lucide Icons."
+  },
+  "postcss.config.mjs": {
+    "summary": "Konfigurasi PostCSS untuk plugin Tailwind CSS."
+  },
+  "src/app/admin/page.tsx": {
+    "summary": "Panel admin toko online kebutuhan anak untuk memantau ringkasan penjualan, mengelola daftar produk, memproses pesanan, input resi pengiriman kurir, dan mengatur voucher promo.",
+    "sections": [
+      {
+        "symbol": "AdminPage",
+        "startLine": 20,
+        "endLine": 280,
+        "summary": "Komponen halaman dashboard panel admin toko."
+      }
+    ]
+  },
+  "src/app/checkout/page.tsx": {
+    "summary": "Halaman proses checkout dengan alur bertahap (stepper) dari alamat, pilihan kurir, metode pembayaran hingga ringkasan pesanan.",
+    "sections": [
+      {
+        "symbol": "CheckoutPage",
+        "startLine": 11,
+        "endLine": 23,
+        "summary": "Halaman pembungkus alur checkout pengiriman toko anak."
+      }
+    ]
+  },
+  "src/app/globals.css": {
+    "summary": "File CSS global yang mengimpor Tailwind CSS dan mengatur variabel warna dasar."
+  },
+  "src/app/katalog/page.tsx": {
+    "summary": "Halaman katalog utama dengan fitur cari produk, filter kategori, rentang harga, rating, dan pengurutan harga/popularitas.",
+    "sections": [
+      {
+        "symbol": "CatalogPage",
+        "startLine": 11,
+        "endLine": 23,
+        "summary": "Halaman katalog produk dengan Suspense wrapper."
+      }
+    ]
+  },
+  "src/app/kategori/[slug]/page.tsx": {
+    "summary": "Halaman filter kategori dinamis berdasarkan slug (perlengkapan, pakaian, mainan) dengan metadata otomatis.",
+    "sections": [
+      {
+        "symbol": "CategoryPage",
+        "startLine": 23,
+        "endLine": 40,
+        "summary": "Halaman kategori spesifik dengan pengecekan slug dan tampilan katalog."
+      }
+    ]
+  },
+  "src/app/keranjang/page.tsx": {
+    "summary": "Halaman keranjang belanja untuk mengelola item, kuantitas, input voucher diskon, dan navigasi ke checkout.",
+    "sections": [
+      {
+        "symbol": "CartPage",
+        "startLine": 10,
+        "endLine": 22,
+        "summary": "Halaman keranjang belanja toko."
+      }
+    ]
+  },
+  "src/app/layout.tsx": {
+    "summary": "Root layout Next.js App Router dengan metadata nama toko dan konfigurasi font Geist.",
+    "sections": [
+      {
+        "symbol": "RootLayout",
+        "startLine": 20,
+        "endLine": 35,
+        "summary": "Komponen root layout pembungkus halaman aplikasi toko anak."
+      }
+    ]
+  },
+  "src/app/page.tsx": {
+    "summary": "Halaman beranda utama toko kebutuhan anak yang merangkum Hero Banner, Kategori, Promo Hemat, Produk Populer, Produk Terbaru, dan Rekomendasi.",
+    "sections": [
+      {
+        "symbol": "Home",
+        "startLine": 12,
+        "endLine": 37,
+        "summary": "Komponen halaman beranda toko dengan 4 bagian utama produk dan banner."
+      }
+    ]
+  },
+  "src/app/produk/[slug]/page.tsx": {
+    "summary": "Halaman detail produk dinamis berdasarkan slug dengan render metadata SEO, generateStaticParams, dan rekomendasi produk terkait.",
+    "sections": [
+      {
+        "symbol": "ProductDetailPage",
+        "startLine": 33,
+        "endLine": 52,
+        "summary": "Halaman server-side detail produk dan rekomendasi produk terkait."
+      }
+    ]
+  },
+  "src/app/user/pesanan/page.tsx": {
+    "summary": "Halaman daftar riwayat pesanan pembeli dengan filter status, pelacakan live kurir, dan aksi konfirmasi terima atau beli lagi.",
+    "sections": [
+      {
+        "symbol": "OrderHistoryPage",
+        "startLine": 10,
+        "endLine": 22,
+        "summary": "Halaman riwayat transaksi dan status pengiriman pembeli."
+      }
+    ]
+  },
+  "src/app/user/profil/page.tsx": {
+    "summary": "Halaman profil dan data diri pembeli, informasi keluarga, serta buku alamat pengiriman tersimpan.",
+    "sections": [
+      {
+        "symbol": "UserProfilePage",
+        "startLine": 10,
+        "endLine": 22,
+        "summary": "Halaman pengaturan akun dan data profil pembeli."
+      }
+    ]
+  },
+  "src/components/catalog/CatalogView.tsx": {
+    "summary": "Komponen interaktif katalog produk yang menyediakan input pencarian, filter kategori, rentang harga, rating minimal, dan sorting harga/popularitas.",
+    "sections": [
+      {
+        "symbol": "CatalogView",
+        "startLine": 21,
+        "endLine": 355,
+        "summary": "Komponen utama antarmuka katalog pencarian dan penyaringan produk."
+      }
+    ]
+  },
+  "src/components/checkout/CartView.tsx": {
+    "summary": "Komponen interaktif keranjang belanja yang memungkinkan penyesuaian kuantitas produk, hapus item, penerapan kupon diskon toko, dan kalkulasi subtotal.",
+    "sections": [
+      {
+        "symbol": "CartView",
+        "startLine": 10,
+        "endLine": 185,
+        "summary": "Komponen daftar item keranjang dan ringkasan biaya."
+      }
+    ]
+  },
+  "src/components/checkout/CheckoutStepper.tsx": {
+    "summary": "Komponen stepper 4 langkah checkout: (1) Pilih & Tambah Alamat Pengiriman ke seluruh Indonesia, (2) Pilihan Kurir & Ongkir Otomatis, (3) Metode Pembayaran QRIS/VA/E-wallet, dan (4) Periksa Ringkasan & Konfirmasi Pembayaran.",
+    "sections": [
+      {
+        "symbol": "CheckoutStepper",
+        "startLine": 31,
+        "endLine": 450,
+        "summary": "Komponen alur transaksi checkout bertahap dengan kalkulasi otomatis ongkir dan nomor invoice unik."
+      }
+    ]
+  },
+  "src/components/home/HeroBanner.tsx": {
+    "summary": "Komponen Hero banner sambutan toko anak dan daftar 3 kategori utama (Perlengkapan, Pakaian, Mainan).",
+    "sections": [
+      {
+        "symbol": "HeroBanner",
+        "startLine": 8,
+        "endLine": 65,
+        "summary": "Banner utama promo toko online kebutuhan anak dengan call-to-action."
+      },
+      {
+        "symbol": "CategorySection",
+        "startLine": 67,
+        "endLine": 105,
+        "summary": "Grid 3 kategori utama produk perlengkapan, pakaian, dan mainan anak."
+      }
+    ]
+  },
+  "src/components/home/HomeSections.tsx": {
+    "summary": "Komponen bagian-bagian beranda: Produk Populer, Produk Terbaru, Rekomendasi untuk Anak, dan Promo Hemat Rutin (Flash Sale).",
+    "sections": [
+      {
+        "symbol": "PopularSection",
+        "startLine": 12,
+        "endLine": 52,
+        "summary": "Menampilkan daftar produk terpopuler/paling banyak dibeli."
+      },
+      {
+        "symbol": "NewArrivalsSection",
+        "startLine": 54,
+        "endLine": 94,
+        "summary": "Menampilkan koleksi barang baru masuk."
+      },
+      {
+        "symbol": "RecommendedSection",
+        "startLine": 96,
+        "endLine": 136,
+        "summary": "Menampilkan rekomendasi produk untuk tumbuh kembang anak."
+      },
+      {
+        "symbol": "PromoSection",
+        "startLine": 138,
+        "endLine": 185,
+        "summary": "Menampilkan produk promo diskon rutin dan flash sale dengan timer."
+      }
+    ]
+  },
+  "src/components/layout/NavbarFooter.tsx": {
+    "summary": "Komponen navigasi header marketplace dengan form pencarian terintegrasi, keranjang, akun, dan footer informasi toko se-Indonesia.",
+    "sections": [
+      {
+        "symbol": "Navbar",
+        "startLine": 8,
+        "endLine": 120,
+        "summary": "Header navigasi atas dengan banner promo gratis ongkir, form search bar, dan link kategori."
+      },
+      {
+        "symbol": "Footer",
+        "startLine": 122,
+        "endLine": 182,
+        "summary": "Footer lengkap dengan informasi alamat kirim, keamanan anak SNI, dan bantuan."
+      }
+    ]
+  },
+  "src/components/order/OrderHistoryView.tsx": {
+    "summary": "Komponen riwayat pesanan dengan filter status transaksi (diproses, dikirim, selesai), modal pelacakan kurir live timeline, konfirmasi pesanan diterima, dan tombol beli lagi.",
+    "sections": [
+      {
+        "symbol": "OrderHistoryView",
+        "startLine": 20,
+        "endLine": 310,
+        "summary": "Komponen interaktif riwayat pesanan dan pelacakan resi kurir."
+      }
+    ]
+  },
+  "src/components/product/ProductCard.tsx": {
+    "summary": "Komponen kartu produk interaktif dengan foto, tag diskon/status, rating bintang, harga coret, dan tombol beli.",
+    "sections": [
+      {
+        "symbol": "ProductCard",
+        "startLine": 12,
+        "endLine": 85,
+        "summary": "Kartu produk tunggal untuk katalog dan beranda toko."
+      }
+    ]
+  },
+  "src/components/product/ProductDetailView.tsx": {
+    "summary": "Komponen detail produk interaktif dengan galeri foto, pilihan varian warna/ukuran, kontrol kuantitas, deskripsi spesifikasi bahan & SNI, serta tombol Tambah ke Keranjang dan Beli Sekarang.",
+    "sections": [
+      {
+        "symbol": "ProductDetailView",
+        "startLine": 28,
+        "endLine": 350,
+        "summary": "Komponen interaktif halaman detail produk lengkap."
+      }
+    ]
+  },
+  "src/components/user/UserProfileView.tsx": {
+    "summary": "Komponen profil pengguna dengan pengelolaan data nama, email, nomor kontak, jumlah anak, serta ringkasan buku alamat tersimpan.",
+    "sections": [
+      {
+        "symbol": "UserProfileView",
+        "startLine": 10,
+        "endLine": 180,
+        "summary": "Komponen antarmuka profil pembeli dan buku alamat."
+      }
+    ]
+  },
+  "src/data/mock-checkout.ts": {
+    "summary": "Dataset tiruan untuk keranjang belanja awal, daftar alamat tersimpan pengguna di Indonesia, opsi kurir pengiriman (SiCepat, JNE, J&T, Anteraja), serta metode pembayaran (QRIS, VA Bank, E-Wallet).",
+    "sections": [
+      {
+        "symbol": "MOCK_INITIAL_CART",
+        "startLine": 3,
+        "endLine": 48,
+        "summary": "Data item keranjang belanja awal."
+      },
+      {
+        "symbol": "MOCK_SAVED_ADDRESSES",
+        "startLine": 50,
+        "endLine": 87,
+        "summary": "Data alamat pengiriman tersimpan pengguna."
+      },
+      {
+        "symbol": "MOCK_COURIERS",
+        "startLine": 89,
+        "endLine": 134,
+        "summary": "Data pilihan kurir dan tarif ongkir."
+      },
+      {
+        "symbol": "MOCK_PAYMENT_METHODS",
+        "startLine": 136,
+        "endLine": 178,
+        "summary": "Data metode pembayaran QRIS, Virtual Account, dan E-Wallet."
+      }
+    ]
+  },
+  "src/data/mock-orders.ts": {
+    "summary": "Dataset tiruan pesanan pembeli dengan berbagai status pengiriman (dikirim, diproses, selesai), nomor resi ekspres, serta riwayat timeline tracking kurir.",
+    "sections": [
+      {
+        "symbol": "MOCK_ORDERS",
+        "startLine": 3,
+        "endLine": 160,
+        "summary": "Daftar mock order dan data riwayat pelacakan kurir."
+      }
+    ]
+  },
+  "src/data/mock-products.ts": {
+    "summary": "Dataset tiruan produk toko kebutuhan anak yang mencakup kategori perlengkapan, pakaian, dan mainan lengkap dengan varian dan data promo.",
+    "sections": [
+      {
+        "symbol": "MOCK_CATEGORIES",
+        "startLine": 3,
+        "endLine": 32,
+        "summary": "Data 3 kategori utama toko kebutuhan anak."
+      },
+      {
+        "symbol": "MOCK_PRODUCTS",
+        "startLine": 34,
+        "endLine": 310,
+        "summary": "Data 16 produk anak untuk kategori populer, terbaru, rekomendasi, dan promo hemat."
+      }
+    ]
+  },
+  "src/lib/format.ts": {
+    "summary": "Fungsi utilitas untuk memformat nominal angka menjadi mata uang Rupiah (IDR).",
+    "sections": [
+      {
+        "symbol": "formatRupiah",
+        "startLine": 1,
+        "endLine": 8,
+        "summary": "Format angka menjadi string IDR (misal: Rp 150.000)."
+      }
+    ]
+  },
+  "src/types/checkout.ts": {
+    "summary": "Definisi tipe TypeScript untuk CartItem, ShippingAddress, CourierService, PaymentMethod, dan OrderSummary.",
+    "sections": [
+      {
+        "symbol": "CartItem",
+        "startLine": 1,
+        "endLine": 14,
+        "summary": "Tipe data item dalam keranjang belanja."
+      },
+      {
+        "symbol": "ShippingAddress",
+        "startLine": 16,
+        "endLine": 27,
+        "summary": "Tipe data alamat pengiriman."
+      },
+      {
+        "symbol": "CourierService",
+        "startLine": 29,
+        "endLine": 37,
+        "summary": "Tipe data pilihan kurir."
+      },
+      {
+        "symbol": "PaymentMethod",
+        "startLine": 39,
+        "endLine": 46,
+        "summary": "Tipe data opsi pembayaran."
+      }
+    ]
+  },
+  "src/types/order.ts": {
+    "summary": "Definisi tipe TypeScript untuk Order, OrderItem, TrackingStep, dan OrderStatus.",
+    "sections": [
+      {
+        "symbol": "Order",
+        "startLine": 23,
+        "endLine": 44,
+        "summary": "Tipe data pesanan toko, rincian barang, dan timeline pelacakan."
+      }
+    ]
+  },
+  "src/types/product.ts": {
+    "summary": "Definisi tipe TypeScript untuk Product, ProductVariant, ProductImage, dan CategoryItem.",
+    "sections": [
+      {
+        "symbol": "Product",
+        "startLine": 16,
+        "endLine": 39,
+        "summary": "Tipe data struktur produk toko online anak."
+      }
+    ]
+  },
+  "toko-kebutuhan-anak-PRD.md": {
+    "summary": "Dokumen PRD kebutuhan toko online anak, alur marketplace, skema basis data, dan arsitektur Next.js & Node.js."
+  },
+  "tsconfig.json": {
+    "summary": "Konfigurasi compiler TypeScript dengan path alias @/*."
+  }
+}
