@@ -39,6 +39,13 @@ import {
   Sliders,
   ChevronRight,
   AlertTriangle,
+  Eye,
+  EyeOff,
+  Lock,
+  Key,
+  Zap,
+  Globe,
+  Activity,
 } from 'lucide-react';
 
 interface StoreProfile {
@@ -216,11 +223,34 @@ const QUICK_DESTINATIONS = [
 const STORAGE_KEY = 'babykids_seller_settings_v1';
 
 export default function AdminSettingPage() {
-  // State for all 5 cards
+  // State for store profile, warehouse, couriers, payments
   const [profile, setProfile] = useState<StoreProfile>(DEFAULT_PROFILE);
   const [warehouse, setWarehouse] = useState<OriginWarehouse>(DEFAULT_WAREHOUSE);
   const [couriers, setCouriers] = useState<CourierSettings>(DEFAULT_COURIERS);
   const [payments, setPayments] = useState<PaymentSettings>(DEFAULT_PAYMENTS);
+
+  // Payment Gateway State (Midtrans, Xendit, Simulator)
+  const [activePaymentGateway, setActivePaymentGateway] = useState<'midtrans' | 'xendit' | 'simulator'>('midtrans');
+  const [midtransServerKey, setMidtransServerKey] = useState<string>('');
+  const [midtransClientKey, setMidtransClientKey] = useState<string>('');
+  const [midtransMerchantId, setMidtransMerchantId] = useState<string>('');
+  const [midtransIsProduction, setMidtransIsProduction] = useState<boolean>(false);
+  const [showMidtransServerKey, setShowMidtransServerKey] = useState<boolean>(false);
+
+  const [xenditSecretKey, setXenditSecretKey] = useState<string>('');
+  const [xenditPublicKey, setXenditPublicKey] = useState<string>('');
+  const [xenditWebhookToken, setXenditWebhookToken] = useState<string>('');
+  const [xenditIsProduction, setXenditIsProduction] = useState<boolean>(false);
+  const [showXenditSecretKey, setShowXenditSecretKey] = useState<boolean>(false);
+  const [showXenditWebhookToken, setShowXenditWebhookToken] = useState<boolean>(false);
+
+  const [currentOrigin, setCurrentOrigin] = useState<string>('');
+  const [isTestingGateway, setIsTestingGateway] = useState<boolean>(false);
+  const [gatewayTestResult, setGatewayTestResult] = useState<{
+    success: boolean;
+    message: string;
+    provider: string;
+  } | null>(null);
 
   // Storage info from server
   const [r2Info, setR2Info] = useState<R2StorageInfo>({
@@ -270,6 +300,13 @@ export default function AdminSettingPage() {
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  // Setup current origin for webhook copying
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentOrigin(window.location.origin);
+    }
+  }, []);
 
   // Show toast notification
   const triggerToast = (msg: string) => {
@@ -343,7 +380,7 @@ export default function AdminSettingPage() {
     };
   };
 
-  // Fetch initial R2, Biteship, and stored settings
+  // Fetch initial settings, R2, and Biteship from API
   const loadSettings = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -351,22 +388,89 @@ export default function AdminSettingPage() {
       const res = await fetch('/api/admin/settings');
       if (res.ok) {
         const json = await res.json();
-        if (json?.data?.r2) {
-          setR2Info(json.data.r2);
-        }
-        if (json?.data?.biteship) {
-          setBiteshipInfo(json.data.biteship);
+        const data = json?.data;
+        if (data) {
+          if (data.store) {
+            setProfile((prev) => ({
+              ...prev,
+              storeName: data.store.storeName || prev.storeName,
+              tagline: data.store.tagline || prev.tagline,
+              customerServiceEmail: data.store.email || prev.customerServiceEmail,
+              whatsappNumber: data.store.phone || prev.whatsappNumber,
+            }));
+            setWarehouse((prev) => ({
+              ...prev,
+              fullAddress: data.store.address || prev.fullAddress,
+              city: data.store.city || prev.city,
+              postalCode: data.store.postalCode || prev.postalCode,
+            }));
+          }
+          if (data.settings) {
+            if (data.settings.active_payment_gateway) {
+              setActivePaymentGateway(data.settings.active_payment_gateway as 'midtrans' | 'xendit' | 'simulator');
+            }
+            if (data.settings.midtrans_server_key !== undefined) {
+              setMidtransServerKey(data.settings.midtrans_server_key || '');
+            }
+            if (data.settings.midtrans_client_key !== undefined) {
+              setMidtransClientKey(data.settings.midtrans_client_key || '');
+            }
+            if (data.settings.midtrans_merchant_id !== undefined) {
+              setMidtransMerchantId(data.settings.midtrans_merchant_id || '');
+            }
+            if (data.settings.midtrans_is_production !== undefined) {
+              setMidtransIsProduction(Boolean(data.settings.midtrans_is_production));
+            }
+            if (data.settings.xendit_secret_key !== undefined) {
+              setXenditSecretKey(data.settings.xendit_secret_key || '');
+            }
+            if (data.settings.xendit_public_key !== undefined) {
+              setXenditPublicKey(data.settings.xendit_public_key || '');
+            }
+            if (data.settings.xendit_webhook_token !== undefined) {
+              setXenditWebhookToken(data.settings.xendit_webhook_token || '');
+            }
+            if (data.settings.xendit_is_production !== undefined) {
+              setXenditIsProduction(Boolean(data.settings.xendit_is_production));
+            }
+            if (Array.isArray(data.settings.enabled_payment_methods)) {
+              const methods = data.settings.enabled_payment_methods;
+              setPayments({
+                qris: methods.includes('pay-qris'),
+                bcaVa: methods.includes('pay-bca-va'),
+                mandiriVa: methods.includes('pay-mandiri-va'),
+                briVa: methods.includes('pay-bri-va'),
+                gopay: methods.includes('pay-gopay'),
+              });
+            }
+            if (Array.isArray(data.settings.enabled_couriers)) {
+              const couriersArr = data.settings.enabled_couriers;
+              setCouriers({
+                sicepat: couriersArr.includes('sicepat'),
+                jne: couriersArr.includes('jne'),
+                jnt: couriersArr.includes('jnt'),
+                anteraja: couriersArr.includes('anteraja'),
+                cargo: couriersArr.includes('cargo'),
+              });
+            }
+          }
+          if (data.r2) {
+            setR2Info(data.r2);
+          }
+          if (data.biteship) {
+            setBiteshipInfo(data.biteship);
+          }
         }
       }
 
-      // 2. Load from localStorage if present
+      // 2. Load from localStorage if present for local overrides
       const saved = localStorage.getItem(STORAGE_KEY);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (parsed.profile) setProfile(parsed.profile);
-        if (parsed.warehouse) setWarehouse(parsed.warehouse);
-        if (parsed.couriers) setCouriers(parsed.couriers);
-        if (parsed.payments) setPayments(parsed.payments);
+        if (parsed.profile) setProfile((prev) => ({ ...prev, ...parsed.profile }));
+        if (parsed.warehouse) setWarehouse((prev) => ({ ...prev, ...parsed.warehouse }));
+        if (parsed.couriers) setCouriers((prev) => ({ ...prev, ...parsed.couriers }));
+        if (parsed.payments) setPayments((prev) => ({ ...prev, ...parsed.payments }));
       }
     } catch (err) {
       console.warn('Failed to load settings from storage/server:', err);
@@ -384,11 +488,38 @@ export default function AdminSettingPage() {
   const handleSaveAll = async () => {
     setIsSaving(true);
     try {
+      const enabledMethodsArray = [
+        payments.qris && 'pay-qris',
+        payments.bcaVa && 'pay-bca-va',
+        payments.mandiriVa && 'pay-mandiri-va',
+        payments.briVa && 'pay-bri-va',
+        payments.gopay && 'pay-gopay',
+      ].filter(Boolean) as string[];
+
+      const enabledCouriersArray = [
+        couriers.sicepat && 'sicepat',
+        couriers.jne && 'jne',
+        couriers.jnt && 'jnt',
+        couriers.anteraja && 'anteraja',
+        couriers.cargo && 'cargo',
+      ].filter(Boolean) as string[];
+
       const payload = {
         profile,
         warehouse,
         couriers,
         payments,
+        active_payment_gateway: activePaymentGateway,
+        midtrans_server_key: midtransServerKey,
+        midtrans_client_key: midtransClientKey,
+        midtrans_merchant_id: midtransMerchantId,
+        midtrans_is_production: midtransIsProduction,
+        xendit_secret_key: xenditSecretKey,
+        xendit_public_key: xenditPublicKey,
+        xendit_webhook_token: xenditWebhookToken,
+        xendit_is_production: xenditIsProduction,
+        enabled_payment_methods: enabledMethodsArray,
+        enabled_couriers: enabledCouriersArray,
         savedAt: new Date().toISOString(),
       };
 
@@ -396,17 +527,22 @@ export default function AdminSettingPage() {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
 
       // Post to backend API
-      await fetch('/api/admin/settings', {
+      const res = await fetch('/api/admin/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
+      const resJson = await res.json().catch(() => ({}));
+      if (!res.ok || resJson.success === false) {
+        throw new Error(resJson.error || 'Gagal menyimpan pengaturan');
+      }
+
       setHasUnsavedChanges(false);
-      triggerToast('🎉 Pengaturan toko & logistik berhasil disimpan!');
-    } catch (err) {
+      triggerToast('Pengaturan toko, logistik & payment gateway berhasil disimpan!');
+    } catch (err: any) {
       console.error('Error saving settings:', err);
-      triggerToast('🎉 Pengaturan toko & logistik berhasil disimpan!');
+      triggerToast(err.message || 'Gagal menyimpan pengaturan');
     } finally {
       setIsSaving(false);
     }
@@ -419,7 +555,62 @@ export default function AdminSettingPage() {
       setWarehouse(DEFAULT_WAREHOUSE);
       setCouriers(DEFAULT_COURIERS);
       setPayments(DEFAULT_PAYMENTS);
+      setActivePaymentGateway('midtrans');
+      setMidtransIsProduction(false);
+      setXenditIsProduction(false);
       setHasUnsavedChanges(true);
+    }
+  };
+
+  // Test Gateway Connection
+  const handleTestGatewayConnection = async () => {
+    setIsTestingGateway(true);
+    setGatewayTestResult(null);
+    try {
+      const credentials: any = {};
+      if (activePaymentGateway === 'midtrans') {
+        if (midtransServerKey) credentials.midtrans_server_key = midtransServerKey;
+        credentials.midtrans_is_production = midtransIsProduction;
+      } else if (activePaymentGateway === 'xendit') {
+        if (xenditSecretKey) credentials.xendit_secret_key = xenditSecretKey;
+        credentials.xendit_is_production = xenditIsProduction;
+      }
+
+      const res = await fetch('/api/admin/settings/test-gateway', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          provider: activePaymentGateway,
+          credentials,
+        }),
+      });
+
+      const json = await res.json().catch(() => ({}));
+
+      if (res.ok && json.success) {
+        setGatewayTestResult({
+          success: true,
+          message: json.message || 'Koneksi ke gateway pembayaran berhasil diverifikasi!',
+          provider: activePaymentGateway,
+        });
+        triggerToast(`Uji Koneksi ${activePaymentGateway.toUpperCase()}: Sukses terhubung!`);
+      } else {
+        setGatewayTestResult({
+          success: false,
+          message: json.message || 'Gagal menghubungkan ke gateway pembayaran.',
+          provider: activePaymentGateway,
+        });
+        triggerToast(`Uji Koneksi ${activePaymentGateway.toUpperCase()}: Gagal (${json.message || 'Cek kredensial'})`);
+      }
+    } catch (err: any) {
+      setGatewayTestResult({
+        success: false,
+        message: err.message || 'Terjadi kesalahan saat menghubungi API uji koneksi gateway.',
+        provider: activePaymentGateway,
+      });
+      triggerToast('Terjadi kesalahan saat menghubungi server pengujian.');
+    } finally {
+      setIsTestingGateway(false);
     }
   };
 
@@ -1041,187 +1232,789 @@ export default function AdminSettingPage() {
         </div>
 
         {/* ========================================================================= */}
-        {/* CARD 4: Manajemen Metode Pembayaran */}
+        {/* CARD 4: Integrasi Payment Gateway (Midtrans & Xendit) */}
         {/* ========================================================================= */}
         <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
-          <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          {/* Card Header */}
+          <div className="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center font-bold shrink-0">
                 <CreditCard className="w-5 h-5" />
               </div>
               <div>
                 <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-                  Manajemen Metode Pembayaran
+                  Integrasi Payment Gateway (Midtrans & Xendit)
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Gerbang pembayaran otomatis terverifikasi sistem (Payment Gateway).
+                  Gerbang pembayaran otomatis terverifikasi sistem (Multi-Provider).
                 </p>
               </div>
             </div>
-            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
-              {Object.values(payments).filter(Boolean).length} Kanal Aktif
-            </span>
+            {/* Active Provider Badge */}
+            <div>
+              {activePaymentGateway === 'midtrans' && (
+                <span className="text-[11px] font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full border border-blue-200 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                  Midtrans ({midtransIsProduction ? 'Prod' : 'Sandbox'})
+                </span>
+              )}
+              {activePaymentGateway === 'xendit' && (
+                <span className="text-[11px] font-bold text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-purple-500 animate-pulse" />
+                  Xendit ({xenditIsProduction ? 'Prod' : 'Sandbox'})
+                </span>
+              )}
+              {activePaymentGateway === 'simulator' && (
+                <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200 flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-amber-500" />
+                  Mode Simulator Lokal
+                </span>
+              )}
+            </div>
           </div>
 
-          <div className="p-6 space-y-4 divide-y divide-slate-100 flex-1">
-            {/* QRIS Instan */}
-            <div className="flex items-center justify-between pt-3 first:pt-0">
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center font-black text-xs shrink-0 border border-emerald-200/60">
-                  <QrCode className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900">QRIS Instan</h3>
-                    <span className="text-[10px] bg-emerald-50 text-emerald-700 font-extrabold px-2 py-0.5 rounded-md border border-emerald-200">
-                      SEMUA E-WALLET & BANK
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500">
-                    Scan QRIS instan terverifikasi otomatis (GoPay, OVO, Dana, ShopeePay, BCA, LinkAja).
-                  </p>
-                </div>
+          <div className="p-6 space-y-6 flex-1">
+            {/* SUB-SECTION 1: Pilihan Provider Pembayaran Aktif (Radio Cards) */}
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  1. Pilihan Provider Pembayaran Aktif <span className="text-rose-500">*</span>
+                </label>
+                <span className="text-[11px] text-slate-400 font-medium">Pilih 1 engine aktif</span>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer ml-4">
-                <input
-                  type="checkbox"
-                  checked={payments.qris}
-                  onChange={(e) => {
-                    setPayments({ ...payments, qris: e.target.checked });
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {/* 🔵 Midtrans Payment Gateway */}
+                <div
+                  onClick={() => {
+                    setActivePaymentGateway('midtrans');
                     setHasUnsavedChanges(true);
                   }}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
-              </label>
+                  className={`relative p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                    activePaymentGateway === 'midtrans'
+                      ? 'border-blue-500 bg-blue-50/40 ring-2 ring-blue-500/20 shadow-xs'
+                      : 'border-slate-200 bg-slate-50/40 hover:bg-slate-50 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
+                        <Globe className="w-4 h-4" />
+                      </div>
+                      <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          activePaymentGateway === 'midtrans'
+                            ? 'border-blue-600 bg-blue-600'
+                            : 'border-slate-300 bg-white'
+                        }`}
+                      >
+                        {activePaymentGateway === 'midtrans' && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-xs sm:text-sm font-black text-slate-900">Midtrans</h4>
+                        <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700 border border-blue-200">
+                          Snap API
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                        Snap popup, QRIS, GoPay, dan Virtual Account BCA/Mandiri/BRI.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 🟣 Xendit Payment Gateway */}
+                <div
+                  onClick={() => {
+                    setActivePaymentGateway('xendit');
+                    setHasUnsavedChanges(true);
+                  }}
+                  className={`relative p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                    activePaymentGateway === 'xendit'
+                      ? 'border-purple-500 bg-purple-50/40 ring-2 ring-purple-500/20 shadow-xs'
+                      : 'border-slate-200 bg-slate-50/40 hover:bg-slate-50 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold">
+                        <ShieldCheck className="w-4 h-4" />
+                      </div>
+                      <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          activePaymentGateway === 'xendit'
+                            ? 'border-purple-600 bg-purple-600'
+                            : 'border-slate-300 bg-white'
+                        }`}
+                      >
+                        {activePaymentGateway === 'xendit' && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-xs sm:text-sm font-black text-slate-900">Xendit</h4>
+                        <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md bg-purple-100 text-purple-700 border border-purple-200">
+                          XenInvoice
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                        Hosted invoice page, QRIS, E-Wallet, dan VA Bank terintegrasi.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 🟡 Mode Simulator Internal */}
+                <div
+                  onClick={() => {
+                    setActivePaymentGateway('simulator');
+                    setHasUnsavedChanges(true);
+                  }}
+                  className={`relative p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between ${
+                    activePaymentGateway === 'simulator'
+                      ? 'border-amber-500 bg-amber-50/40 ring-2 ring-amber-500/20 shadow-xs'
+                      : 'border-slate-200 bg-slate-50/40 hover:bg-slate-50 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="w-8 h-8 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold">
+                        <Sliders className="w-4 h-4" />
+                      </div>
+                      <div
+                        className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                          activePaymentGateway === 'simulator'
+                            ? 'border-amber-600 bg-amber-600'
+                            : 'border-slate-300 bg-white'
+                        }`}
+                      >
+                        {activePaymentGateway === 'simulator' && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-white" />
+                        )}
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-xs sm:text-sm font-black text-slate-900">Simulator</h4>
+                        <span className="text-[9px] font-extrabold uppercase px-1.5 py-0.5 rounded-md bg-amber-100 text-amber-700 border border-amber-200">
+                          Offline
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                        Uji coba alur transaksi otomatis tanpa memerlukan kredensial luar.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* BCA Virtual Account */}
-            <div className="flex items-center justify-between pt-4">
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-blue-500/10 text-blue-700 flex items-center justify-center font-black text-xs shrink-0 border border-blue-200/60">
-                  BCA
-                </div>
-                <div>
+            {/* SUB-SECTION 2: Formulir Kredensial Sesuai Provider */}
+            {/* Panel Kredensial Midtrans */}
+            {(activePaymentGateway === 'midtrans' || activePaymentGateway === 'simulator') && (
+              <div className="p-5 rounded-2xl bg-blue-50/30 border border-blue-100/80 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-blue-100 pb-3">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900">BCA Virtual Account</h3>
-                    <span className="text-[10px] bg-blue-50 text-blue-700 font-extrabold px-2 py-0.5 rounded-md border border-blue-200">
-                      OTOMATIS 24 JAM
+                    <div className="w-6 h-6 rounded-lg bg-blue-600 text-white flex items-center justify-center text-xs font-bold">
+                      M
+                    </div>
+                    <span className="text-xs font-bold text-slate-900">
+                      Konfigurasi Kredensial Midtrans (Snap API)
                     </span>
                   </div>
-                  <p className="text-xs text-slate-500">
-                    Konfirmasi pembayaran real-time melalui myBCA, BCA mobile, KlikBCA, dan ATM BCA.
+                  <a
+                    href="https://dashboard.midtrans.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-bold text-blue-600 hover:text-blue-800 flex items-center gap-1 w-fit"
+                  >
+                    <span>Buka Portal Midtrans</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+
+                {/* Mode Environment Midtrans */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2">
+                    Mode Environment Midtrans
+                  </label>
+                  <div className="grid grid-cols-2 gap-2 max-w-sm">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMidtransIsProduction(false);
+                        setHasUnsavedChanges(true);
+                      }}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        !midtransIsProduction
+                          ? 'bg-amber-500 text-white shadow-xs'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>🧪 Sandbox (Testing)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMidtransIsProduction(true);
+                        setHasUnsavedChanges(true);
+                      }}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        midtransIsProduction
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>🚀 Production (Live)</span>
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    {midtransIsProduction
+                      ? 'Endpoint Live: https://app.midtrans.com/snap/v1/transactions'
+                      : 'Endpoint Sandbox: https://app.sandbox.midtrans.com/snap/v1/transactions'}
+                  </p>
+                </div>
+
+                {/* Midtrans Server Key */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                    <span>
+                      Server Key <span className="text-rose-500">*</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-normal">Rahasia Backend</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                      <Key className="w-4 h-4" />
+                    </div>
+                    <input
+                      type={showMidtransServerKey ? 'text' : 'password'}
+                      value={midtransServerKey}
+                      onChange={(e) => {
+                        setMidtransServerKey(e.target.value);
+                        setHasUnsavedChanges(true);
+                      }}
+                      placeholder="SB-Mid-server-xxxxxxxxxxxx"
+                      className="w-full pl-10 pr-12 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowMidtransServerKey(!showMidtransServerKey)}
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                      title={showMidtransServerKey ? 'Sembunyikan' : 'Tampilkan'}
+                    >
+                      {showMidtransServerKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Midtrans Client Key & Merchant ID */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                      <span>Client Key</span>
+                      <span className="text-[10px] text-slate-400 font-normal">Frontend Snap JS</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={midtransClientKey}
+                      onChange={(e) => {
+                        setMidtransClientKey(e.target.value);
+                        setHasUnsavedChanges(true);
+                      }}
+                      placeholder="SB-Mid-client-xxxxxxxxxxxx"
+                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      Merchant ID
+                    </label>
+                    <input
+                      type="text"
+                      value={midtransMerchantId}
+                      onChange={(e) => {
+                        setMidtransMerchantId(e.target.value);
+                        setHasUnsavedChanges(true);
+                      }}
+                      placeholder="G123456789"
+                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Panel Kredensial Xendit */}
+            {(activePaymentGateway === 'xendit' || activePaymentGateway === 'simulator') && (
+              <div className="p-5 rounded-2xl bg-purple-50/30 border border-purple-100/80 space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-purple-100 pb-3">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-lg bg-purple-600 text-white flex items-center justify-center text-xs font-bold">
+                      X
+                    </div>
+                    <span className="text-xs font-bold text-slate-900">
+                      Konfigurasi Kredensial Xendit (XenInvoice API)
+                    </span>
+                  </div>
+                  <a
+                    href="https://dashboard.xendit.co"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-[11px] font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 w-fit"
+                  >
+                    <span>Buka Portal Xendit</span>
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </div>
+
+                {/* Mode Environment Xendit */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2">
+                    Mode Environment Xendit
+                  </label>
+                  <div className="grid grid-cols-2 gap-2 max-w-sm">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setXenditIsProduction(false);
+                        setHasUnsavedChanges(true);
+                      }}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        !xenditIsProduction
+                          ? 'bg-amber-500 text-white shadow-xs'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>🧪 Sandbox (Testing)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setXenditIsProduction(true);
+                        setHasUnsavedChanges(true);
+                      }}
+                      className={`px-3 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer ${
+                        xenditIsProduction
+                          ? 'bg-emerald-600 text-white shadow-xs'
+                          : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <span>🚀 Production (Live)</span>
+                    </button>
+                  </div>
+                  <p className="text-[11px] text-slate-400 mt-1.5">
+                    Endpoint API XenInvoice: https://api.xendit.co/v2/invoices
+                  </p>
+                </div>
+
+                {/* Xendit Secret API Key */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                    <span>
+                      Secret API Key <span className="text-rose-500">*</span>
+                    </span>
+                    <span className="text-[10px] text-slate-400 font-normal">Rahasia Backend</span>
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                      <Lock className="w-4 h-4" />
+                    </div>
+                    <input
+                      type={showXenditSecretKey ? 'text' : 'password'}
+                      value={xenditSecretKey}
+                      onChange={(e) => {
+                        setXenditSecretKey(e.target.value);
+                        setHasUnsavedChanges(true);
+                      }}
+                      placeholder="xnd_development_xxxxxxxxxxxx"
+                      className="w-full pl-10 pr-12 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowXenditSecretKey(!showXenditSecretKey)}
+                      className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                      title={showXenditSecretKey ? 'Sembunyikan' : 'Tampilkan'}
+                    >
+                      {showXenditSecretKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Xendit Public Key & Webhook Verification Token */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                      Public Key
+                    </label>
+                    <input
+                      type="text"
+                      value={xenditPublicKey}
+                      onChange={(e) => {
+                        setXenditPublicKey(e.target.value);
+                        setHasUnsavedChanges(true);
+                      }}
+                      placeholder="xnd_public_development_xxxxxxxx"
+                      className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                      <span>Webhook Token</span>
+                      <span className="text-[10px] text-slate-400 font-normal">x-callback-token</span>
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showXenditWebhookToken ? 'text' : 'password'}
+                        value={xenditWebhookToken}
+                        onChange={(e) => {
+                          setXenditWebhookToken(e.target.value);
+                          setHasUnsavedChanges(true);
+                        }}
+                        placeholder="Callback verification token"
+                        className="w-full pl-3.5 pr-10 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowXenditWebhookToken(!showXenditWebhookToken)}
+                        className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                      >
+                        {showXenditWebhookToken ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Info Mode Simulator */}
+            {activePaymentGateway === 'simulator' && (
+              <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 text-amber-900 flex items-start gap-3">
+                <div className="w-6 h-6 rounded-lg bg-amber-200 text-amber-800 flex items-center justify-center shrink-0 mt-0.5 font-bold">
+                  <Info className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold">
+                    Mode Simulator Internal Aktif (Offline Testing)
+                  </p>
+                  <p className="text-xs text-amber-800/90 mt-0.5">
+                    Transaksi checkout otomatis disimulasikan sukses tanpa menghubungi API luar. Pelanggan dapat memilih metode pembayaran dan memverifikasi pelunasan instan.
                   </p>
                 </div>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer ml-4">
+            )}
+
+            {/* SUB-SECTION 3: Webhook URL Notification Box */}
+            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                  <ExternalLink className="w-3.5 h-3.5 text-indigo-500" />
+                  <span>URL Webhook Notifikasi Pembayaran (Callback URL)</span>
+                </label>
+                <span className="text-[10px] text-slate-400 font-semibold">Endpoint POST</span>
+              </div>
+
+              <div className="flex items-center gap-2">
                 <input
-                  type="checkbox"
-                  checked={payments.bcaVa}
-                  onChange={(e) => {
-                    setPayments({ ...payments, bcaVa: e.target.checked });
-                    setHasUnsavedChanges(true);
-                  }}
-                  className="sr-only peer"
+                  type="text"
+                  readOnly
+                  value={`${currentOrigin || 'https://domain-toko.com'}/api/webhooks/payment`}
+                  className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs font-mono text-slate-800 select-all"
                 />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
-              </label>
+                <button
+                  type="button"
+                  onClick={() =>
+                    copyToClipboard(
+                      `${currentOrigin || 'https://domain-toko.com'}/api/webhooks/payment`,
+                      'webhook'
+                    )
+                  }
+                  className="px-4 py-2.5 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 flex items-center gap-1.5 shrink-0 transition-all cursor-pointer shadow-2xs"
+                >
+                  {copiedKey === 'webhook' ? (
+                    <>
+                      <CheckCheck className="w-4 h-4 text-emerald-600" />
+                      <span className="text-emerald-700">Tersalin!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 text-slate-500" />
+                      <span>Salin</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <p className="text-[11px] text-slate-500 leading-relaxed">
+                Salin URL ini dan masukkan ke Dashboard Midtrans (<strong>Settings &gt; Configuration &gt; Payment Notification URL</strong>) atau Dashboard Xendit (<strong>Settings &gt; Callbacks &gt; Invoices</strong>).
+              </p>
             </div>
 
-            {/* Mandiri Virtual Account */}
-            <div className="flex items-center justify-between pt-4">
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-indigo-500/10 text-indigo-700 flex items-center justify-center font-black text-xs shrink-0 border border-indigo-200/60">
-                  Mandiri
-                </div>
+            {/* SUB-SECTION 4: Checklist / Switch Metode Pembayaran yang Diaktifkan */}
+            <div className="space-y-3 pt-1">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900">Mandiri Livin Virtual Account</h3>
-                    <span className="text-[10px] bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded-md border border-indigo-200">
-                      LIVIN' BY MANDIRI
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500">
-                    Nomor VA khusus pelanggan Mandiri dengan deteksi pelunasan instan.
+                  <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Metode Pembayaran yang Diaktifkan
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    Pilihan kanal pembayaran yang dapat dipilih pembeli di halaman checkout.
                   </p>
                 </div>
+                <span className="text-[11px] font-bold text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-full border border-indigo-200">
+                  {Object.values(payments).filter(Boolean).length} Kanal Aktif
+                </span>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer ml-4">
-                <input
-                  type="checkbox"
-                  checked={payments.mandiriVa}
-                  onChange={(e) => {
-                    setPayments({ ...payments, mandiriVa: e.target.checked });
-                    setHasUnsavedChanges(true);
-                  }}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
-              </label>
+
+              <div className="space-y-3 divide-y divide-slate-100">
+                {/* 1. pay-qris: QRIS Instan */}
+                <div className="flex items-center justify-between pt-3 first:pt-0">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-700 flex items-center justify-center font-black text-xs shrink-0 border border-emerald-200/60">
+                      <QrCode className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900">QRIS Instan</h4>
+                        <span className="text-[9px] bg-emerald-50 text-emerald-700 font-extrabold px-2 py-0.5 rounded-md border border-emerald-200">
+                          SEMUA E-WALLET & BANK
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Scan QRIS instan otomatis (GoPay, OVO, Dana, ShopeePay, BCA, LinkAja).
+                      </p>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer ml-3">
+                    <input
+                      type="checkbox"
+                      checked={payments.qris}
+                      onChange={(e) => {
+                        setPayments({ ...payments, qris: e.target.checked });
+                        setHasUnsavedChanges(true);
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
+                  </label>
+                </div>
+
+                {/* 2. pay-bca-va: BCA Virtual Account */}
+                <div className="flex items-center justify-between pt-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-blue-500/10 text-blue-700 flex items-center justify-center font-black text-xs shrink-0 border border-blue-200/60">
+                      BCA
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900">BCA Virtual Account</h4>
+                        <span className="text-[9px] bg-blue-50 text-blue-700 font-extrabold px-2 py-0.5 rounded-md border border-blue-200">
+                          OTOMATIS 24 JAM
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Konfirmasi pembayaran real-time melalui myBCA, BCA mobile, dan ATM BCA.
+                      </p>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer ml-3">
+                    <input
+                      type="checkbox"
+                      checked={payments.bcaVa}
+                      onChange={(e) => {
+                        setPayments({ ...payments, bcaVa: e.target.checked });
+                        setHasUnsavedChanges(true);
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
+                  </label>
+                </div>
+
+                {/* 3. pay-mandiri-va: Mandiri Virtual Account */}
+                <div className="flex items-center justify-between pt-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-indigo-500/10 text-indigo-700 flex items-center justify-center font-black text-xs shrink-0 border border-indigo-200/60">
+                      Mandiri
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900">Mandiri Virtual Account</h4>
+                        <span className="text-[9px] bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded-md border border-indigo-200">
+                          LIVIN' BY MANDIRI
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Nomor VA khusus nasabah Mandiri dengan deteksi pelunasan instan.
+                      </p>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer ml-3">
+                    <input
+                      type="checkbox"
+                      checked={payments.mandiriVa}
+                      onChange={(e) => {
+                        setPayments({ ...payments, mandiriVa: e.target.checked });
+                        setHasUnsavedChanges(true);
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
+                  </label>
+                </div>
+
+                {/* 4. pay-bri-va: BRI Virtual Account (BRIVA) */}
+                <div className="flex items-center justify-between pt-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-cyan-500/10 text-cyan-700 flex items-center justify-center font-black text-xs shrink-0 border border-cyan-200/60">
+                      BRI
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900">BRI Virtual Account (BRIVA)</h4>
+                        <span className="text-[9px] bg-cyan-50 text-cyan-700 font-extrabold px-2 py-0.5 rounded-md border border-cyan-200">
+                          BRIMO & AGEN BRILINK
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Pembayaran praktis nasabah BRImo dan jaringan luas Agen BRILink.
+                      </p>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer ml-3">
+                    <input
+                      type="checkbox"
+                      checked={payments.briVa}
+                      onChange={(e) => {
+                        setPayments({ ...payments, briVa: e.target.checked });
+                        setHasUnsavedChanges(true);
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
+                  </label>
+                </div>
+
+                {/* 5. pay-gopay: GoPay & GoPay Later */}
+                <div className="flex items-center justify-between pt-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black text-xs shrink-0 border border-emerald-200/60">
+                      GoPay
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="text-xs sm:text-sm font-bold text-slate-900">GoPay & GoPay Later</h4>
+                        <span className="text-[9px] bg-emerald-50 text-emerald-700 font-extrabold px-2 py-0.5 rounded-md border border-emerald-200">
+                          1-KLIK DEEP LINK
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-slate-500">
+                        Pembayaran instan langsung membuka aplikasi GoPay dengan saldo/paylater.
+                      </p>
+                    </div>
+                  </div>
+                  <label className="relative inline-flex items-center cursor-pointer ml-3">
+                    <input
+                      type="checkbox"
+                      checked={payments.gopay}
+                      onChange={(e) => {
+                        setPayments({ ...payments, gopay: e.target.checked });
+                        setHasUnsavedChanges(true);
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
+                  </label>
+                </div>
+              </div>
             </div>
 
-            {/* BRI Virtual Account */}
-            <div className="flex items-center justify-between pt-4">
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-cyan-500/10 text-cyan-700 flex items-center justify-center font-black text-xs shrink-0 border border-cyan-200/60">
-                  BRI
+            {/* SUB-SECTION 5: Gateway Test Result Alert */}
+            {gatewayTestResult && (
+              <div
+                className={`p-4 rounded-2xl border flex items-start gap-3 transition-all animate-in fade-in ${
+                  gatewayTestResult.success
+                    ? 'bg-emerald-50 border-emerald-200 text-emerald-900'
+                    : 'bg-rose-50 border-rose-200 text-rose-900'
+                }`}
+              >
+                <div
+                  className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 font-bold ${
+                    gatewayTestResult.success
+                      ? 'bg-emerald-200 text-emerald-800'
+                      : 'bg-rose-200 text-rose-800'
+                  }`}
+                >
+                  {gatewayTestResult.success ? (
+                    <CheckCircle2 className="w-4 h-4" />
+                  ) : (
+                    <AlertCircle className="w-4 h-4" />
+                  )}
                 </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900">BRI Virtual Account (BRIVA)</h3>
-                    <span className="text-[10px] bg-cyan-50 text-cyan-700 font-extrabold px-2 py-0.5 rounded-md border border-cyan-200">
-                      BRIMO & AGEN BRILINK
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500">
-                    Pembayaran praktis untuk jutaan nasabah BRImo dan jaringan luas Agen BRILink.
+                <div className="flex-1 text-xs">
+                  <p className="font-bold">
+                    Hasil Uji Koneksi Gateway ({gatewayTestResult.provider.toUpperCase()}):{' '}
+                    {gatewayTestResult.success ? 'Berhasil Terhubung' : 'Gagal Terhubung'}
                   </p>
+                  <p className="mt-0.5 opacity-90">{gatewayTestResult.message}</p>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setGatewayTestResult(null)}
+                  className="text-slate-400 hover:text-slate-600 text-xs px-1"
+                >
+                  ✕
+                </button>
               </div>
-              <label className="relative inline-flex items-center cursor-pointer ml-4">
-                <input
-                  type="checkbox"
-                  checked={payments.briVa}
-                  onChange={(e) => {
-                    setPayments({ ...payments, briVa: e.target.checked });
-                    setHasUnsavedChanges(true);
-                  }}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
-              </label>
-            </div>
+            )}
 
-            {/* GoPay */}
-            <div className="flex items-center justify-between pt-4">
-              <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-emerald-500/10 text-emerald-600 flex items-center justify-center font-black text-xs shrink-0 border border-emerald-200/60">
-                  GoPay
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900">GoPay & GoPay Later</h3>
-                    <span className="text-[10px] bg-emerald-50 text-emerald-700 font-extrabold px-2 py-0.5 rounded-md border border-emerald-200">
-                      1-KLIK DEEP LINK
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500">
-                    Pembayaran instan langsung membuka aplikasi GoPay dengan saldo maupun paylater.
-                  </p>
-                </div>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer ml-4">
-                <input
-                  type="checkbox"
-                  checked={payments.gopay}
-                  onChange={(e) => {
-                    setPayments({ ...payments, gopay: e.target.checked });
-                    setHasUnsavedChanges(true);
-                  }}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-slate-200 peer-focus:outline-hidden rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-rose-500" />
-              </label>
+            {/* SUB-SECTION 6: Action Buttons */}
+            <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+              <button
+                type="button"
+                onClick={handleTestGatewayConnection}
+                disabled={isTestingGateway}
+                className="px-5 py-2.5 rounded-xl border border-indigo-200 hover:bg-indigo-50/70 text-indigo-700 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
+              >
+                {isTestingGateway ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-indigo-600" />
+                    <span>Menguji Koneksi Gateway...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-4 h-4 text-indigo-600" />
+                    <span>Uji Koneksi Gateway</span>
+                  </>
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleSaveAll}
+                disabled={isSaving}
+                className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-extrabold text-xs shadow-md shadow-rose-500/20 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-60"
+              >
+                {isSaving ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" />
+                    <span>Menyimpan...</span>
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    <span>Simpan Semua Pengaturan</span>
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>
