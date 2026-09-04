@@ -65,15 +65,15 @@ export function BiodataTab({
 
   // Profile form state
   const [profile, setProfile] = useState<UserProfileData>({
-    name: initialData?.name || 'Bunda Sarah Clarissa',
-    email: initialData?.email || 'sarah.clarissa@example.com',
-    phone: initialData?.phone || '0812-3456-7890',
+    name: initialData?.name || '',
+    email: initialData?.email || '',
+    phone: initialData?.phone || '',
     image: initialData?.image || null,
-    birthDate: initialData?.birthDate || '1994-05-14',
-    gender: (initialData?.gender as 'female' | 'male') || 'female',
-    childrenInfo: initialData?.childrenInfo || '2 Orang Anak (3 th & 6 bln)',
-    emailVerified: initialData?.emailVerified ?? true,
-    memberSince: initialData?.memberSince || 'Januari 2025',
+    birthDate: initialData?.birthDate || '',
+    gender: (initialData?.gender as 'female' | 'male') || '',
+    childrenInfo: initialData?.childrenInfo || '',
+    emailVerified: initialData?.emailVerified ?? false,
+    memberSince: initialData?.memberSince || 'Baru Saja',
     role: initialData?.role || 'buyer',
   });
 
@@ -81,7 +81,7 @@ export function BiodataTab({
   const [originalProfile, setOriginalProfile] = useState<UserProfileData>(profile);
 
   // UI States
-  const [isLoading, setIsLoading] = useState(!initialProfile);
+  const [isLoading, setIsLoading] = useState(!initialProfile && !user);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [toast, setToast] = useState<{
@@ -102,15 +102,15 @@ export function BiodataTab({
       const source = initialProfile || user;
       const merged: UserProfileData = {
         id: source?.id,
-        name: source?.name || 'Bunda Sarah Clarissa',
-        email: source?.email || 'sarah.clarissa@example.com',
-        phone: source?.phone || '0812-3456-7890',
+        name: source?.name || '',
+        email: source?.email || '',
+        phone: source?.phone || '',
         image: source?.image || null,
-        birthDate: (source as UserProfileData)?.birthDate || '1994-05-14',
-        gender: ((source as UserProfileData)?.gender as 'female' | 'male') || 'female',
-        childrenInfo: (source as UserProfileData)?.childrenInfo || '2 Orang Anak (3 th & 6 bln)',
-        emailVerified: (source as UserProfileData)?.emailVerified ?? true,
-        memberSince: (source as UserProfileData)?.memberSince || 'Januari 2025',
+        birthDate: (source as UserProfileData)?.birthDate || '',
+        gender: ((source as UserProfileData)?.gender as 'female' | 'male') || '',
+        childrenInfo: (source as UserProfileData)?.childrenInfo || '',
+        emailVerified: (source as UserProfileData)?.emailVerified ?? false,
+        memberSince: (source as UserProfileData)?.memberSince || 'Baru Saja',
         role: source?.role || 'buyer',
       };
       setProfile(merged);

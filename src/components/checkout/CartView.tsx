@@ -23,8 +23,8 @@ export function CartView() {
         const res = await fetch('/api/cart');
         if (res.ok) {
           const json = await res.json();
-          if (json.success && Array.isArray(json.data?.items) && json.data.items.length > 0) {
-            const mapped: CartItem[] = json.data.items.map((item: any) => ({
+          if (json.success && json.data) {
+            const mapped: CartItem[] = (json.data.items || []).map((item: any) => ({
               id: item.id,
               cartId: item.cartId,
               productId: item.productId,
@@ -48,11 +48,10 @@ export function CartView() {
             return;
           }
         }
-        // Fallback to mock if empty or offline
-        if (isMounted) setItems(MOCK_INITIAL_CART);
+        if (isMounted) setItems([]);
       } catch (error) {
         console.error('Failed to load cart from /api/cart:', error);
-        if (isMounted) setItems(MOCK_INITIAL_CART);
+        if (isMounted) setItems([]);
       } finally {
         if (isMounted) setIsLoading(false);
       }
@@ -84,13 +83,18 @@ export function CartView() {
           setItems((prev) =>
             prev.map((item) => (item.id === id ? { ...item, jumlah: newQty } : item))
           );
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('cart-updated'));
+          }
           return;
         }
       }
-      // Fallback for mock items or offline
       setItems((prev) =>
         prev.map((item) => (item.id === id ? { ...item, jumlah: newQty } : item))
       );
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
     } catch (error) {
       console.error('Failed to update quantity:', error);
       setItems((prev) =>
@@ -112,11 +116,16 @@ export function CartView() {
         const json = await res.json();
         if (json.success) {
           setItems((prev) => prev.filter((item) => item.id !== id));
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('cart-updated'));
+          }
           return;
         }
       }
-      // Fallback for mock items or offline
       setItems((prev) => prev.filter((item) => item.id !== id));
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
     } catch (error) {
       console.error('Failed to delete cart item:', error);
       setItems((prev) => prev.filter((item) => item.id !== id));

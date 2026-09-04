@@ -23,7 +23,6 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { AddressModal, AddressFormData } from '@/components/user/AddressModal';
-import { MOCK_SAVED_ADDRESSES } from '@/data/mock-checkout';
 
 export interface UserAddressItem {
   id: string;
@@ -136,28 +135,17 @@ export function AddressesTab({
       const res = await fetch(url);
       const data = await res.json();
 
-      if (data.success && Array.isArray(data.data) && data.data.length > 0) {
+      if (data.success && Array.isArray(data.data)) {
         const normalized = data.data.map(normalizeAddress);
         setAddresses(normalized);
         onAddressesUpdated?.(normalized);
-      } else if (data.success && Array.isArray(data.data) && data.data.length === 0) {
-        // If API returns empty, seed with mock addresses for initial demo or keep empty
-        if (!initialAddresses) {
-          const fallback = MOCK_SAVED_ADDRESSES.map(normalizeAddress);
-          setAddresses(fallback);
-          onAddressesUpdated?.(fallback);
-        } else {
-          setAddresses([]);
-          onAddressesUpdated?.([]);
-        }
+      } else {
+        setAddresses([]);
+        onAddressesUpdated?.([]);
       }
     } catch (error) {
       console.error('Failed to fetch addresses:', error);
-      // Fallback to mock data on network error
-      if (addresses.length === 0) {
-        const fallback = MOCK_SAVED_ADDRESSES.map(normalizeAddress);
-        setAddresses(fallback);
-      }
+      setAddresses([]);
     } finally {
       setIsLoading(false);
     }

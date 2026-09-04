@@ -249,33 +249,14 @@ async function seed() {
     }
     console.log(`✅ Addresses seeded (${MOCK_SAVED_ADDRESSES.length} addresses for buyer).`);
 
-    // 5. Seed Initial Cart for Demo Buyer
+    // 5. Seed Initial Cart for Demo Buyer (Clean Empty Cart)
     const [buyerCart] = await db
       .insert(schema.cartsTable)
       .values({
         user_id: buyerUser.id,
       })
       .returning({ id: schema.cartsTable.id });
-
-    let cartItemCount = 0;
-    for (const cartItem of MOCK_INITIAL_CART) {
-      const prodInfo = productMap.get(cartItem.slug);
-      if (prodInfo) {
-        let variantId: string | null = null;
-        if (cartItem.warna && cartItem.ukuran) {
-          const vKey = `${cartItem.warna.toLowerCase().trim()}|${cartItem.ukuran.toLowerCase().trim()}`;
-          variantId = prodInfo.variants.get(vKey) ?? null;
-        }
-        await db.insert(schema.cartItemsTable).values({
-          cart_id: buyerCart.id,
-          product_id: prodInfo.id,
-          variant_id: variantId,
-          quantity: cartItem.jumlah,
-        });
-        cartItemCount++;
-      }
-    }
-    console.log(`✅ Cart seeded for buyer (${cartItemCount} items in cart).`);
+    console.log(`✅ Cart initialized for buyer (empty cart ID: ${buyerCart.id}).`);
 
     // 6. Seed Orders, Order Items, and Tracking History
     console.log(`📦 Seeding ${MOCK_ORDERS.length} demo orders with timeline...`);

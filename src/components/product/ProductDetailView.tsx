@@ -126,6 +126,9 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
       }
 
       showToast(`🎉 Berhasil menambahkan ${quantity}x "${product.nama}" (${selectedColor} - ${selectedSize}) ke keranjang belanja!`, 'success');
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
     } catch (err: any) {
       console.error('Error adding to cart:', err);
       showToast('Terjadi kesalahan jaringan saat menambahkan ke keranjang', 'error');
@@ -170,6 +173,9 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
         return;
       }
 
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       router.push('/checkout');
     } catch (err: any) {
       console.error('Error in buy now:', err);

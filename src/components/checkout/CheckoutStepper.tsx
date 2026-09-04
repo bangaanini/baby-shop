@@ -22,10 +22,9 @@ import {
   Loader2,
   Scale,
   ExternalLink,
+  ShoppingBag,
 } from 'lucide-react';
 import {
-  MOCK_INITIAL_CART,
-  MOCK_SAVED_ADDRESSES,
   MOCK_COURIERS,
   MOCK_PAYMENT_METHODS,
 } from '@/data/mock-checkout';
@@ -115,6 +114,19 @@ const FALLBACK_COURIER_OPTIONS: ShippingRateOption[] = MOCK_COURIERS.map((m) => 
   iconText: m.iconText,
 }));
 
+const DEFAULT_EMPTY_ADDRESS: ShippingAddress = {
+  id: '',
+  namaPenerima: 'Penerima',
+  telepon: '',
+  labelAlamat: 'Rumah',
+  alamatLengkap: '',
+  provinsi: '',
+  kotaKabupaten: '',
+  kecamatan: '',
+  kodePos: '',
+  isUtama: false,
+};
+
 type Step = 1 | 2 | 3 | 4;
 
 export function CheckoutStepper() {
@@ -124,13 +136,13 @@ export function CheckoutStepper() {
   const [currentStep, setCurrentStep] = useState<Step>(1);
 
   // Cart & items state
-  const [items, setItems] = useState<CartItem[]>(MOCK_INITIAL_CART);
+  const [items, setItems] = useState<CartItem[]>([]);
   const [cartId, setCartId] = useState<string | null>(null);
   const [isLoadingCart, setIsLoadingCart] = useState(true);
 
   // Voucher state
-  const [voucherApplied, setVoucherApplied] = useState(true);
-  const [voucherCode, setVoucherCode] = useState('ANAKHEMAT');
+  const [voucherApplied, setVoucherApplied] = useState(false);
+  const [voucherCode, setVoucherCode] = useState('');
 
   // Calculation & submission states
   const [isCalculating, setIsCalculating] = useState(false);
@@ -138,8 +150,8 @@ export function CheckoutStepper() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   // User selections
-  const [addresses, setAddresses] = useState<ShippingAddress[]>(MOCK_SAVED_ADDRESSES);
-  const [selectedAddressId, setSelectedAddressId] = useState<string>(MOCK_SAVED_ADDRESSES[0].id);
+  const [addresses, setAddresses] = useState<ShippingAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string>('');
   const [availableCouriers, setAvailableCouriers] = useState<ShippingRateOption[]>(FALLBACK_COURIER_OPTIONS);
   const [selectedCourierId, setSelectedCourierId] = useState<string>(FALLBACK_COURIER_OPTIONS[0].id);
   const [isLoadingRates, setIsLoadingRates] = useState(false);
@@ -163,7 +175,7 @@ export function CheckoutStepper() {
   const [paymentTx, setPaymentTx] = useState<PaymentTransactionState | null>(null);
 
   const [selectedPaymentId, setSelectedPaymentId] = useState<string>(MOCK_PAYMENT_METHODS[0].id);
-  const [buyerNotes, setBuyerNotes] = useState<string>('Tolong periksa jahitan & kemasan aman berlapis bubble wrap ya.');
+  const [buyerNotes, setBuyerNotes] = useState<string>('');
 
   // New Address Form Modal / Inline
   const [showAddAddress, setShowAddAddress] = useState(false);
@@ -184,7 +196,7 @@ export function CheckoutStepper() {
   const [isCopied, setIsCopied] = useState(false);
 
   // Selected Objects
-  const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses[0];
+  const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses[0] || DEFAULT_EMPTY_ADDRESS;
   const selectedCourier =
     availableCouriers.find((c) => c.id === selectedCourierId) ||
     availableCouriers[0] ||
@@ -249,16 +261,41 @@ export function CheckoutStepper() {
             }
           }
         }
-        if (isMounted) setItems(MOCK_INITIAL_CART);
+        if (isMounted) setItems([]);
       } catch (error) {
         console.error('Failed to load cart for checkout:', error);
-        if (isMounted) setItems(MOCK_INITIAL_CART);
+        if (isMounted) setItems([]);
       } finally {
         if (isMounted) setIsLoadingCart(false);
       }
     }
 
     fetchCart();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // 1a. Fetch saved user addresses dynamically
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchAddresses() {
+      try {
+        const res = await fetch('/api/user/addresses');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0 && isMounted) {
+            setAddresses(json.data);
+            const primary = json.data.find((a: ShippingAddress) => a.isUtama) || json.data[0];
+            setSelectedAddressId(primary.id);
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load user addresses:', err);
+      }
+    }
+
+    fetchAddresses();
     return () => {
       isMounted = false;
     };
@@ -583,6 +620,10 @@ export function CheckoutStepper() {
         setIsOrderPlaced(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('cart-updated'));
+        }
+
         const tx = json.data.paymentTransaction;
         if (tx) {
           setPaymentTx(tx);
@@ -784,6 +825,27 @@ export function CheckoutStepper() {
             </Link>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (!isLoadingCart && items.length === 0) {
+    return (
+      <div className="max-w-2xl mx-auto py-16 text-center bg-white rounded-3xl p-8 border border-slate-100 shadow-xs my-8">
+        <div className="text-5xl mb-4">🛒</div>
+        <h2 className="text-xl sm:text-2xl font-black text-slate-800 mb-2">
+          Keranjang Belanja Anda Kosong
+        </h2>
+        <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-6">
+          Anda belum memiliki produk di keranjang belanja. Silakan pilih produk terlebih dahulu untuk melanjutkan checkout.
+        </p>
+        <Link
+          href="/katalog"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all"
+        >
+          <ShoppingBag className="w-4 h-4" />
+          <span>Mulai Belanja di Katalog</span>
+        </Link>
       </div>
     );
   }
@@ -994,58 +1056,74 @@ export function CheckoutStepper() {
               )}
 
               {/* Daftar Alamat Tersimpan */}
-              <div className="space-y-3 mb-6">
-                {addresses.map((addr) => {
-                  const isSelected = addr.id === selectedAddressId;
+              {addresses.length > 0 ? (
+                <div className="space-y-3 mb-6">
+                  {addresses.map((addr) => {
+                    const isSelected = addr.id === selectedAddressId;
 
-                  return (
-                    <div
-                      key={addr.id}
-                      onClick={() => setSelectedAddressId(addr.id)}
-                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-4 ${
-                        isSelected
-                          ? 'border-rose-500 bg-rose-50/20 shadow-xs'
-                          : 'border-slate-100 hover:border-slate-200 bg-white'
-                      }`}
-                    >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-sm text-slate-800">{addr.namaPenerima}</span>
-                          <span className="text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
-                            {addr.labelAlamat}
-                          </span>
-                          {addr.isUtama && (
-                            <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
-                              Utama
+                    return (
+                      <div
+                        key={addr.id}
+                        onClick={() => setSelectedAddressId(addr.id)}
+                        className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-4 ${
+                          isSelected
+                            ? 'border-rose-500 bg-rose-50/20 shadow-xs'
+                            : 'border-slate-100 hover:border-slate-200 bg-white'
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-sm text-slate-800">{addr.namaPenerima}</span>
+                            <span className="text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                              {addr.labelAlamat}
                             </span>
-                          )}
+                            {addr.isUtama && (
+                              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
+                                Utama
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-xs text-slate-500">{addr.telepon}</p>
+                          <p className="text-xs text-slate-600 leading-relaxed pt-1">{addr.alamatLengkap}</p>
+                          <p className="text-[11px] text-slate-400">
+                            {addr.kecamatan ? addr.kecamatan + ', ' : ''}{addr.kotaKabupaten}, {addr.provinsi} {addr.kodePos}
+                          </p>
                         </div>
-                        <p className="text-xs text-slate-500">{addr.telepon}</p>
-                        <p className="text-xs text-slate-600 leading-relaxed pt-1">{addr.alamatLengkap}</p>
-                        <p className="text-[11px] text-slate-400">
-                          {addr.kecamatan ? addr.kecamatan + ', ' : ''}{addr.kotaKabupaten}, {addr.provinsi} {addr.kodePos}
-                        </p>
-                      </div>
 
-                      <div className="mt-1">
-                        <div
-                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                            isSelected ? 'border-rose-500 bg-rose-500 text-white' : 'border-slate-300'
-                          }`}
-                        >
-                          {isSelected && <CheckCircle2 className="w-4 h-4" />}
+                        <div className="mt-1">
+                          <div
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                              isSelected ? 'border-rose-500 bg-rose-500 text-white' : 'border-slate-300'
+                            }`}
+                          >
+                            {isSelected && <CheckCircle2 className="w-4 h-4" />}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              ) : !showAddAddress && (
+                <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 mb-6 space-y-3">
+                  <p className="text-xs text-slate-600">
+                    Belum ada alamat pengiriman tersimpan. Silakan tambahkan alamat tujuan pengiriman Anda.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setShowAddAddress(true)}
+                    className="px-4 py-2 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition-colors"
+                  >
+                    Tambah Alamat Sekarang
+                  </button>
+                </div>
+              )}
 
               <div className="flex justify-end">
                 <button
                   type="button"
+                  disabled={!selectedAddress}
                   onClick={() => setCurrentStep(2)}
-                  className="px-6 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center gap-2"
+                  className="px-6 py-3 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center gap-2"
                 >
                   <span>Pilih Jasa Pengiriman</span>
                   <ChevronRight className="w-4 h-4" />

@@ -21,7 +21,6 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { useSession } from '@/lib/auth-client';
-import { MOCK_ORDERS } from '@/data/mock-orders';
 import { Order, OrderStatus } from '@/types/order';
 import { formatRupiah } from '@/lib/format';
 
@@ -31,7 +30,7 @@ export function OrderHistoryView() {
     | { id?: string; name?: string; email?: string; role?: string }
     | undefined;
 
-  const [orders, setOrders] = useState<Order[]>(MOCK_ORDERS);
+  const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState<boolean>(true);
   const [activeTab, setActiveTab] = useState<string>('semua');
   const [searchInvoice, setSearchInvoice] = useState<string>('');
@@ -105,40 +104,14 @@ export function OrderHistoryView() {
       const res = await fetch(`/api/orders?${params.toString()}`);
       const data = await res.json();
 
-      if (res.ok && data.success && Array.isArray(data.data) && data.data.length > 0) {
+      if (res.ok && data.success && Array.isArray(data.data)) {
         setOrders(data.data);
       } else {
-        // Fallback to mock data if API returns empty during demo/dev
-        let filteredMock = [...MOCK_ORDERS];
-        if (activeTab !== 'semua') {
-          filteredMock = filteredMock.filter((o) => o.status === activeTab);
-        }
-        if (debouncedSearch.trim() !== '') {
-          const q = debouncedSearch.toLowerCase().trim();
-          filteredMock = filteredMock.filter((o) => {
-            const matchInvoice = o.nomorInvoice.toLowerCase().includes(q);
-            const matchProduct = o.items.some((i) => i.nama.toLowerCase().includes(q));
-            return matchInvoice || matchProduct;
-          });
-        }
-        setOrders(filteredMock);
+        setOrders([]);
       }
     } catch (err) {
       console.error('Failed to fetch orders from API:', err);
-      // Fallback on error
-      let filteredMock = [...MOCK_ORDERS];
-      if (activeTab !== 'semua') {
-        filteredMock = filteredMock.filter((o) => o.status === activeTab);
-      }
-      if (debouncedSearch.trim() !== '') {
-        const q = debouncedSearch.toLowerCase().trim();
-        filteredMock = filteredMock.filter((o) => {
-          const matchInvoice = o.nomorInvoice.toLowerCase().includes(q);
-          const matchProduct = o.items.some((i) => i.nama.toLowerCase().includes(q));
-          return matchInvoice || matchProduct;
-        });
-      }
-      setOrders(filteredMock);
+      setOrders([]);
     } finally {
       setLoadingOrders(false);
     }

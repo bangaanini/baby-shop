@@ -37,8 +37,8 @@ export function UserSidebar({
   onLogout,
   isLoggingOut = false,
 }: UserSidebarProps) {
-  const displayName = user?.name || 'Bunda Sarah Clarissa';
-  const displayEmail = user?.email || 'sarah.clarissa@example.com';
+  const displayName = user?.name || 'Pengguna NBusiness';
+  const displayEmail = user?.email || '';
   const isAdmin = user?.role === 'admin';
 
   const getInitials = (name?: string) => {
@@ -134,27 +134,25 @@ export function UserSidebar({
                 {displayName}
               </h2>
             </div>
-            <p className="text-xs text-slate-500 truncate mb-2" title={displayEmail}>
-              {displayEmail}
-            </p>
-            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-50 border border-amber-200/80 text-[11px] font-semibold text-amber-800">
-              <Sparkles className="w-3 h-3 text-amber-600 fill-amber-500" />
-              <span>Member VIP NBusiness</span>
+            {displayEmail && (
+              <p className="text-xs text-slate-500 truncate mb-2" title={displayEmail}>
+                {displayEmail}
+              </p>
+            )}
+            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700">
+              {isAdmin ? (
+                <>
+                  <ShieldCheck className="w-3 h-3 text-purple-600" />
+                  <span>Administrator Toko</span>
+                </>
+              ) : (
+                <>
+                  <User className="w-3 h-3 text-rose-500" />
+                  <span>Akun Pembeli</span>
+                </>
+              )}
             </div>
           </div>
-        </div>
-
-        {/* Small Loyalty / Voucher Snippet */}
-        <div className="mt-4 pt-3.5 border-t border-rose-50 flex items-center justify-between gap-2 text-xs">
-          <div className="flex items-center gap-2 text-slate-700 font-medium truncate">
-            <div className="w-7 h-7 rounded-lg bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
-              <Ticket className="w-4 h-4" />
-            </div>
-            <span className="truncate">3 Voucher Toko Siap Pakai</span>
-          </div>
-          <span className="text-[11px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md shrink-0">
-            Gunakan
-          </span>
         </div>
       </div>
 

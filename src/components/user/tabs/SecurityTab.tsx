@@ -216,9 +216,9 @@ export function SecurityTab({
     }
   };
 
-  const displayEmail = user?.email || 'sarah.clarissa@example.com';
-  const displayPhone = user?.phone || '0812-3456-7890';
-  const isEmailVerified = user?.emailVerified ?? true;
+  const displayEmail = user?.email || 'Belum terdaftar';
+  const displayPhone = user?.phone || 'Belum diisi';
+  const isEmailVerified = Boolean(user?.emailVerified);
 
   return (
     <div className="space-y-6">

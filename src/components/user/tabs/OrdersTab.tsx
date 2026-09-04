@@ -26,7 +26,6 @@ import {
   ArrowRight,
 } from 'lucide-react';
 import { Order, OrderStatus, TrackingStep } from '@/types/order';
-import { MOCK_ORDERS } from '@/data/mock-orders';
 import { formatRupiah } from '@/lib/format';
 
 export interface OrdersTabProps {
@@ -116,42 +115,16 @@ export function OrdersTab({
       const res = await fetch(`/api/orders?${params.toString()}`);
       const data = await res.json();
 
-      if (res.ok && data.success && Array.isArray(data.data) && data.data.length > 0) {
+      if (res.ok && data.success && Array.isArray(data.data)) {
         setAllOrders(data.data);
         onOrderUpdated?.(data.data);
       } else {
-        // Fallback to mock data during initial dev/demo if API is empty
-        let filtered = [...MOCK_ORDERS];
-        if (activeTab !== 'semua') {
-          filtered = filtered.filter((o) => o.status === activeTab);
-        }
-        if (debouncedSearch.trim()) {
-          const q = debouncedSearch.toLowerCase().trim();
-          filtered = filtered.filter((o) => {
-            const matchInvoice = o.nomorInvoice.toLowerCase().includes(q);
-            const matchProduct = o.items.some((i) => i.nama.toLowerCase().includes(q));
-            return matchInvoice || matchProduct;
-          });
-        }
-        setAllOrders(filtered);
-        onOrderUpdated?.(filtered);
+        setAllOrders([]);
+        onOrderUpdated?.([]);
       }
     } catch (err) {
       console.error('Failed to fetch orders from API:', err);
-      // Fallback on error
-      let filtered = [...MOCK_ORDERS];
-      if (activeTab !== 'semua') {
-        filtered = filtered.filter((o) => o.status === activeTab);
-      }
-      if (debouncedSearch.trim()) {
-        const q = debouncedSearch.toLowerCase().trim();
-        filtered = filtered.filter((o) => {
-          const matchInvoice = o.nomorInvoice.toLowerCase().includes(q);
-          const matchProduct = o.items.some((i) => i.nama.toLowerCase().includes(q));
-          return matchInvoice || matchProduct;
-        });
-      }
-      setAllOrders(filtered);
+      setAllOrders([]);
     } finally {
       setIsLoading(false);
     }
@@ -324,7 +297,7 @@ export function OrdersTab({
   // Order Counts for Badges
   const statusCounts = useMemo(() => {
     const counts: Record<FilterStatus, number> = {
-      semua: MOCK_ORDERS.length,
+      semua: allOrders.length,
       menunggu_pembayaran: 0,
       diproses: 0,
       dikirim: 0,
@@ -332,15 +305,14 @@ export function OrdersTab({
       dibatalkan: 0,
     };
 
-    // Calculate from MOCK_ORDERS or combined
-    MOCK_ORDERS.forEach((o) => {
+    allOrders.forEach((o) => {
       if (counts[o.status] !== undefined) {
         counts[o.status]++;
       }
     });
 
     return counts;
-  }, []);
+  }, [allOrders]);
 
   return (
     <div className="space-y-6">

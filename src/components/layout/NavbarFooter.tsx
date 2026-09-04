@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -22,6 +22,7 @@ export function Navbar() {
   const [navSearch, setNavSearch] = useState('');
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [cartCount, setCartCount] = useState<number>(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -40,6 +41,38 @@ export function Navbar() {
     if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
+
+  const fetchCartCount = useCallback(async () => {
+    try {
+      const res = await fetch('/api/cart');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          const total = Array.isArray(json.data.items)
+            ? json.data.items.reduce((sum: number, item: any) => sum + (Number(item.jumlah) || 1), 0)
+            : 0;
+          setCartCount(total);
+          return;
+        }
+      }
+      setCartCount(0);
+    } catch {
+      setCartCount(0);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchCartCount();
+
+    const handleCartUpdate = () => {
+      fetchCartCount();
+    };
+
+    window.addEventListener('cart-updated', handleCartUpdate);
+    return () => {
+      window.removeEventListener('cart-updated', handleCartUpdate);
+    };
+  }, [fetchCartCount]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -131,9 +164,11 @@ export function Navbar() {
             >
               <div className="relative">
                 <ShoppingBag className="w-6 h-6" />
-                <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center border-2 border-white">
-                  3
-                </span>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center border-2 border-white animate-in zoom-in-50 duration-200">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
               </div>
               <span className="text-xs font-semibold hidden lg:inline">Keranjang</span>
             </Link>
