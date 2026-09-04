@@ -68,7 +68,7 @@
   - Tampilan dan form ubah biodata diri (Nama Lengkap, Tanggal Lahir, Jenis Kelamin, Email Terverifikasi, Nomor HP/WA, Data Anak).
   - Terintegrasi dengan `PATCH /api/user/profile` dan feedback toast.
 
-- [ ] **Step 1: Buat `src/components/user/tabs/BiodataTab.tsx`**
+- [x] **Step 1: Buat `src/components/user/tabs/BiodataTab.tsx`**
 
 ---
 
@@ -84,8 +84,8 @@
   - Modal form Tambah Alamat Baru & Ubah Alamat.
   - Aksi "Jadikan Alamat Utama" dan "Hapus Alamat" terhubung ke `/api/user/addresses`.
 
-- [ ] **Step 1: Buat `src/components/user/AddressModal.tsx`**
-- [ ] **Step 2: Buat `src/components/user/tabs/AddressesTab.tsx`**
+- [x] **Step 1: Buat `src/components/user/AddressModal.tsx`**
+- [x] **Step 2: Buat `src/components/user/tabs/AddressesTab.tsx`**
 
 ---
 
