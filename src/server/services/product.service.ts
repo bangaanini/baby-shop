@@ -183,6 +183,44 @@ export async function getProducts(filters: Partial<ProductFilterInput> = {}): Pr
 }
 
 /**
+ * Get product details by ID or slug, including category, variants, and images.
+ */
+export async function getProductById(id: string) {
+  if (!id || !id.trim()) return null;
+  const trimmed = id.trim();
+  const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trimmed);
+
+  let product = null;
+  if (isUuid) {
+    product = await db.query.productsTable.findFirst({
+      where: eq(productsTable.id, trimmed),
+      with: {
+        category: true,
+        variants: true,
+        images: {
+          orderBy: (images, { asc }) => [asc(images.sort_order)],
+        },
+      },
+    });
+  }
+
+  if (!product) {
+    product = await db.query.productsTable.findFirst({
+      where: eq(productsTable.slug, trimmed),
+      with: {
+        category: true,
+        variants: true,
+        images: {
+          orderBy: (images, { asc }) => [asc(images.sort_order)],
+        },
+      },
+    });
+  }
+
+  return product || null;
+}
+
+/**
  * Get product details by slug, including category, variants, and images.
  */
 export async function getProductBySlug(slug: string) {
@@ -251,6 +289,7 @@ export async function getRelatedProducts(
 export const productService = {
   getCategories,
   getProducts,
+  getProductById,
   getProductBySlug,
   getRelatedProducts,
 };

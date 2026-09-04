@@ -9,6 +9,24 @@ import { productService } from '@/server/services/product.service';
 
 export async function GET(request: NextRequest) {
   try {
+    const idParam = request.nextUrl.searchParams.get('id');
+    if (idParam) {
+      const product = await productService.getProductById(idParam);
+      if (!product) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Produk dengan ID "${idParam}" tidak ditemukan`,
+          },
+          { status: 404 }
+        );
+      }
+      return NextResponse.json({
+        success: true,
+        data: product,
+      });
+    }
+
     const searchParams = Object.fromEntries(request.nextUrl.searchParams.entries());
     const parseResult = adminProductFilterSchema.safeParse(searchParams);
 

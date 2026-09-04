@@ -240,14 +240,13 @@ export function ProductTable() {
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
 
-            <button
-              type="button"
-              onClick={handleOpenCreateModal}
+            <Link
+              href="/admin/produk/tambah"
               className="px-4 py-2.5 bg-rose-500 hover:bg-rose-600 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-rose-500/20 flex items-center gap-2 cursor-pointer"
             >
               <Plus className="w-4 h-4" />
               <span>Tambah Produk Baru</span>
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -335,13 +334,13 @@ export function ProductTable() {
             <p className="text-xs text-slate-400 max-w-sm mx-auto">
               Coba ubah kata kunci pencarian atau bersihkan filter kategori Anda.
             </p>
-            <button
-              onClick={handleOpenCreateModal}
+            <Link
+              href="/admin/produk/tambah"
               className="px-4 py-2 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition-colors inline-flex items-center gap-1.5"
             >
               <Plus className="w-3.5 h-3.5" />
               <span>Tambah Produk Pertama</span>
-            </button>
+            </Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -500,14 +499,13 @@ export function ProductTable() {
                           </Link>
 
                           {/* Edit button */}
-                          <button
-                            type="button"
-                            onClick={() => handleOpenEditModal(prod)}
+                          <Link
+                            href={`/admin/produk/${prod.id}/edit`}
                             title="Edit Data Produk"
                             className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer"
                           >
                             <Edit2 className="w-4 h-4" />
-                          </button>
+                          </Link>
 
                           {/* Delete button */}
                           <button
