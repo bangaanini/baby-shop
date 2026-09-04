@@ -4,3 +4,5 @@ export * from './users';
 export * from './auth';
 export * from './carts';
 export * from './orders';
+export * from './settings';
+

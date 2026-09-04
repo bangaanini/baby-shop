@@ -1,0 +1,22 @@
+CREATE TABLE "store_settings" (
+	"id" text PRIMARY KEY DEFAULT 'default' NOT NULL,
+	"store_name" varchar(150) DEFAULT 'BabyKids Official Store' NOT NULL,
+	"store_tagline" varchar(255) DEFAULT 'Marketplace Kebutuhan Anak Terlengkap #1 di Indonesia',
+	"store_email" varchar(255) DEFAULT 'halo@babykids.id',
+	"store_phone" varchar(50) DEFAULT '0812-3456-7890',
+	"store_address" text DEFAULT 'Jl. Melati Indah No. 42, RT 03 / RW 07, Kebayoran Baru',
+	"store_city" varchar(100) DEFAULT 'Jakarta Selatan',
+	"store_postal_code" varchar(20) DEFAULT '12160',
+	"active_payment_gateway" varchar(50) DEFAULT 'midtrans' NOT NULL,
+	"midtrans_server_key" text,
+	"midtrans_client_key" text,
+	"midtrans_merchant_id" text,
+	"midtrans_is_production" boolean DEFAULT false NOT NULL,
+	"xendit_secret_key" text,
+	"xendit_public_key" text,
+	"xendit_webhook_token" text,
+	"xendit_is_production" boolean DEFAULT false NOT NULL,
+	"enabled_payment_methods" json DEFAULT '["pay-qris","pay-bca-va","pay-mandiri-va","pay-bri-va","pay-gopay"]'::json NOT NULL,
+	"enabled_couriers" json DEFAULT '["sicepat","jne","jnt","anteraja","cargo"]'::json NOT NULL,
+	"updated_at" timestamp DEFAULT now() NOT NULL
+);
