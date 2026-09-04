@@ -1,6 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { storageService } from '@/server/services/storage.service';
 import { shippingService } from '@/server/services/shipping.service';
+import { paymentService } from '@/server/services/payment.service';
+import { NewStoreSettings } from '@/db/schema/settings';
+
+export const dynamic = 'force-dynamic';
+
+function maskSecret(key: string | null | undefined, visiblePrefix = 8): string {
+  if (!key || key.trim() === '') return '';
+  if (key.length <= visiblePrefix) return '••••••••';
+  return `${key.slice(0, visiblePrefix)}••••••••`;
+}
 
 export async function GET() {
   try {
@@ -16,9 +26,52 @@ export async function GET() {
     const isBiteshipConfigured = shippingService.isBiteshipConfigured();
     const biteshipOrigin = shippingService.getOriginInfo();
 
+    const storeSettings = await paymentService.getStoreSettings();
+
     return NextResponse.json({
       success: true,
       data: {
+        store: {
+          id: storeSettings.id,
+          storeName: storeSettings.store_name,
+          tagline: storeSettings.store_tagline,
+          email: storeSettings.store_email,
+          phone: storeSettings.store_phone,
+          address: storeSettings.store_address,
+          city: storeSettings.store_city,
+          postalCode: storeSettings.store_postal_code,
+        },
+        settings: {
+          ...storeSettings,
+          midtrans_server_key_masked: maskSecret(storeSettings.midtrans_server_key, 8),
+          xendit_secret_key_masked: maskSecret(storeSettings.xendit_secret_key, 8),
+          xendit_webhook_token_masked: maskSecret(storeSettings.xendit_webhook_token, 4),
+        },
+        activePaymentGateway: storeSettings.active_payment_gateway || 'midtrans',
+        enabledPaymentMethods: storeSettings.enabled_payment_methods || [],
+        enabledCouriers: storeSettings.enabled_couriers || [],
+        midtrans: {
+          serverKeyMasked: maskSecret(storeSettings.midtrans_server_key, 8),
+          clientKey: storeSettings.midtrans_client_key || '',
+          merchantId: storeSettings.midtrans_merchant_id || '',
+          isProduction: storeSettings.midtrans_is_production,
+          isConfigured: Boolean(
+            storeSettings.midtrans_server_key &&
+              storeSettings.midtrans_server_key.trim() !== '' &&
+              !storeSettings.midtrans_server_key.includes('your_midtrans_server_key')
+          ),
+        },
+        xendit: {
+          secretKeyMasked: maskSecret(storeSettings.xendit_secret_key, 8),
+          publicKey: storeSettings.xendit_public_key || '',
+          webhookTokenMasked: maskSecret(storeSettings.xendit_webhook_token, 4),
+          isProduction: storeSettings.xendit_is_production,
+          isConfigured: Boolean(
+            storeSettings.xendit_secret_key &&
+              storeSettings.xendit_secret_key.trim() !== '' &&
+              !storeSettings.xendit_secret_key.includes('your_xendit')
+          ),
+        },
         r2: {
           isConfigured: isR2Configured,
           bucketName,
@@ -53,11 +106,98 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
 
+    // Support both direct Partial<NewStoreSettings> and nested objects from form
+    const updatePayload: Partial<NewStoreSettings> = {};
+
+    if (body.profile) {
+      if (body.profile.storeName !== undefined) updatePayload.store_name = body.profile.storeName;
+      if (body.profile.tagline !== undefined) updatePayload.store_tagline = body.profile.tagline;
+      if (body.profile.customerServiceEmail !== undefined)
+        updatePayload.store_email = body.profile.customerServiceEmail;
+      if (body.profile.whatsappNumber !== undefined)
+        updatePayload.store_phone = body.profile.whatsappNumber;
+    }
+
+    if (body.warehouse) {
+      if (body.warehouse.fullAddress !== undefined)
+        updatePayload.store_address = body.warehouse.fullAddress;
+      if (body.warehouse.city !== undefined) updatePayload.store_city = body.warehouse.city;
+      if (body.warehouse.postalCode !== undefined)
+        updatePayload.store_postal_code = body.warehouse.postalCode;
+    }
+
+    if (body.couriers && typeof body.couriers === 'object' && !Array.isArray(body.couriers)) {
+      updatePayload.enabled_couriers = Object.entries(body.couriers)
+        .filter(([_, enabled]) => Boolean(enabled))
+        .map(([key]) => key);
+    }
+
+    if (body.payments && typeof body.payments === 'object' && !Array.isArray(body.payments)) {
+      const methodMap: Record<string, string> = {
+        qris: 'pay-qris',
+        bcaVa: 'pay-bca-va',
+        mandiriVa: 'pay-mandiri-va',
+        briVa: 'pay-bri-va',
+        gopay: 'pay-gopay',
+      };
+      updatePayload.enabled_payment_methods = Object.entries(body.payments)
+        .filter(([_, enabled]) => Boolean(enabled))
+        .map(([key]) => methodMap[key] || key);
+    }
+
+    const directKeys: (keyof NewStoreSettings)[] = [
+      'store_name',
+      'store_tagline',
+      'store_email',
+      'store_phone',
+      'store_address',
+      'store_city',
+      'store_postal_code',
+      'active_payment_gateway',
+      'midtrans_server_key',
+      'midtrans_client_key',
+      'midtrans_merchant_id',
+      'midtrans_is_production',
+      'xendit_secret_key',
+      'xendit_public_key',
+      'xendit_webhook_token',
+      'xendit_is_production',
+      'enabled_payment_methods',
+      'enabled_couriers',
+    ];
+
+    for (const key of directKeys) {
+      if (body[key] !== undefined) {
+        (updatePayload as any)[key] = body[key];
+      }
+    }
+
+    // Do not overwrite secret keys if they are masked values
+    if (
+      typeof updatePayload.midtrans_server_key === 'string' &&
+      updatePayload.midtrans_server_key.includes('••••')
+    ) {
+      delete updatePayload.midtrans_server_key;
+    }
+    if (
+      typeof updatePayload.xendit_secret_key === 'string' &&
+      updatePayload.xendit_secret_key.includes('••••')
+    ) {
+      delete updatePayload.xendit_secret_key;
+    }
+    if (
+      typeof updatePayload.xendit_webhook_token === 'string' &&
+      updatePayload.xendit_webhook_token.includes('••••')
+    ) {
+      delete updatePayload.xendit_webhook_token;
+    }
+
+    const updatedSettings = await paymentService.saveStoreSettings(updatePayload);
+
     return NextResponse.json({
       success: true,
-      message: 'Pengaturan toko & logistik berhasil disimpan!',
-      data: body,
-      updatedAt: new Date().toISOString(),
+      message: 'Pengaturan toko berhasil disimpan!',
+      data: updatedSettings,
     });
   } catch (error: any) {
     console.error('Error in POST /api/admin/settings:', error);
