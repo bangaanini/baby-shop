@@ -54,7 +54,7 @@
   - Menu navigasi: 👤 Biodata Diri, 📍 Daftar Alamat, 🛍️ Pembelian, 🔒 Keamanan Akun, 🚪 Logout.
   - Bilah tab horizontal adaptif untuk layar smartphone.
 
-- [ ] **Step 1: Buat `src/components/user/UserSidebar.tsx`**
+- [x] **Step 1: Buat `src/components/user/UserSidebar.tsx`**
 
 ---
 
