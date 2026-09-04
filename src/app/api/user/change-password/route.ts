@@ -8,14 +8,14 @@ export const dynamic = 'force-dynamic';
 async function resolveUserId(
   request: NextRequest,
   bodyUserId?: string | null
-): Promise<string> {
+): Promise<string | null> {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
     if (session?.user?.id) {
       return session.user.id;
     }
   } catch (err) {
-    console.warn('Could not read session from headers:', err);
+    console.warn('Could not read session from headers in /api/user/change-password:', err);
   }
 
   if (bodyUserId) return bodyUserId;
@@ -26,7 +26,7 @@ async function resolveUserId(
   const cookieUserId = request.cookies.get('user_id')?.value;
   if (cookieUserId) return cookieUserId;
 
-  return 'user_buyer_demo_1';
+  return null;
 }
 
 export async function POST(request: NextRequest) {
@@ -46,6 +46,15 @@ export async function POST(request: NextRequest) {
     }
 
     const userId = await resolveUserId(request, parseResult.data.userId);
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Silakan masuk ke akun Anda untuk mengubah kata sandi.',
+        },
+        { status: 401 }
+      );
+    }
     const result = await userService.changeUserPassword(
       userId,
       parseResult.data.currentPassword,

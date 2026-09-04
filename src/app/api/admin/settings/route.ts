@@ -24,7 +24,7 @@ export async function GET() {
       : 'Belum Dikonfigurasi';
 
     const isBiteshipConfigured = shippingService.isBiteshipConfigured();
-    const biteshipOrigin = shippingService.getOriginInfo();
+    const biteshipOrigin = await shippingService.getOriginInfo();
 
     const storeSettings = await paymentService.getStoreSettings();
 

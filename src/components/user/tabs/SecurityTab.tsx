@@ -217,7 +217,8 @@ export function SecurityTab({
   };
 
   const displayEmail = user?.email || 'Belum terdaftar';
-  const displayPhone = user?.phone || 'Belum diisi';
+  const hasPhone = Boolean(user?.phone && user.phone.trim() && user.phone !== 'Belum diisi' && user.phone !== '-');
+  const displayPhone = hasPhone ? user!.phone : 'Belum ditambahkan';
   const isEmailVerified = Boolean(user?.emailVerified);
 
   return (
@@ -590,16 +591,24 @@ export function SecurityTab({
                     <span className="text-[11px] font-bold text-slate-500 uppercase">
                       Nomor HP / WhatsApp
                     </span>
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
-                      <ShieldCheck className="w-3 h-3 text-blue-600" />
-                      Terhubung
-                    </span>
+                    {hasPhone ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
+                        <ShieldCheck className="w-3 h-3 text-blue-600" />
+                        Terhubung
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-600">
+                        Belum Diisi
+                      </span>
+                    )}
                   </div>
                   <p className="text-xs sm:text-sm font-semibold text-slate-800 truncate mt-0.5">
                     {displayPhone}
                   </p>
                   <p className="text-[11px] text-slate-500 mt-1">
-                    Digunakan untuk konfirmasi pesanan dan verifikasi pengiriman.
+                    {hasPhone
+                      ? 'Digunakan untuk konfirmasi pesanan dan verifikasi pengiriman.'
+                      : 'Tambahkan nomor WhatsApp Anda di tab Biodata Diri untuk memudahkan kurir.'}
                   </p>
                 </div>
               </div>

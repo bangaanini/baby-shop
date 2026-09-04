@@ -1,6 +1,6 @@
 import { inArray } from 'drizzle-orm';
 import { db } from '@/db';
-import { productsTable } from '@/db/schema';
+import { productsTable, storeSettingsTable } from '@/db/schema';
 import {
   CalculateShippingRatesInput,
   ShippingRateOption,
@@ -17,7 +17,21 @@ export function isBiteshipConfigured(): boolean {
   return true;
 }
 
-export function getOriginInfo(): { postalCode: string; city: string; province: string } {
+export async function getOriginInfo(): Promise<{ postalCode: string; city: string; province: string; address?: string }> {
+  try {
+    const settings = await db.query.storeSettingsTable.findFirst();
+    if (settings) {
+      return {
+        postalCode: settings.store_postal_code || process.env.SHIPPING_ORIGIN_POSTAL_CODE || '12160',
+        city: settings.store_city || process.env.SHIPPING_ORIGIN_CITY || 'Jakarta Selatan',
+        province: process.env.SHIPPING_ORIGIN_PROVINCE || 'DKI Jakarta',
+        address: settings.store_address || undefined,
+      };
+    }
+  } catch (err) {
+    console.warn('Could not read store origin from DB settings, falling back to env:', err);
+  }
+
   return {
     postalCode: process.env.SHIPPING_ORIGIN_POSTAL_CODE || '12160',
     city: process.env.SHIPPING_ORIGIN_CITY || 'Jakarta Selatan',
@@ -376,7 +390,7 @@ export interface CalculateRatesResult {
 export async function calculateRates(
   input: CalculateShippingRatesInput
 ): Promise<CalculateRatesResult> {
-  const origin = getOriginInfo();
+  const origin = await getOriginInfo();
 
   // 1. Ambil data spesifikasi berat & dimensi produk dari database
   const productIds = (input.items || [])

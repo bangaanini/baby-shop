@@ -197,6 +197,15 @@ export function CheckoutStepper() {
 
   // Selected Objects
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses[0] || DEFAULT_EMPTY_ADDRESS;
+
+  const isAddressValid = Boolean(
+    selectedAddress &&
+    selectedAddress.id &&
+    selectedAddress.namaPenerima?.trim() &&
+    selectedAddress.telepon?.trim() &&
+    selectedAddress.alamatLengkap?.trim() &&
+    selectedAddress.kotaKabupaten?.trim()
+  );
   const selectedCourier =
     availableCouriers.find((c) => c.id === selectedCourierId) ||
     availableCouriers[0] ||
@@ -883,13 +892,22 @@ export function CheckoutStepper() {
               <button
                 key={s.step}
                 type="button"
-                onClick={() => setCurrentStep(s.step as Step)}
+                onClick={() => {
+                  if (s.step > 1 && !isAddressValid) {
+                    setErrorMessage('Mohon lengkapi alamat tujuan pengiriman Anda terlebih dahulu sebelum memilih kurir.');
+                    return;
+                  }
+                  setCurrentStep(s.step as Step);
+                }}
+                disabled={s.step > 1 && !isAddressValid}
                 className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all ${
                   isCurrent
                     ? 'text-rose-600 font-bold bg-rose-50/50'
                     : isDone
-                    ? 'text-emerald-600 font-medium'
-                    : 'text-slate-400 font-normal hover:text-slate-600'
+                    ? 'text-emerald-600 font-medium cursor-pointer'
+                    : !isAddressValid && s.step > 1
+                    ? 'text-slate-300 opacity-40 cursor-not-allowed'
+                    : 'text-slate-400 font-normal hover:text-slate-600 cursor-pointer'
                 }`}
               >
                 <div
@@ -1118,12 +1136,28 @@ export function CheckoutStepper() {
                 </div>
               )}
 
-              <div className="flex justify-end">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+                {!isAddressValid ? (
+                  <p className="text-xs text-rose-600 font-medium flex items-center gap-1.5">
+                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                    <span>Mohon lengkapi atau pilih alamat pengiriman Anda terlebih dahulu.</span>
+                  </p>
+                ) : (
+                  <div />
+                )}
+
                 <button
                   type="button"
-                  disabled={!selectedAddress}
-                  onClick={() => setCurrentStep(2)}
-                  className="px-6 py-3 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center gap-2"
+                  disabled={!isAddressValid}
+                  onClick={() => {
+                    if (!isAddressValid) {
+                      setErrorMessage('Mohon lengkapi alamat tujuan pengiriman Anda terlebih dahulu.');
+                      return;
+                    }
+                    setErrorMessage(null);
+                    setCurrentStep(2);
+                  }}
+                  className="w-full sm:w-auto px-6 py-3 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <span>Pilih Jasa Pengiriman</span>
                   <ChevronRight className="w-4 h-4" />

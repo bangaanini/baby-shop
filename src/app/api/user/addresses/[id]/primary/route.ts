@@ -7,14 +7,14 @@ export const dynamic = 'force-dynamic';
 async function resolveUserId(
   request: NextRequest,
   bodyUserId?: string | null
-): Promise<string> {
+): Promise<string | null> {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
     if (session?.user?.id) {
       return session.user.id;
     }
   } catch (err) {
-    console.warn('Could not read session from headers:', err);
+    console.warn('Could not read session from headers in /api/user/addresses/[id]/primary:', err);
   }
 
   if (bodyUserId) return bodyUserId;
@@ -25,7 +25,7 @@ async function resolveUserId(
   const cookieUserId = request.cookies.get('user_id')?.value;
   if (cookieUserId) return cookieUserId;
 
-  return 'user_buyer_demo_1';
+  return null;
 }
 
 export async function PATCH(
@@ -46,6 +46,15 @@ export async function PATCH(
 
     const body = await request.json().catch(() => ({}));
     const userId = await resolveUserId(request, body.userId);
+    if (!userId) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Silakan masuk ke akun Anda.',
+        },
+        { status: 401 }
+      );
+    }
     const updated = await userService.setPrimaryAddress(addressId, userId);
 
     return NextResponse.json({
