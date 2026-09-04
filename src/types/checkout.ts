@@ -42,6 +42,26 @@ export interface CourierService {
   iconText: string;
 }
 
+export interface ShippingRateOption {
+  id: string;
+  courierCode: string;
+  courierName: string;
+  serviceCode: string;
+  serviceName: string;
+  cost: number;
+  price: number;
+  etd: string;
+  description?: string;
+  isAvailable?: boolean;
+  isLiveRate?: boolean;
+  iconText?: string;
+  kodeKurir?: string;
+  namaKurir?: string;
+  layanan?: string;
+  estimasiHari?: string;
+  ongkir?: number;
+}
+
 export interface PaymentMethod {
   id: string;
   kategori: 'qris' | 'bank_transfer' | 'ewallet';

@@ -20,6 +20,7 @@ import {
   QrCode,
   Building2,
   Loader2,
+  Scale,
 } from 'lucide-react';
 import {
   MOCK_INITIAL_CART,
@@ -27,8 +28,37 @@ import {
   MOCK_COURIERS,
   MOCK_PAYMENT_METHODS,
 } from '@/data/mock-checkout';
-import { CartItem, ShippingAddress, CourierService, PaymentMethod } from '@/types/checkout';
+import { CartItem, ShippingAddress, CourierService, PaymentMethod, ShippingRateOption } from '@/types/checkout';
 import { formatRupiah } from '@/lib/format';
+
+function getCourierIconText(code: string): string {
+  const lower = (code || '').toLowerCase().trim();
+  if (lower.includes('sicepat')) return '⚡ SiCepat';
+  if (lower.includes('jne')) return '📦 JNE';
+  if (lower.includes('jnt') || lower.includes('j&t')) return '🚀 J&T';
+  if (lower.includes('anteraja')) return '⚡ Anteraja';
+  if (lower.includes('pos')) return '📮 POS';
+  if (lower.includes('tiki')) return '🚚 TIKI';
+  if (lower.includes('ninja')) return '🥷 Ninja';
+  if (lower.includes('lion')) return '🦁 Lion';
+  if (lower.includes('wahana')) return '🚛 Wahana';
+  return '🚚 ' + (code ? code.toUpperCase() : 'Kurir');
+}
+
+const FALLBACK_COURIER_OPTIONS: ShippingRateOption[] = MOCK_COURIERS.map((m) => ({
+  id: m.id,
+  courierCode: m.kodeKurir,
+  courierName: m.namaKurir,
+  serviceCode: m.layanan.split(' ')[0] || 'REG',
+  serviceName: m.layanan,
+  cost: m.ongkir,
+  price: m.ongkir,
+  etd: m.estimasiHari,
+  description: '',
+  isAvailable: true,
+  isLiveRate: false,
+  iconText: m.iconText,
+}));
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -55,7 +85,20 @@ export function CheckoutStepper() {
   // User selections
   const [addresses, setAddresses] = useState<ShippingAddress[]>(MOCK_SAVED_ADDRESSES);
   const [selectedAddressId, setSelectedAddressId] = useState<string>(MOCK_SAVED_ADDRESSES[0].id);
-  const [selectedCourierId, setSelectedCourierId] = useState<string>(MOCK_COURIERS[0].id);
+  const [availableCouriers, setAvailableCouriers] = useState<ShippingRateOption[]>(FALLBACK_COURIER_OPTIONS);
+  const [selectedCourierId, setSelectedCourierId] = useState<string>(FALLBACK_COURIER_OPTIONS[0].id);
+  const [isLoadingRates, setIsLoadingRates] = useState(false);
+  const [shippingWeights, setShippingWeights] = useState<{
+    chargeableWeightKg: number;
+    totalWeightGram: number;
+    totalVolumeWeightGram: number;
+    isLiveRate: boolean;
+  }>({
+    chargeableWeightKg: 1,
+    totalWeightGram: 500,
+    totalVolumeWeightGram: 500,
+    isLiveRate: false,
+  });
   const [selectedPaymentId, setSelectedPaymentId] = useState<string>(MOCK_PAYMENT_METHODS[0].id);
   const [buyerNotes, setBuyerNotes] = useState<string>('Tolong periksa jahitan & kemasan aman berlapis bubble wrap ya.');
 
@@ -79,14 +122,17 @@ export function CheckoutStepper() {
 
   // Selected Objects
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId) || addresses[0];
-  const selectedCourier = MOCK_COURIERS.find((c) => c.id === selectedCourierId) || MOCK_COURIERS[0];
+  const selectedCourier =
+    availableCouriers.find((c) => c.id === selectedCourierId) ||
+    availableCouriers[0] ||
+    FALLBACK_COURIER_OPTIONS[0];
   const selectedPayment = MOCK_PAYMENT_METHODS.find((p) => p.id === selectedPaymentId) || MOCK_PAYMENT_METHODS[0];
 
   // Fallback initial computations
   const fallbackSubtotal = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
   const fallbackTotalBeratGram = items.reduce((sum, item) => sum + (item.beratGram || 500) * item.jumlah, 0);
   const fallbackTotalBeratKg = Math.max(1, Math.ceil(fallbackTotalBeratGram / 1000));
-  const fallbackOngkir = (selectedCourier?.ongkir || 20000) * fallbackTotalBeratKg;
+  const fallbackOngkir = (selectedCourier?.price || selectedCourier?.cost || 20000);
   const fallbackDiskonVoucher = voucherApplied ? 20000 : 0;
   const fallbackBiayaLayanan = 1000;
   const fallbackTotalBayar = Math.max(0, fallbackSubtotal + fallbackOngkir + fallbackBiayaLayanan - fallbackDiskonVoucher);
@@ -155,7 +201,108 @@ export function CheckoutStepper() {
     };
   }, []);
 
-  // 2. Whenever items, courier, or voucher changes, call POST /api/checkout/calculate
+  // 2. Fetch live shipping rates dynamically whenever selected address or items change
+  useEffect(() => {
+    let isMounted = true;
+
+    async function fetchShippingRates() {
+      if (!selectedAddress || !items || items.length === 0) return;
+
+      setIsLoadingRates(true);
+      try {
+        const res = await fetch('/api/shipping/rates', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            destinationPostalCode: selectedAddress.kodePos,
+            destinationCity: selectedAddress.kotaKabupaten,
+            destinationProvince: selectedAddress.provinsi,
+            destinationDistrict: selectedAddress.kecamatan,
+            items: items.map((i) => ({
+              productId: i.productId,
+              variantId: i.variantId || null,
+              quantity: i.jumlah,
+            })),
+          }),
+        });
+
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data) {
+            const { rates, totalWeightGram, totalVolumeWeightGram, chargeableWeightKg, isLiveBiteship } = json.data;
+
+            if (isMounted) {
+              setShippingWeights({
+                chargeableWeightKg: chargeableWeightKg || 1,
+                totalWeightGram: totalWeightGram || 0,
+                totalVolumeWeightGram: totalVolumeWeightGram || 0,
+                isLiveRate: Boolean(isLiveBiteship),
+              });
+
+              if (Array.isArray(rates) && rates.length > 0) {
+                const mappedRates: ShippingRateOption[] = rates.map((r: any) => {
+                  const uniqueId = `${r.courierCode}-${r.serviceCode}`.toLowerCase();
+                  const priceVal = Number(r.cost ?? r.price ?? 0);
+                  return {
+                    id: uniqueId,
+                    courierCode: r.courierCode,
+                    courierName: r.courierName || r.courierCode,
+                    serviceCode: r.serviceCode || 'REG',
+                    serviceName: r.serviceName || r.serviceCode || 'REG',
+                    cost: priceVal,
+                    price: priceVal,
+                    etd: r.etd || '1 - 3 Hari',
+                    description: r.description || '',
+                    isAvailable: r.isAvailable !== false,
+                    isLiveRate: Boolean(isLiveBiteship || r.isLiveRate),
+                    iconText: getCourierIconText(r.courierCode),
+                  };
+                });
+
+                setAvailableCouriers(mappedRates);
+
+                // Maintain or auto-select a valid courier option
+                setSelectedCourierId((prevId) => {
+                  const exists = mappedRates.some((c) => c.id === prevId);
+                  return exists ? prevId : mappedRates[0].id;
+                });
+                return;
+              }
+            }
+          }
+        }
+
+        // Fallback
+        if (isMounted) {
+          setAvailableCouriers(FALLBACK_COURIER_OPTIONS);
+        }
+      } catch (err) {
+        console.error('Failed to fetch live shipping rates:', err);
+        if (isMounted) {
+          setAvailableCouriers(FALLBACK_COURIER_OPTIONS);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingRates(false);
+        }
+      }
+    }
+
+    fetchShippingRates();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [
+    selectedAddress?.id,
+    selectedAddress?.kodePos,
+    selectedAddress?.kotaKabupaten,
+    selectedAddress?.provinsi,
+    selectedAddress?.kecamatan,
+    items,
+  ]);
+
+  // 3. Whenever items, courier, address, or voucher changes, call POST /api/checkout/calculate
   useEffect(() => {
     let isMounted = true;
     async function runCalculation() {
@@ -171,8 +318,12 @@ export function CheckoutStepper() {
               variantId: i.variantId || null,
               quantity: i.jumlah,
             })),
-            courierCode: selectedCourier.kodeKurir,
-            courierService: selectedCourier.layanan,
+            courierCode: selectedCourier.courierCode,
+            courierService: selectedCourier.serviceCode,
+            destinationPostalCode: selectedAddress.kodePos,
+            destinationCity: selectedAddress.kotaKabupaten,
+            destinationProvince: selectedAddress.provinsi,
+            destinationDistrict: selectedAddress.kecamatan,
             voucherCode: voucherApplied ? (voucherCode || 'ANAKHEMAT') : undefined,
           }),
         });
@@ -183,8 +334,8 @@ export function CheckoutStepper() {
             if (isMounted) {
               setCalcSummary({
                 subtotal: json.data.subtotalProduk,
-                totalBeratGram: json.data.totalBeratGram,
-                totalBeratKg: json.data.totalBeratKg,
+                totalBeratGram: json.data.totalBeratGram || json.data.totalWeightGram || 500,
+                totalBeratKg: json.data.chargeableWeightKg || json.data.totalBeratKg || 1,
                 ongkir: json.data.ongkir,
                 diskonVoucher: json.data.diskonVoucher,
                 biayaLayanan: json.data.biayaLayanan,
@@ -197,9 +348,9 @@ export function CheckoutStepper() {
 
         // Fallback calculation for mock items or offline
         const sub = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
-        const weight = items.reduce((sum, item) => sum + (item.beratGram || 500) * item.jumlah, 0);
-        const weightKg = Math.max(1, Math.ceil(weight / 1000));
-        const ongk = (selectedCourier?.ongkir || 20000) * weightKg;
+        const weight = shippingWeights.totalWeightGram || items.reduce((sum, item) => sum + (item.beratGram || 500) * item.jumlah, 0);
+        const weightKg = shippingWeights.chargeableWeightKg || Math.max(1, Math.ceil(weight / 1000));
+        const ongk = selectedCourier.price ?? selectedCourier.cost ?? 20000;
         const disc = voucherApplied ? 20000 : 0;
         const fee = 1000;
         const total = Math.max(0, sub + ongk + fee - disc);
@@ -217,9 +368,9 @@ export function CheckoutStepper() {
       } catch (error) {
         console.error('Failed to calculate order:', error);
         const sub = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
-        const weight = items.reduce((sum, item) => sum + (item.beratGram || 500) * item.jumlah, 0);
-        const weightKg = Math.max(1, Math.ceil(weight / 1000));
-        const ongk = (selectedCourier?.ongkir || 20000) * weightKg;
+        const weight = shippingWeights.totalWeightGram || items.reduce((sum, item) => sum + (item.beratGram || 500) * item.jumlah, 0);
+        const weightKg = shippingWeights.chargeableWeightKg || Math.max(1, Math.ceil(weight / 1000));
+        const ongk = selectedCourier.price ?? selectedCourier.cost ?? 20000;
         const disc = voucherApplied ? 20000 : 0;
         const fee = 1000;
         const total = Math.max(0, sub + ongk + fee - disc);
@@ -243,7 +394,22 @@ export function CheckoutStepper() {
     return () => {
       isMounted = false;
     };
-  }, [items, selectedCourier.id, selectedCourier.layanan, selectedCourier.kodeKurir, voucherApplied, voucherCode]);
+  }, [
+    items,
+    selectedCourier.id,
+    selectedCourier.courierCode,
+    selectedCourier.serviceCode,
+    selectedCourier.price,
+    selectedCourier.cost,
+    selectedAddress.id,
+    selectedAddress.kodePos,
+    selectedAddress.kotaKabupaten,
+    selectedAddress.provinsi,
+    selectedAddress.kecamatan,
+    voucherApplied,
+    voucherCode,
+    shippingWeights.chargeableWeightKg,
+  ]);
 
   const handleAddNewAddress = (e: React.FormEvent) => {
     e.preventDefault();
@@ -279,8 +445,12 @@ export function CheckoutStepper() {
       recipientName: selectedAddress.namaPenerima,
       recipientPhone: selectedAddress.telepon,
       shippingAddress: fullShippingAddress,
-      courierCode: selectedCourier.kodeKurir,
-      courierService: selectedCourier.layanan,
+      courierCode: selectedCourier.courierCode || selectedCourier.kodeKurir,
+      courierService: selectedCourier.serviceName || selectedCourier.serviceCode || selectedCourier.layanan,
+      destinationPostalCode: selectedAddress.kodePos,
+      destinationCity: selectedAddress.kotaKabupaten,
+      destinationProvince: selectedAddress.provinsi,
+      destinationDistrict: selectedAddress.kecamatan,
       paymentMethod: selectedPayment.nama,
       notes: buyerNotes || undefined,
       voucherCode: voucherApplied ? (voucherCode || 'ANAKHEMAT') : undefined,
@@ -370,7 +540,7 @@ export function CheckoutStepper() {
               </div>
               <div className="flex justify-between">
                 <span>Kurir Pengiriman:</span>
-                <strong className="text-slate-800">{selectedCourier.namaKurir} ({selectedCourier.layanan})</strong>
+                <strong className="text-slate-800">{selectedCourier.courierName} - {selectedCourier.serviceName}</strong>
               </div>
               <div className="flex justify-between">
                 <span>Penerima:</span>
@@ -669,67 +839,109 @@ export function CheckoutStepper() {
           {currentStep === 2 && (
             <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs">
               <div className="pb-4 border-b border-slate-100 mb-5">
-                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                  <Truck className="w-5 h-5 text-rose-500" />
-                  <span>Langkah 2: Pilih Jasa Kurir & Ongkir Otomatis</span>
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Kirim ke: <strong className="text-slate-700">{selectedAddress.kotaKabupaten}, {selectedAddress.provinsi}</strong> (Berat: {calcSummary.totalBeratKg} kg)
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                    <Truck className="w-5 h-5 text-rose-500" />
+                    <span>Langkah 2: Pilihan Kurir & Ongkir Otomatis</span>
+                  </h2>
+                  {shippingWeights.isLiveRate && (
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      🟢 Live Rate Aktif
+                    </span>
+                  )}
+                </div>
+                <p className="text-xs text-slate-500 mt-1">
+                  Kirim ke: <strong className="text-slate-700">{selectedAddress.kotaKabupaten}, {selectedAddress.provinsi}</strong>
                 </p>
+
+                {/* Dimensional cargo weight badge */}
+                <div className="mt-3 p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl flex flex-wrap items-center justify-between gap-2.5 text-xs">
+                  <div className="flex items-center gap-2 text-amber-900 font-medium">
+                    <Scale className="w-4 h-4 text-amber-600 shrink-0" />
+                    <span>
+                      Berat Aktual: <strong>{(shippingWeights.totalWeightGram / 1000).toFixed(1)} kg</strong> • Berat Volumetrik: <strong>{(shippingWeights.totalVolumeWeightGram / 1000).toFixed(1)} kg</strong> — Dihitung: <strong className="text-rose-600 font-extrabold">{shippingWeights.chargeableWeightKg.toFixed(1)} kg</strong>
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-amber-700/80 font-medium italic">
+                    (Standar cargo: volumetrik / 6000)
+                  </span>
+                </div>
               </div>
 
-              <div className="space-y-3 mb-6">
-                {MOCK_COURIERS.map((courier) => {
-                  const isSelected = courier.id === selectedCourierId;
-                  const calculatedCost = courier.ongkir * Math.max(1, calcSummary.totalBeratKg);
+              {/* Loading Indicator or Dynamic Courier List */}
+              {isLoadingRates ? (
+                <div className="py-12 flex flex-col items-center justify-center gap-3 text-slate-500">
+                  <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
+                  <p className="text-xs font-semibold">Mengambil tarif ongkir live real-time...</p>
+                </div>
+              ) : (
+                <div className="space-y-3 mb-6">
+                  {availableCouriers.map((courier) => {
+                    const isSelected = courier.id === selectedCourierId;
+                    const displayPrice = courier.price ?? courier.cost ?? 0;
 
-                  return (
-                    <div
-                      key={courier.id}
-                      onClick={() => setSelectedCourierId(courier.id)}
-                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-4 ${
-                        isSelected
-                          ? 'border-rose-500 bg-rose-50/20 shadow-xs'
-                          : 'border-slate-100 hover:border-slate-200 bg-white'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center">
-                          {courier.iconText}
-                        </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-slate-800">{courier.namaKurir}</span>
-                            <span className="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
-                              {courier.layanan}
-                            </span>
+                    return (
+                      <div
+                        key={courier.id}
+                        onClick={() => setSelectedCourierId(courier.id)}
+                        className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-4 ${
+                          isSelected
+                            ? 'border-rose-500 bg-rose-50/20 shadow-xs'
+                            : 'border-slate-100 hover:border-slate-200 bg-white'
+                        }`}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200/50">
+                            {courier.iconText || courier.courierCode.toUpperCase()}
                           </div>
-                          <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                            <Clock className="w-3 h-3 text-slate-400" />
-                            <span>Estimasi sampai: <strong>{courier.estimasiHari}</strong></span>
-                          </p>
+                          <div>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-bold text-sm text-slate-800">
+                                {courier.courierName} - {courier.serviceCode || courier.serviceName}
+                              </span>
+                              {courier.serviceName && courier.serviceName !== courier.serviceCode && (
+                                <span className="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
+                                  {courier.serviceName}
+                                </span>
+                              )}
+                              {courier.isLiveRate && (
+                                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                  <span>🟢</span>
+                                  <span>Live Rate</span>
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                              <Clock className="w-3 h-3 text-slate-400 shrink-0" />
+                              <span>Estimasi sampai: <strong>{courier.etd}</strong></span>
+                              {courier.description ? (
+                                <span className="text-slate-400 text-[11px] hidden sm:inline">• {courier.description}</span>
+                              ) : null}
+                            </p>
+                          </div>
                         </div>
-                      </div>
 
-                      <div className="text-right flex items-center gap-3">
-                        <div>
-                          <span className="text-sm font-bold text-slate-800 block">
-                            {formatRupiah(calculatedCost)}
-                          </span>
-                          <span className="text-[10px] text-slate-400">Ongkir Otomatis</span>
-                        </div>
-                        <div
-                          className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                            isSelected ? 'border-rose-500 bg-rose-500 text-white' : 'border-slate-300'
-                          }`}
-                        >
-                          {isSelected && <CheckCircle2 className="w-4 h-4" />}
+                        <div className="text-right flex items-center gap-3 shrink-0">
+                          <div>
+                            <span className="text-sm font-bold text-slate-800 block">
+                              {formatRupiah(displayPrice)}
+                            </span>
+                            <span className="text-[10px] text-slate-400">Ongkir Otomatis</span>
+                          </div>
+                          <div
+                            className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                              isSelected ? 'border-rose-500 bg-rose-500 text-white' : 'border-slate-300'
+                            }`}
+                          >
+                            {isSelected && <CheckCircle2 className="w-4 h-4" />}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Catatan untuk Penjual / Kurir */}
               <div className="mb-6">
@@ -889,8 +1101,8 @@ export function CheckoutStepper() {
                     </button>
                   </div>
                   <div className="text-xs text-slate-800 space-y-1">
-                    <p>Kurir: <strong>{selectedCourier.namaKurir} - {selectedCourier.layanan}</strong></p>
-                    <p>Estimasi: <strong>{selectedCourier.estimasiHari}</strong></p>
+                    <p>Kurir: <strong>{selectedCourier.courierName} - {selectedCourier.serviceName}</strong></p>
+                    <p>Estimasi: <strong>{selectedCourier.etd}</strong></p>
                     <p>Metode Bayar: <strong>{selectedPayment.nama}</strong></p>
                   </div>
                 </div>
