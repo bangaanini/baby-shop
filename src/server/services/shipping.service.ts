@@ -429,15 +429,37 @@ export async function calculateRates(
   for (const item of input.items || []) {
     const prod = productMap.get(item.productId);
     const qty = Math.max(1, item.quantity || 1);
-    const weight = prod?.weight_gram && prod.weight_gram > 0 ? prod.weight_gram : 500;
+    const weight =
+      item.weightGram && item.weightGram > 0
+        ? item.weightGram
+        : prod?.weight_gram && prod.weight_gram > 0
+        ? prod.weight_gram
+        : 500;
     const length =
-      prod?.dimension_length && prod.dimension_length > 0 ? prod.dimension_length : 10;
+      item.dimensionLength && item.dimensionLength > 0
+        ? item.dimensionLength
+        : prod?.dimension_length && prod.dimension_length > 0
+        ? prod.dimension_length
+        : 10;
     const width =
-      prod?.dimension_width && prod.dimension_width > 0 ? prod.dimension_width : 10;
+      item.dimensionWidth && item.dimensionWidth > 0
+        ? item.dimensionWidth
+        : prod?.dimension_width && prod.dimension_width > 0
+        ? prod.dimension_width
+        : 10;
     const height =
-      prod?.dimension_height && prod.dimension_height > 0 ? prod.dimension_height : 10;
-    const price = prod?.price && prod.price > 0 ? prod.price : 50000;
-    const name = prod?.name || 'Produk Bayi';
+      item.dimensionHeight && item.dimensionHeight > 0
+        ? item.dimensionHeight
+        : prod?.dimension_height && prod.dimension_height > 0
+        ? prod.dimension_height
+        : 10;
+    const price =
+      item.price && item.price > 0
+        ? item.price
+        : prod?.price && prod.price > 0
+        ? prod.price
+        : 50000;
+    const name = item.name || prod?.name || 'Produk Bayi';
     const description = prod?.description || 'Kebutuhan Bayi & Anak';
 
     totalWeightGram += weight * qty;

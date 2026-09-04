@@ -4,6 +4,12 @@ export const shippingRateItemSchema = z.object({
   productId: z.string().min(1, 'Product ID wajib diisi'),
   variantId: z.string().optional().nullable(),
   quantity: z.coerce.number().int().min(1, 'Jumlah produk minimal 1').default(1),
+  weightGram: z.coerce.number().optional().nullable(),
+  dimensionLength: z.coerce.number().optional().nullable(),
+  dimensionWidth: z.coerce.number().optional().nullable(),
+  dimensionHeight: z.coerce.number().optional().nullable(),
+  name: z.string().optional().nullable(),
+  price: z.coerce.number().optional().nullable(),
 });
 
 export const calculateShippingRatesSchema = z.object({

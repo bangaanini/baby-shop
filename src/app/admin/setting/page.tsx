@@ -30,6 +30,15 @@ import {
   CheckCheck,
   RotateCcw,
   ArrowRight,
+  Search,
+  Calculator,
+  Radio,
+  Scale,
+  Box,
+  Package,
+  Sliders,
+  ChevronRight,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface StoreProfile {
@@ -76,6 +85,35 @@ interface R2StorageInfo {
   maxUploadSize: string;
 }
 
+interface BiteshipConfigInfo {
+  isConfigured: boolean;
+  origin: {
+    postalCode: string;
+    city: string;
+    province: string;
+  };
+  apiKeyMasked: string;
+}
+
+interface ShippingRateOption {
+  courierCode: string;
+  courierName: string;
+  serviceCode: string;
+  serviceName: string;
+  cost: number;
+  etd: string;
+  description?: string;
+  isAvailable?: boolean;
+}
+
+interface ShippingCalculationResult {
+  rates: ShippingRateOption[];
+  totalWeightGram: number;
+  totalVolumeWeightGram: number;
+  chargeableWeightKg: number;
+  isLiveBiteship: boolean;
+}
+
 const DEFAULT_PROFILE: StoreProfile = {
   storeName: 'BabyKids Official Store',
   tagline: 'Pusat Perlengkapan Bayi & Anak Terlengkap #1 Indonesia',
@@ -112,6 +150,69 @@ const DEFAULT_PAYMENTS: PaymentSettings = {
   gopay: true,
 };
 
+const SAMPLE_PRODUCTS = [
+  {
+    id: 'sample-1',
+    name: 'Pakaian & Kaos Kaki Bayi (Ringan)',
+    weightGram: 300,
+    length: 15,
+    width: 10,
+    height: 5,
+    badge: '300 gr (Kecil)',
+    description: 'Baju katun jumper & kaos kaki lembut bayi',
+  },
+  {
+    id: 'sample-2',
+    name: 'Botol Susu Anti-Kolik & Dot',
+    weightGram: 500,
+    length: 15,
+    width: 15,
+    height: 10,
+    badge: '500 gr (Standar)',
+    description: 'Botol susu silicone anti-kolik 240ml',
+  },
+  {
+    id: 'sample-3',
+    name: 'Paket Perlengkapan Bayi Standar (1.5 kg)',
+    weightGram: 1500,
+    length: 20,
+    width: 15,
+    height: 10,
+    badge: '1.500 gr (Sedang)',
+    description: 'Setelan piyama, selimut, dan perlengkapan mandi',
+  },
+  {
+    id: 'sample-4',
+    name: 'Mainan Montessori Balok Kayu',
+    weightGram: 2500,
+    length: 30,
+    width: 20,
+    height: 15,
+    badge: '2.500 gr (Padat)',
+    description: 'Balok kayu natural 50 pcs dalam wadah kotak kayu',
+  },
+  {
+    id: 'sample-5',
+    name: 'Stroller Lipat Travel Baby Orbit (Barang Besar)',
+    weightGram: 6500,
+    length: 60,
+    width: 40,
+    height: 25,
+    badge: '6.500 gr (Volumetrik 10 kg)',
+    description: 'Kereta dorong lipat kanopi kabin-pesawat',
+  },
+];
+
+const QUICK_DESTINATIONS = [
+  { city: 'Surabaya', postalCode: '60189', province: 'Jawa Timur', label: 'Surabaya (60189)' },
+  { city: 'Bandung', postalCode: '40115', province: 'Jawa Barat', label: 'Bandung (40115)' },
+  { city: 'Semarang', postalCode: '50134', province: 'Jawa Tengah', label: 'Semarang (50134)' },
+  { city: 'Medan', postalCode: '20111', province: 'Sumatera Utara', label: 'Medan (20111)' },
+  { city: 'Makassar', postalCode: '90111', province: 'Sulawesi Selatan', label: 'Makassar (90111)' },
+  { city: 'Denpasar', postalCode: '80111', province: 'Bali', label: 'Denpasar (80111)' },
+  { city: 'Jakarta Barat', postalCode: '11470', province: 'DKI Jakarta', label: 'Jakarta (11470)' },
+];
+
 const STORAGE_KEY = 'babykids_seller_settings_v1';
 
 export default function AdminSettingPage() {
@@ -131,6 +232,37 @@ export default function AdminSettingPage() {
     protocol: 'S3 API Protocol v4',
     maxUploadSize: '5 MB per file',
   });
+
+  // Biteship info from server
+  const [biteshipInfo, setBiteshipInfo] = useState<BiteshipConfigInfo>({
+    isConfigured: false,
+    origin: {
+      postalCode: '12160',
+      city: 'Jakarta Selatan',
+      province: 'DKI Jakarta',
+    },
+    apiKeyMasked: 'Belum Dikonfigurasi',
+  });
+
+  // Biteship Live Rates Tester State
+  const [testCity, setTestCity] = useState<string>('Surabaya');
+  const [testPostalCode, setTestPostalCode] = useState<string>('60189');
+  const [testWeightGram, setTestWeightGram] = useState<number>(1500);
+  const [testLengthCm, setTestLengthCm] = useState<number>(20);
+  const [testWidthCm, setTestWidthCm] = useState<number>(15);
+  const [testHeightCm, setTestHeightCm] = useState<number>(10);
+  const [testItemName, setTestItemName] = useState<string>('Paket Perlengkapan Bayi Standar');
+  const [testSelectedPresetId, setTestSelectedPresetId] = useState<string>('sample-3');
+  const [testCouriers, setTestCouriers] = useState<{ [key: string]: boolean }>({
+    sicepat: true,
+    jne: true,
+    jnt: true,
+    anteraja: true,
+  });
+
+  const [isTestingRates, setIsTestingRates] = useState<boolean>(false);
+  const [testError, setTestError] = useState<string | null>(null);
+  const [testResult, setTestResult] = useState<ShippingCalculationResult | null>(null);
 
   // UI state
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -154,16 +286,76 @@ export default function AdminSettingPage() {
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  // Fetch initial R2 and stored settings
+  // Format currency helper
+  const formatRupiah = (amount: number) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR',
+      maximumFractionDigits: 0,
+    }).format(amount);
+  };
+
+  // Get courier styling
+  const getCourierBadgeStyle = (courierCode: string) => {
+    const code = (courierCode || '').toLowerCase();
+    if (code.includes('sicepat')) {
+      return {
+        bg: 'bg-red-50',
+        text: 'text-red-700',
+        border: 'border-red-200',
+        pillBg: 'bg-red-600',
+        logo: 'SiCepat',
+      };
+    }
+    if (code.includes('jne')) {
+      return {
+        bg: 'bg-blue-50',
+        text: 'text-blue-700',
+        border: 'border-blue-200',
+        pillBg: 'bg-blue-700',
+        logo: 'JNE',
+      };
+    }
+    if (code.includes('jnt') || code.includes('j&t')) {
+      return {
+        bg: 'bg-rose-50',
+        text: 'text-rose-700',
+        border: 'border-rose-200',
+        pillBg: 'bg-rose-600',
+        logo: 'J&T',
+      };
+    }
+    if (code.includes('anteraja')) {
+      return {
+        bg: 'bg-fuchsia-50',
+        text: 'text-fuchsia-700',
+        border: 'border-fuchsia-200',
+        pillBg: 'bg-fuchsia-600',
+        logo: 'Anteraja',
+      };
+    }
+    return {
+      bg: 'bg-slate-50',
+      text: 'text-slate-700',
+      border: 'border-slate-200',
+      pillBg: 'bg-slate-700',
+      logo: courierCode.toUpperCase(),
+    };
+  };
+
+  // Fetch initial R2, Biteship, and stored settings
   const loadSettings = useCallback(async () => {
     setIsLoading(true);
     try {
-      // 1. Fetch server R2 config status
+      // 1. Fetch server config status
       const res = await fetch('/api/admin/settings');
       if (res.ok) {
         const json = await res.json();
         if (json?.data?.r2) {
           setR2Info(json.data.r2);
+        }
+        if (json?.data?.biteship) {
+          setBiteshipInfo(json.data.biteship);
         }
       }
 
@@ -231,6 +423,82 @@ export default function AdminSettingPage() {
     }
   };
 
+  // Preset sample product change
+  const handleApplyPreset = (presetId: string) => {
+    setTestSelectedPresetId(presetId);
+    const found = SAMPLE_PRODUCTS.find((p) => p.id === presetId);
+    if (found) {
+      setTestItemName(found.name);
+      setTestWeightGram(found.weightGram);
+      setTestLengthCm(found.length);
+      setTestWidthCm(found.width);
+      setTestHeightCm(found.height);
+    }
+  };
+
+  // Quick destination select
+  const handleApplyQuickDestination = (dest: { city: string; postalCode: string }) => {
+    setTestCity(dest.city);
+    setTestPostalCode(dest.postalCode);
+  };
+
+  // Run live shipping rates test
+  const handleRunShippingTest = async () => {
+    if (!testCity.trim() && !testPostalCode.trim()) {
+      setTestError('Mohon isi minimal Kota / Kabupaten atau Kode Pos tujuan pengiriman');
+      return;
+    }
+    if (testWeightGram <= 0) {
+      setTestError('Berat paket harus lebih dari 0 gram');
+      return;
+    }
+
+    setIsTestingRates(true);
+    setTestError(null);
+
+    try {
+      const activeCouriers = Object.entries(testCouriers)
+        .filter(([, active]) => active)
+        .map(([code]) => code);
+
+      const payload = {
+        destinationCity: testCity.trim() || undefined,
+        destinationPostalCode: testPostalCode.trim() || undefined,
+        items: [
+          {
+            productId: 'biteship-tester-item',
+            name: testItemName.trim() || 'Paket Uji Coba Produk Bayi',
+            weightGram: Number(testWeightGram) || 500,
+            dimensionLength: Number(testLengthCm) || 10,
+            dimensionWidth: Number(testWidthCm) || 10,
+            dimensionHeight: Number(testHeightCm) || 10,
+            quantity: 1,
+          },
+        ],
+        courierCodes: activeCouriers.length > 0 ? activeCouriers : undefined,
+      };
+
+      const res = await fetch('/api/shipping/rates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || 'Gagal menghitung tarif kurir pengiriman');
+      }
+
+      setTestResult(json.data);
+      triggerToast('✨ Berhasil mendapatkan tarif kurir pengiriman real-time!');
+    } catch (err: any) {
+      setTestError(err.message || 'Terjadi kesalahan saat menghubungi API tarif pengiriman');
+      setTestResult(null);
+    } finally {
+      setIsTestingRates(false);
+    }
+  };
+
   return (
     <div className="space-y-8 pb-16">
       {/* Toast Notification */}
@@ -273,7 +541,7 @@ export default function AdminSettingPage() {
             )}
           </div>
           <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            Konfigurasi profil toko, titik gudang asal ekspedisi kurir se-Indonesia, metode pembayaran, dan integrasi penyimpanan cloud.
+            Konfigurasi profil toko, titik gudang asal ekspedisi kurir se-Indonesia, metode pembayaran, simulasi tarif Biteship API, dan integrasi penyimpanan cloud.
           </p>
         </div>
 
@@ -282,7 +550,7 @@ export default function AdminSettingPage() {
           <button
             type="button"
             onClick={handleResetDefaults}
-            className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-semibold text-xs sm:text-sm transition-all flex items-center gap-2"
+            className="px-4 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-semibold text-xs sm:text-sm transition-all flex items-center gap-2 cursor-pointer"
           >
             <RotateCcw className="w-4 h-4 text-slate-400" />
             <span>Reset Default</span>
@@ -308,7 +576,7 @@ export default function AdminSettingPage() {
         </div>
       </div>
 
-      {/* Main Content: 2-Column / Stacked Layout */}
+      {/* Main Content: 2-Column Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* ========================================================================= */}
         {/* CARD 1: Profil & Identitas Toko */}
@@ -353,10 +621,10 @@ export default function AdminSettingPage() {
               </div>
             </div>
 
-            {/* Tagline Toko */}
+            {/* Slogan / Tagline */}
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Tagline Slogan Toko
+                Slogan / Tagline Toko
               </label>
               <input
                 type="text"
@@ -365,70 +633,82 @@ export default function AdminSettingPage() {
                   setProfile({ ...profile, tagline: e.target.value });
                   setHasUnsavedChanges(true);
                 }}
-                placeholder="Pusat Perlengkapan Bayi & Anak Terlengkap #1 Indonesia"
+                placeholder="Pusat Perlengkapan Bayi & Anak Terlengkap"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all"
               />
             </div>
 
-            {/* Grid: Email & WhatsApp */}
+            {/* CS Email & WA */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <Mail className="w-3.5 h-3.5 text-slate-400" />
-                  Email Customer Service
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Email Layanan Pelanggan <span className="text-rose-500">*</span>
                 </label>
-                <input
-                  type="email"
-                  value={profile.customerServiceEmail}
-                  onChange={(e) => {
-                    setProfile({ ...profile, customerServiceEmail: e.target.value });
-                    setHasUnsavedChanges(true);
-                  }}
-                  placeholder="support@babykids.id"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all"
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="email"
+                    value={profile.customerServiceEmail}
+                    onChange={(e) => {
+                      setProfile({ ...profile, customerServiceEmail: e.target.value });
+                      setHasUnsavedChanges(true);
+                    }}
+                    placeholder="support@babykids.id"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5 text-emerald-500" />
-                  Nomor WhatsApp Toko
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                  Nomor WhatsApp CS <span className="text-rose-500">*</span>
                 </label>
-                <input
-                  type="text"
-                  value={profile.whatsappNumber}
-                  onChange={(e) => {
-                    setProfile({ ...profile, whatsappNumber: e.target.value });
-                    setHasUnsavedChanges(true);
-                  }}
-                  placeholder="+62 812-3456-7890"
-                  className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all"
-                />
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                    <Phone className="w-4 h-4" />
+                  </div>
+                  <input
+                    type="text"
+                    value={profile.whatsappNumber}
+                    onChange={(e) => {
+                      setProfile({ ...profile, whatsappNumber: e.target.value });
+                      setHasUnsavedChanges(true);
+                    }}
+                    placeholder="+62 812-3456-7890"
+                    className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all"
+                  />
+                </div>
               </div>
             </div>
 
-            {/* Jam Buka Toko */}
+            {/* Jam Operasional */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-indigo-500" />
-                Jam Buka & Layanan Toko
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Jam Operasional Toko
               </label>
-              <input
-                type="text"
-                value={profile.operationalHours}
-                onChange={(e) => {
-                  setProfile({ ...profile, operationalHours: e.target.value });
-                  setHasUnsavedChanges(true);
-                }}
-                placeholder="Senin - Minggu, 08:00 - 21:00 WIB"
-                className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all"
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                  <Clock className="w-4 h-4" />
+                </div>
+                <input
+                  type="text"
+                  value={profile.operationalHours}
+                  onChange={(e) => {
+                    setProfile({ ...profile, operationalHours: e.target.value });
+                    setHasUnsavedChanges(true);
+                  }}
+                  placeholder="Senin - Minggu, 08:00 - 21:00 WIB"
+                  className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all"
+                />
+              </div>
             </div>
 
             {/* Deskripsi Toko */}
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Deskripsi Singkat Toko
+                Deskripsi Profil Toko
               </label>
               <textarea
                 rows={3}
@@ -437,6 +717,7 @@ export default function AdminSettingPage() {
                   setProfile({ ...profile, storeDescription: e.target.value });
                   setHasUnsavedChanges(true);
                 }}
+                placeholder="Tuliskan deskripsi singkat mengenai toko Anda..."
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all resize-none"
               />
             </div>
@@ -444,7 +725,7 @@ export default function AdminSettingPage() {
         </div>
 
         {/* ========================================================================= */}
-        {/* CARD 2: Lokasi Gudang Pengiriman (Origin Address for Shipping Calculator) */}
+        {/* CARD 2: Lokasi Titik Gudang Pengiriman (Warehouse Origin) */}
         {/* ========================================================================= */}
         <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden flex flex-col">
           <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
@@ -454,33 +735,23 @@ export default function AdminSettingPage() {
               </div>
               <div>
                 <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
-                  Lokasi Gudang Pengiriman
+                  Lokasi Titik Gudang Pengiriman
                 </h2>
                 <p className="text-xs text-slate-500">
-                  Origin Address untuk kalkulasi tarif ongkos kirim real-time se-Indonesia.
+                  Alamat asal pengiriman paket (Origin) untuk kalkulasi tarif ekspedisi & kurir.
                 </p>
               </div>
             </div>
             <span className="text-[11px] font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
-              Origin Hub
+              Titik Origin Kurir
             </span>
           </div>
 
           <div className="p-6 space-y-4 sm:space-y-5 flex-1">
-            {/* Note banner */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-50 to-orange-50/60 border border-amber-200/80 text-amber-900 flex items-start gap-3 shadow-xs">
-              <div className="w-6 h-6 rounded-lg bg-amber-200/60 text-amber-800 flex items-center justify-center shrink-0 mt-0.5 font-bold">
-                <Info className="w-4 h-4" />
-              </div>
-              <p className="text-xs sm:text-sm font-medium leading-relaxed">
-                Alamat ini digunakan sebagai titik keberangkatan kurir ekspres ke seluruh 38 provinsi di Indonesia.
-              </p>
-            </div>
-
             {/* Nama Gudang */}
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Nama Gudang Pengiriman <span className="text-rose-500">*</span>
+                Nama Gudang / Cabang <span className="text-rose-500">*</span>
               </label>
               <input
                 type="text"
@@ -489,12 +760,12 @@ export default function AdminSettingPage() {
                   setWarehouse({ ...warehouse, warehouseName: e.target.value });
                   setHasUnsavedChanges(true);
                 }}
-                placeholder="Contoh: Gudang Utama BabyKids Jakarta"
+                placeholder="Gudang Utama BabyKids Jakarta"
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all"
               />
             </div>
 
-            {/* Grid: Provinsi & Kota */}
+            {/* Provinsi & Kota */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
@@ -514,7 +785,7 @@ export default function AdminSettingPage() {
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                  Kota / Kabupaten <span className="text-rose-500">*</span>
+                  Kota / Kabupaten Asal <span className="text-rose-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -529,7 +800,7 @@ export default function AdminSettingPage() {
               </div>
             </div>
 
-            {/* Grid: Kecamatan & Kode Pos */}
+            {/* Kecamatan & Kode Pos */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
@@ -576,7 +847,7 @@ export default function AdminSettingPage() {
                   setWarehouse({ ...warehouse, fullAddress: e.target.value });
                   setHasUnsavedChanges(true);
                 }}
-                placeholder="Jalan, RT/RW, Patokan..."
+                placeholder="Tuliskan nama jalan, gedung, nomor ruko, RT/RW, dan patokan..."
                 className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 focus:bg-white transition-all resize-none"
               />
             </div>
@@ -839,7 +1110,7 @@ export default function AdminSettingPage() {
                     </span>
                   </div>
                   <p className="text-xs text-slate-500">
-                    Nomor rekening virtual unik per order via myBCA, BCA Mobile, KlikBCA & ATM.
+                    Konfirmasi pembayaran real-time melalui myBCA, BCA mobile, KlikBCA, dan ATM BCA.
                   </p>
                 </div>
               </div>
@@ -860,18 +1131,18 @@ export default function AdminSettingPage() {
             {/* Mandiri Virtual Account */}
             <div className="flex items-center justify-between pt-4">
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-2xl bg-amber-500/10 text-amber-700 flex items-center justify-center font-black text-xs shrink-0 border border-amber-200/60">
+                <div className="w-11 h-11 rounded-2xl bg-indigo-500/10 text-indigo-700 flex items-center justify-center font-black text-xs shrink-0 border border-indigo-200/60">
                   Mandiri
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-slate-900">Mandiri Virtual Account</h3>
-                    <span className="text-[10px] bg-amber-50 text-amber-700 font-extrabold px-2 py-0.5 rounded-md border border-amber-200">
-                      LIVIN' & ATM
+                    <h3 className="text-sm font-bold text-slate-900">Mandiri Livin Virtual Account</h3>
+                    <span className="text-[10px] bg-indigo-50 text-indigo-700 font-extrabold px-2 py-0.5 rounded-md border border-indigo-200">
+                      LIVIN' BY MANDIRI
                     </span>
                   </div>
                   <p className="text-xs text-slate-500">
-                    Pembayaran instan melalui aplikasi Livin' by Mandiri dan ATM Mandiri se-Indonesia.
+                    Nomor VA khusus pelanggan Mandiri dengan deteksi pelunasan instan.
                   </p>
                 </div>
               </div>
@@ -957,7 +1228,472 @@ export default function AdminSettingPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* CARD 5: Status Penyimpanan Cloudflare R2 Storage (Full Width) */}
+      {/* CARD 5: Uji Cek Tarif Kurir Live (Biteship API Tester) - Full Width */}
+      {/* ========================================================================= */}
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
+        {/* Tester Header */}
+        <div className="p-6 sm:p-7 border-b border-slate-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4 bg-slate-50/50">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 text-white flex items-center justify-center font-bold shadow-md shadow-rose-500/20 shrink-0">
+              <Calculator className="w-6 h-6" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                  Uji Cek Tarif Kurir Live (Biteship API Tester)
+                </h2>
+                {/* Live Biteship vs Fallback Indicator */}
+                {biteshipInfo.isConfigured ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    🟢 Live Biteship API Terhubung
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                    <span className="w-2 h-2 rounded-full bg-amber-500" />
+                    🟡 Smart Fallback Multi-Kurir Aktif
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-slate-500 mt-1">
+                Simulasikan kalkulasi tarif pengiriman real-time dari Gudang Asal ({warehouse.city || 'Jakarta Selatan'}) ke seluruh kota & kecamatan tujuan di Indonesia.
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="text-xs bg-slate-100 border border-slate-200 text-slate-600 px-3.5 py-2 rounded-xl flex items-center gap-2 font-medium">
+              <MapPin className="w-4 h-4 text-rose-500" />
+              <span>
+                Asal: <strong>{warehouse.city || 'Jakarta Selatan'} ({warehouse.postalCode || '12160'})</strong>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-6 sm:p-7 space-y-7">
+          {/* Section 1: Tester Form Controls */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Left Column: Destination Location (5 cols) */}
+            <div className="lg:col-span-5 space-y-4 p-5 rounded-2xl bg-slate-50/70 border border-slate-200/70 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
+                  <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-rose-500" />
+                    1. Tujuan Pengiriman Paket
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-semibold">Tujuan Domestik</span>
+                </div>
+
+                {/* Quick Destination Chips */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">
+                    Pilihan Cepat Kota Tujuan:
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {QUICK_DESTINATIONS.map((dest) => {
+                      const isSelected = testCity === dest.city;
+                      return (
+                        <button
+                          key={dest.city}
+                          type="button"
+                          onClick={() => handleApplyQuickDestination(dest)}
+                          className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-rose-500 text-white shadow-xs'
+                              : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-100'
+                          }`}
+                        >
+                          {dest.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Inputs for City and Postal Code */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Kota / Kabupaten <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={testCity}
+                      onChange={(e) => setTestCity(e.target.value)}
+                      placeholder="Surabaya"
+                      className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Kode Pos Tujuan <span className="text-rose-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={testPostalCode}
+                      onChange={(e) => setTestPostalCode(e.target.value)}
+                      placeholder="60189"
+                      className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Kurir Checkboxes */}
+              <div className="pt-3 border-t border-slate-200/80">
+                <label className="block text-[11px] font-bold text-slate-600 uppercase tracking-wider mb-2">
+                  Ekspedisi yang Disimulasikan:
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    { key: 'sicepat', label: 'SiCepat' },
+                    { key: 'jne', label: 'JNE' },
+                    { key: 'jnt', label: 'J&T' },
+                    { key: 'anteraja', label: 'Anteraja' },
+                  ].map((c) => (
+                    <label
+                      key={c.key}
+                      className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border transition-all cursor-pointer select-none ${
+                        testCouriers[c.key]
+                          ? 'bg-rose-50 border-rose-300 text-rose-700'
+                          : 'bg-white border-slate-200 text-slate-400'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={!!testCouriers[c.key]}
+                        onChange={(e) =>
+                          setTestCouriers({ ...testCouriers, [c.key]: e.target.checked })
+                        }
+                        className="rounded text-rose-600 focus:ring-rose-500 h-3.5 w-3.5"
+                      />
+                      <span>{c.label}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column: Sample Product Presets & Package Dimensions (7 cols) */}
+            <div className="lg:col-span-7 space-y-4 p-5 rounded-2xl bg-slate-50/70 border border-slate-200/70 flex flex-col justify-between">
+              <div className="space-y-4">
+                <div className="flex items-center justify-between border-b border-slate-200/80 pb-2.5">
+                  <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                    <Box className="w-3.5 h-3.5 text-rose-500" />
+                    2. Pilihan Produk Contoh & Dimensi Paket
+                  </span>
+                  <span className="text-[10px] text-slate-400 font-semibold">Aktual vs Volumetrik</span>
+                </div>
+
+                {/* Preset Dropdown Selector */}
+                <div>
+                  <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5">
+                    Gunakan Contoh Produk Katalog Bayi:
+                  </label>
+                  <select
+                    value={testSelectedPresetId}
+                    onChange={(e) => handleApplyPreset(e.target.value)}
+                    className="w-full px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 transition-all cursor-pointer"
+                  >
+                    {SAMPLE_PRODUCTS.map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} — {p.badge}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Name of Product */}
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                    Nama Paket / Deskripsi
+                  </label>
+                  <input
+                    type="text"
+                    value={testItemName}
+                    onChange={(e) => setTestItemName(e.target.value)}
+                    placeholder="Nama paket contoh..."
+                    className="w-full px-3.5 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-medium text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 transition-all"
+                  />
+                </div>
+
+                {/* Weight and Dimensions in Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Berat (Gram)
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={testWeightGram}
+                      onChange={(e) => setTestWeightGram(Math.max(1, Number(e.target.value)))}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Panjang (cm)
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={testLengthCm}
+                      onChange={(e) => setTestLengthCm(Math.max(1, Number(e.target.value)))}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Lebar (cm)
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={testWidthCm}
+                      onChange={(e) => setTestWidthCm(Math.max(1, Number(e.target.value)))}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 transition-all"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Tinggi (cm)
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      value={testHeightCm}
+                      onChange={(e) => setTestHeightCm(Math.max(1, Number(e.target.value)))}
+                      className="w-full px-3 py-2 bg-white border border-slate-200 rounded-xl text-xs sm:text-sm font-bold text-slate-900 focus:outline-hidden focus:ring-2 focus:ring-rose-500 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Run Button */}
+              <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between gap-3">
+                <div className="text-[11px] text-slate-500">
+                  Volumetrik: <strong>{(((testLengthCm * testWidthCm * testHeightCm) / 6000) * 1000).toFixed(0)} gram</strong>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleRunShippingTest}
+                  disabled={isTestingRates}
+                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-extrabold text-xs sm:text-sm shadow-md shadow-rose-500/25 transition-all flex items-center gap-2 disabled:opacity-60 cursor-pointer"
+                >
+                  {isTestingRates ? (
+                    <>
+                      <RefreshCw className="w-4 h-4 animate-spin" />
+                      <span>Menghitung Tarif Real-Time...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Search className="w-4 h-4" />
+                      <span>Cek Tarif Pengiriman Real-Time</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Section 2: Error Notification */}
+          {testError && (
+            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-900 flex items-start gap-3 animate-in fade-in">
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+              <div>
+                <h4 className="text-xs sm:text-sm font-bold">Kalkulasi Tarif Pengiriman Gagal</h4>
+                <p className="text-xs text-rose-700 mt-0.5">{testError}</p>
+              </div>
+            </div>
+          )}
+
+          {/* Section 3: Chargeable Weight Calculation Metric Cards */}
+          {testResult && (
+            <div className="space-y-4 animate-in fade-in slide-in-from-top-3 duration-300">
+              <div className="flex items-center justify-between border-b border-slate-200/80 pb-2">
+                <h3 className="text-xs sm:text-sm font-black text-slate-900 uppercase tracking-wider flex items-center gap-2">
+                  <Scale className="w-4 h-4 text-rose-500" />
+                  <span>Analisis Berat & Tarif Ekspedisi ({testResult.rates.length} Opsi Layanan Ditemukan)</span>
+                </h3>
+                <span
+                  className={`text-[11px] font-extrabold px-3 py-1 rounded-full border ${
+                    testResult.isLiveBiteship
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-amber-50 text-amber-700 border-amber-200'
+                  }`}
+                >
+                  {testResult.isLiveBiteship
+                    ? '🟢 Sumber: Live Biteship API'
+                    : '🟡 Sumber: Smart Fallback Engine'}
+                </span>
+              </div>
+
+              {/* Metric Breakdown Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Metric 1: Berat Aktual */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    Berat Aktual Paket
+                  </div>
+                  <div className="text-base sm:text-lg font-black text-slate-900">
+                    {testResult.totalWeightGram.toLocaleString('id-ID')} gram
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium">
+                    {(testResult.totalWeightGram / 1000).toFixed(2)} kg (Berat Fisik Timbangan)
+                  </div>
+                </div>
+
+                {/* Metric 2: Berat Volumetrik */}
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    Berat Volumetrik
+                  </div>
+                  <div className="text-base sm:text-lg font-black text-slate-900">
+                    {testResult.totalVolumeWeightGram.toLocaleString('id-ID')} gram
+                  </div>
+                  <div className="text-[11px] text-slate-500 font-medium">
+                    Rumus: ({testLengthCm}×{testWidthCm}×{testHeightCm}) / 6.000 kg
+                  </div>
+                </div>
+
+                {/* Metric 3: Chargeable Weight (Ditagih Kurir) */}
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-rose-500/10 to-pink-500/10 border border-rose-200 space-y-1">
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-rose-700">
+                    Berat Ditagih (Chargeable)
+                  </div>
+                  <div className="text-base sm:text-lg font-black text-rose-600">
+                    {testResult.chargeableWeightKg} Kilogram
+                  </div>
+                  <div className="text-[11px] text-rose-700/80 font-medium">
+                    Max(Aktual, Volumetrik) dibulatkan ke atas
+                  </div>
+                </div>
+              </div>
+
+              {/* Rates Results Table / List */}
+              <div className="overflow-x-auto rounded-2xl border border-slate-200 shadow-2xs">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="bg-slate-50 border-b border-slate-200 text-[11px] uppercase tracking-wider font-extrabold text-slate-600">
+                      <th className="py-3 px-4">Ekspedisi Kurir</th>
+                      <th className="py-3 px-4">Layanan & Tipe</th>
+                      <th className="py-3 px-4">Estimasi Sampai (ETD)</th>
+                      <th className="py-3 px-4">Biaya Ongkir</th>
+                      <th className="py-3 px-4 text-center">Status Tarif</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 bg-white text-xs sm:text-sm">
+                    {testResult.rates.map((rate, idx) => {
+                      const badgeStyle = getCourierBadgeStyle(rate.courierCode);
+                      return (
+                        <tr
+                          key={`${rate.courierCode}-${rate.serviceCode}-${idx}`}
+                          className="hover:bg-slate-50/80 transition-colors"
+                        >
+                          {/* Courier Name & Logo */}
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-2.5">
+                              <span
+                                className={`px-2.5 py-1 rounded-lg text-xs font-black text-white ${badgeStyle.pillBg}`}
+                              >
+                                {badgeStyle.logo}
+                              </span>
+                              <div>
+                                <div className="font-bold text-slate-900">{rate.courierName}</div>
+                                <div className="text-[11px] text-slate-400 font-mono">
+                                  {rate.courierCode.toLowerCase()}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+
+                          {/* Service */}
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className="font-extrabold text-slate-900">{rate.serviceName}</span>
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200 font-mono">
+                                {rate.serviceCode}
+                              </span>
+                            </div>
+                            {rate.description && (
+                              <div className="text-[11px] text-slate-500 mt-0.5 line-clamp-1">
+                                {rate.description}
+                              </div>
+                            )}
+                          </td>
+
+                          {/* ETD */}
+                          <td className="py-3.5 px-4">
+                            <div className="inline-flex items-center gap-1 text-slate-700 font-semibold text-xs">
+                              <Clock className="w-3.5 h-3.5 text-slate-400" />
+                              <span>{rate.etd}</span>
+                            </div>
+                          </td>
+
+                          {/* Cost */}
+                          <td className="py-3.5 px-4">
+                            <div className="text-sm sm:text-base font-black text-rose-600">
+                              {formatRupiah(rate.cost)}
+                            </div>
+                          </td>
+
+                          {/* Live vs Fallback Badge */}
+                          <td className="py-3.5 px-4 text-center">
+                            {testResult.isLiveBiteship ? (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                                🟢 Live Biteship
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-700 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                                🟡 Smart Fallback
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Initial State Placeholder when not tested yet */}
+          {!testResult && !isTestingRates && !testError && (
+            <div className="p-8 rounded-2xl bg-slate-50/60 border-2 border-dashed border-slate-200 text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center mx-auto">
+                <Truck className="w-6 h-6" />
+              </div>
+              <div className="max-w-md mx-auto">
+                <h4 className="text-sm font-bold text-slate-900">
+                  Siap Melakukan Pengujian Tarif Kurir
+                </h4>
+                <p className="text-xs text-slate-500 mt-1">
+                  Pilih kota tujuan dan produk contoh di atas, lalu klik tombol{' '}
+                  <strong className="text-rose-600">"Cek Tarif Pengiriman Real-Time"</strong> untuk memvalidasi integrasi kurir Biteship & modul kalkulasi logistik.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleRunShippingTest}
+                className="mt-2 px-5 py-2 rounded-xl bg-slate-900 text-white hover:bg-slate-800 text-xs font-bold inline-flex items-center gap-2 transition-all cursor-pointer"
+              >
+                <Search className="w-3.5 h-3.5" />
+                <span>Mulai Simulasi Cek Tarif Sekarang</span>
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ========================================================================= */}
+      {/* CARD 6: Status Penyimpanan Cloudflare R2 Storage (Full Width) */}
       {/* ========================================================================= */}
       <div className="bg-white rounded-3xl border border-slate-200/80 shadow-xs overflow-hidden">
         <div className="p-6 sm:p-7 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-slate-50/50">
@@ -993,7 +1729,7 @@ export default function AdminSettingPage() {
             <button
               type="button"
               onClick={loadSettings}
-              className="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-xs font-semibold flex items-center gap-1.5 transition-all"
+              className="px-3.5 py-2 rounded-xl border border-slate-200 hover:bg-slate-100 text-slate-600 text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Cek Koneksi</span>
@@ -1002,7 +1738,7 @@ export default function AdminSettingPage() {
               href="https://dash.cloudflare.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-3.5 py-2 rounded-xl bg-orange-50 hover:bg-orange-100/80 text-orange-700 text-xs font-bold flex items-center gap-1.5 border border-orange-200 transition-all"
+              className="px-3.5 py-2 rounded-xl bg-orange-50 hover:bg-orange-100/80 text-orange-700 text-xs font-bold flex items-center gap-1.5 border border-orange-200 transition-all cursor-pointer"
             >
               <ExternalLink className="w-3.5 h-3.5" />
               <span>Buka Cloudflare Dash</span>
@@ -1047,12 +1783,12 @@ export default function AdminSettingPage() {
             {/* Info 1: Bucket Name */}
             <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
               <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
-                <span>Nama Bucket</span>
+                <span>R2 Bucket Name</span>
                 <button
                   type="button"
                   onClick={() => copyToClipboard(r2Info.bucketName, 'bucket')}
-                  className="text-slate-400 hover:text-slate-700"
-                  title="Salin nama bucket"
+                  className="text-slate-400 hover:text-slate-700 cursor-pointer"
+                  title="Salin Nama Bucket"
                 >
                   {copiedKey === 'bucket' ? <CheckCheck className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                 </button>
@@ -1070,7 +1806,7 @@ export default function AdminSettingPage() {
                 <button
                   type="button"
                   onClick={() => copyToClipboard(r2Info.publicUrl, 'cdn')}
-                  className="text-slate-400 hover:text-slate-700"
+                  className="text-slate-400 hover:text-slate-700 cursor-pointer"
                   title="Salin CDN URL"
                 >
                   {copiedKey === 'cdn' ? <CheckCheck className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
@@ -1131,7 +1867,7 @@ export default function AdminSettingPage() {
           <button
             type="button"
             onClick={handleResetDefaults}
-            className="px-4 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 font-semibold text-xs sm:text-sm transition-all"
+            className="px-4 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-slate-300 font-semibold text-xs sm:text-sm transition-all cursor-pointer"
           >
             Batal / Reset
           </button>
