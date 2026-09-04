@@ -99,7 +99,7 @@
   - Riwayat pesanan dengan filter status (Semua, Menunggu Pembayaran, Diproses, Dikirim, Selesai, Dibatalkan).
   - Kartu pesanan lengkap dengan nomor invoice, foto produk, kurir, nomor resi, modal pelacakan kurir, tombol konfirmasi terima, dan tombol bayar sekarang.
 
-- [ ] **Step 1: Buat `src/components/user/tabs/OrdersTab.tsx`**
+- [x] **Step 1: Buat `src/components/user/tabs/OrdersTab.tsx`**
 
 ---
 
