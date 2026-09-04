@@ -11,6 +11,10 @@ export const calculateCheckoutSchema = z.object({
   courierCode: z.string().min(1, 'Kode kurir wajib diisi').default('sicepat'),
   courierService: z.string().optional().nullable(),
   voucherCode: z.string().optional().nullable(),
+  destinationPostalCode: z.union([z.string(), z.number()]).optional().nullable(),
+  destinationCity: z.string().optional().nullable(),
+  destinationProvince: z.string().optional().nullable(),
+  destinationDistrict: z.string().optional().nullable(),
 });
 
 export const createOrderSchema = z.object({
@@ -24,6 +28,10 @@ export const createOrderSchema = z.object({
   voucherCode: z.string().optional().nullable(),
   cartId: z.string().optional().nullable(),
   userId: z.string().optional().nullable(),
+  destinationPostalCode: z.union([z.string(), z.number()]).optional().nullable(),
+  destinationCity: z.string().optional().nullable(),
+  destinationProvince: z.string().optional().nullable(),
+  destinationDistrict: z.string().optional().nullable(),
   items: z.array(checkoutItemSchema).min(1, 'Pesanan harus memiliki minimal 1 produk'),
 });
 

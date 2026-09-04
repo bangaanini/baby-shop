@@ -83,7 +83,7 @@ SHIPPING_ORIGIN_PROVINCE="DKI Jakarta"
 - Produces:
   - `checkoutService.calculateOrder` dan `checkoutService.createOrder` mengonsumsi tarif kurir live dari `shippingService`.
 
-- [ ] **Step 1: Update `src/server/services/checkout.service.ts` untuk memanggil `shippingService`**
+- [x] **Step 1: Update `src/server/services/checkout.service.ts` untuk memanggil `shippingService`**
 
 ---
 

@@ -14,6 +14,8 @@ import {
   CalculateCheckoutInput,
   CreateOrderInput,
 } from '@/server/validators/checkout.schema';
+import { calculateRates } from '@/server/services/shipping.service';
+import { ShippingRateOption } from '@/server/validators/shipping.schema';
 
 function isValidUUID(str: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -87,6 +89,121 @@ export function calculateVoucherDiscount(
   };
 }
 
+function extractAddressDetails(
+  shippingAddress?: string | null,
+  explicitPostalCode?: string | number | null,
+  explicitCity?: string | null,
+  explicitProvince?: string | null,
+  explicitDistrict?: string | null
+): {
+  postalCode?: string;
+  city?: string;
+  province?: string;
+  district?: string;
+} {
+  let postalCode =
+    explicitPostalCode !== undefined && explicitPostalCode !== null
+      ? String(explicitPostalCode).trim()
+      : undefined;
+  let city = explicitCity?.trim() || undefined;
+  let province = explicitProvince?.trim() || undefined;
+  let district = explicitDistrict?.trim() || undefined;
+
+  if (!postalCode && shippingAddress) {
+    const postalMatch = shippingAddress.match(/\b\d{5}\b/);
+    if (postalMatch) {
+      postalCode = postalMatch[0];
+    }
+  }
+
+  if (!city && shippingAddress) {
+    const lower = shippingAddress.toLowerCase();
+    const cityKeywords = [
+      'jakarta selatan',
+      'jakarta timur',
+      'jakarta barat',
+      'jakarta pusat',
+      'jakarta utara',
+      'bogor',
+      'depok',
+      'tangerang selatan',
+      'tangerang',
+      'bekasi',
+      'bandung',
+      'surabaya',
+      'semarang',
+      'yogyakarta',
+      'jogja',
+      'solo',
+      'surakarta',
+      'malang',
+      'medan',
+      'denpasar',
+      'makassar',
+      'palembang',
+      'pekanbaru',
+      'batam',
+      'padang',
+      'lampung',
+      'banjarmasin',
+      'pontianak',
+      'samarinda',
+      'balikpapan',
+      'manado',
+    ];
+    for (const kw of cityKeywords) {
+      if (lower.includes(kw)) {
+        city = kw;
+        break;
+      }
+    }
+  }
+
+  return { postalCode, city, province, district };
+}
+
+function findMatchingRate(
+  rates: ShippingRateOption[],
+  courierCode: string,
+  courierService?: string | null
+): ShippingRateOption | undefined {
+  if (!rates || rates.length === 0) return undefined;
+
+  const cCode = (courierCode || '').toLowerCase().trim();
+  const cService = (courierService || '').toLowerCase().trim();
+
+  // 1. Filter by courier code
+  const courierRates = rates.filter(
+    (r) =>
+      r.courierCode.toLowerCase() === cCode ||
+      r.courierCode.toLowerCase().includes(cCode) ||
+      cCode.includes(r.courierCode.toLowerCase())
+  );
+
+  const candidateRates = courierRates.length > 0 ? courierRates : rates;
+
+  // 2. If courierService provided, match service
+  if (cService) {
+    const exactMatch = candidateRates.find(
+      (r) =>
+        r.serviceCode.toLowerCase() === cService ||
+        r.serviceName.toLowerCase() === cService
+    );
+    if (exactMatch) return exactMatch;
+
+    const partialMatch = candidateRates.find(
+      (r) =>
+        r.serviceCode.toLowerCase().includes(cService) ||
+        cService.includes(r.serviceCode.toLowerCase()) ||
+        r.serviceName.toLowerCase().includes(cService) ||
+        cService.includes(r.serviceName.toLowerCase())
+    );
+    if (partialMatch) return partialMatch;
+  }
+
+  return candidateRates[0];
+}
+
 export interface CalculatedItem {
   productId: string;
   variantId: string | null;
@@ -99,6 +216,10 @@ export interface CalculatedItem {
   itemSubtotal: number;
   unitWeightGram: number;
   totalWeightGram: number;
+  dimensionLength?: number;
+  dimensionWidth?: number;
+  dimensionHeight?: number;
+  volumeWeightGram?: number;
   availableStock: number;
 }
 
@@ -107,7 +228,10 @@ export interface CheckoutCalculationResult {
   totalItems: number;
   subtotalProduk: number;
   totalBeratGram: number;
+  totalWeightGram?: number;
+  totalVolumeWeightGram?: number;
   totalBeratKg: number;
+  chargeableWeightKg?: number;
   courierCode: string;
   courierService?: string | null;
   courierRatePerKg: number;
@@ -151,6 +275,7 @@ export async function calculateOrder(
 
   let subtotal = 0;
   let totalWeightGram = 0;
+  let totalVolumeWeightGram = 0;
   const calculatedItems: CalculatedItem[] = [];
 
   for (const item of items) {
@@ -187,7 +312,9 @@ export async function calculateOrder(
       });
 
       if (!variant) {
-        throw new Error(`Varian produk tidak ditemukan atau tidak sesuai untuk produk "${product.name}"`);
+        throw new Error(
+          `Varian produk tidak ditemukan atau tidak sesuai untuk produk "${product.name}"`
+        );
       }
 
       variantColor = variant.color;
@@ -197,11 +324,30 @@ export async function calculateOrder(
     }
 
     const itemSubtotal = unitPrice * item.quantity;
-    const unitWeight = estimateWeightGram(product.name, product.category?.slug);
+    const unitWeight =
+      product.weight_gram && product.weight_gram > 0
+        ? product.weight_gram
+        : estimateWeightGram(product.name, product.category?.slug);
+    const dimLength =
+      product.dimension_length && product.dimension_length > 0
+        ? product.dimension_length
+        : 10;
+    const dimWidth =
+      product.dimension_width && product.dimension_width > 0
+        ? product.dimension_width
+        : 10;
+    const dimHeight =
+      product.dimension_height && product.dimension_height > 0
+        ? product.dimension_height
+        : 10;
+    const unitVolumeWeightGram = Math.round(((dimLength * dimWidth * dimHeight) / 6000) * 1000);
+
     const itemTotalWeight = unitWeight * item.quantity;
+    const itemTotalVolumeWeight = unitVolumeWeightGram * item.quantity;
 
     subtotal += itemSubtotal;
     totalWeightGram += itemTotalWeight;
+    totalVolumeWeightGram += itemTotalVolumeWeight;
 
     calculatedItems.push({
       productId: product.id,
@@ -215,13 +361,61 @@ export async function calculateOrder(
       itemSubtotal,
       unitWeightGram: unitWeight,
       totalWeightGram: itemTotalWeight,
+      dimensionLength: dimLength,
+      dimensionWidth: dimWidth,
+      dimensionHeight: dimHeight,
+      volumeWeightGram: unitVolumeWeightGram,
       availableStock,
     });
   }
 
-  const totalBeratKg = Math.max(1, Math.ceil(totalWeightGram / 1000));
-  const courierRatePerKg = getCourierRate(courierCode, courierService);
-  const ongkir = courierRatePerKg * totalBeratKg;
+  const destinationInfo = extractAddressDetails(
+    undefined,
+    input.destinationPostalCode,
+    input.destinationCity,
+    input.destinationProvince,
+    input.destinationDistrict
+  );
+
+  let shippingResult: Awaited<ReturnType<typeof calculateRates>> | null = null;
+  try {
+    shippingResult = await calculateRates({
+      destinationPostalCode: destinationInfo.postalCode,
+      destinationCity: destinationInfo.city,
+      destinationProvince: destinationInfo.province,
+      destinationDistrict: destinationInfo.district,
+      items: items.map((it) => ({
+        productId: it.productId,
+        variantId: it.variantId,
+        quantity: it.quantity,
+      })),
+      courierCodes: courierCode ? [courierCode] : undefined,
+    });
+  } catch (err) {
+    console.error('[checkoutService] calculateRates error in calculateOrder:', err);
+  }
+
+  const chargeableWeightGram = Math.max(totalWeightGram, totalVolumeWeightGram);
+  const totalBeratKg =
+    shippingResult?.chargeableWeightKg || Math.max(1, Math.ceil(chargeableWeightGram / 1000));
+
+  const matchedRate = shippingResult?.rates
+    ? findMatchingRate(shippingResult.rates, courierCode, courierService)
+    : undefined;
+
+  let ongkir: number;
+  let courierRatePerKg: number;
+  let resolvedCourierService = courierService || null;
+
+  if (matchedRate) {
+    ongkir = matchedRate.cost;
+    courierRatePerKg = Math.round(ongkir / Math.max(1, totalBeratKg));
+    resolvedCourierService = matchedRate.serviceName || matchedRate.serviceCode || courierService || null;
+  } else {
+    courierRatePerKg = getCourierRate(courierCode, courierService);
+    ongkir = courierRatePerKg * totalBeratKg;
+  }
+
   const voucherResult = calculateVoucherDiscount(voucherCode, subtotal);
   const biayaLayanan = 1000;
   const totalBayar = Math.max(0, subtotal + ongkir + biayaLayanan - voucherResult.discountAmount);
@@ -231,9 +425,12 @@ export async function calculateOrder(
     totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
     subtotalProduk: subtotal,
     totalBeratGram: totalWeightGram,
+    totalWeightGram,
+    totalVolumeWeightGram,
+    chargeableWeightKg: totalBeratKg,
     totalBeratKg,
     courierCode,
-    courierService,
+    courierService: resolvedCourierService,
     courierRatePerKg,
     ongkir,
     voucherCode: voucherCode || null,
@@ -272,9 +469,40 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
     throw new Error('Pesanan harus memiliki minimal 1 produk');
   }
 
+  const destinationInfo = extractAddressDetails(
+    shippingAddress,
+    payload.destinationPostalCode,
+    payload.destinationCity,
+    payload.destinationProvince,
+    payload.destinationDistrict
+  );
+
+  let shippingResult: Awaited<ReturnType<typeof calculateRates>> | null = null;
+  try {
+    shippingResult = await calculateRates({
+      destinationPostalCode: destinationInfo.postalCode,
+      destinationCity: destinationInfo.city,
+      destinationProvince: destinationInfo.province,
+      destinationDistrict: destinationInfo.district,
+      items: items.map((it) => ({
+        productId: it.productId,
+        variantId: it.variantId,
+        quantity: it.quantity,
+      })),
+      courierCodes: courierCode ? [courierCode] : undefined,
+    });
+  } catch (err) {
+    console.error('[checkoutService] calculateRates error in createOrder:', err);
+  }
+
+  const matchedRate = shippingResult?.rates
+    ? findMatchingRate(shippingResult.rates, courierCode, courierService)
+    : undefined;
+
   return await db.transaction(async (tx) => {
     let subtotal = 0;
     let totalWeightGram = 0;
+    let totalVolumeWeightGram = 0;
 
     interface ValidatedItemSnapshot {
       productId: string;
@@ -363,9 +591,30 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
         })
         .where(eq(productsTable.id, product.id));
 
-      const itemTotalWeight = estimateWeightGram(product.name, product.category?.slug) * item.quantity;
+      const unitWeight =
+        product.weight_gram && product.weight_gram > 0
+          ? product.weight_gram
+          : estimateWeightGram(product.name, product.category?.slug);
+      const dimLength =
+        product.dimension_length && product.dimension_length > 0
+          ? product.dimension_length
+          : 10;
+      const dimWidth =
+        product.dimension_width && product.dimension_width > 0
+          ? product.dimension_width
+          : 10;
+      const dimHeight =
+        product.dimension_height && product.dimension_height > 0
+          ? product.dimension_height
+          : 10;
+      const unitVolumeWeightGram = Math.round(((dimLength * dimWidth * dimHeight) / 6000) * 1000);
+
+      const itemTotalWeight = unitWeight * item.quantity;
+      const itemTotalVolumeWeight = unitVolumeWeightGram * item.quantity;
+
       subtotal += unitPrice * item.quantity;
       totalWeightGram += itemTotalWeight;
+      totalVolumeWeightGram += itemTotalVolumeWeight;
 
       itemSnapshots.push({
         productId: product.id,
@@ -380,9 +629,18 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
     }
 
     // 2. Cost calculations
-    const totalBeratKg = Math.max(1, Math.ceil(totalWeightGram / 1000));
-    const courierRatePerKg = getCourierRate(courierCode, courierService);
-    const shippingCost = courierRatePerKg * totalBeratKg;
+    const chargeableWeightGram = Math.max(totalWeightGram, totalVolumeWeightGram);
+    const totalBeratKg =
+      shippingResult?.chargeableWeightKg || Math.max(1, Math.ceil(chargeableWeightGram / 1000));
+
+    let shippingCost: number;
+    if (matchedRate) {
+      shippingCost = matchedRate.cost;
+    } else {
+      const courierRatePerKg = getCourierRate(courierCode, courierService);
+      shippingCost = courierRatePerKg * totalBeratKg;
+    }
+
     const voucherResult = calculateVoucherDiscount(voucherCode, subtotal);
     const discountAmount = voucherResult.discountAmount;
     const serviceFee = 1000;
@@ -408,7 +666,7 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
         recipient_phone: recipientPhone,
         shipping_address: shippingAddress,
         courier_code: courierCode,
-        courier_service: courierService,
+        courier_service: matchedRate?.serviceName || courierService,
         payment_method: paymentMethod,
         subtotal,
         shipping_cost: shippingCost,
