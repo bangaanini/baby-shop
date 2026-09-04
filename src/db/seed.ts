@@ -212,7 +212,7 @@ async function seed() {
       .insert(schema.usersTable)
       .values({
         id: 'user_admin_demo_1',
-        name: 'Admin Toko BabyKids',
+        name: 'Admin Toko NBusiness',
         email: 'admin@babykids.id',
         phone: '0811-0000-0000',
         role: 'admin',

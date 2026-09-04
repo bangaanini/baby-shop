@@ -492,7 +492,7 @@ export default function EditProdukPage({
                 Foto Produk & Galeri Katalog
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Foto pertama dengan tanda bintang akan menjadi Cover Utama di katalog BabyKids
+                Foto pertama dengan tanda bintang akan menjadi Cover Utama di katalog NBusiness
               </p>
             </div>
             <span className="text-[11px] font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-full border border-rose-200/60">
