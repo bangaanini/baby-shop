@@ -1,19 +1,22 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
-  ShoppingBag,
   Package,
-  Tag,
+  PlusCircle,
+  ListFilter,
+  ShoppingBag,
+  TrendingUp,
+  Settings,
   Store,
   LogOut,
   X,
   ExternalLink,
   ShieldCheck,
-  User,
+  ChevronDown,
   Loader2,
 } from 'lucide-react';
 import { useSession, signOut } from '@/lib/auth-client';
@@ -25,10 +28,18 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const currentTab = searchParams.get('tab') || 'ringkasan';
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const isProductRoute = pathname.startsWith('/admin/produk');
+  const [productMenuOpen, setProductMenuOpen] = useState(true);
+
+  // Auto-expand product submenu if on a product route
+  useEffect(() => {
+    if (isProductRoute) {
+      setProductMenuOpen(true);
+    }
+  }, [isProductRoute]);
 
   const { data: session } = useSession();
   const user = session?.user as
@@ -60,36 +71,13 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     }
   };
 
-  const navItems = [
-    {
-      label: 'Ringkasan',
-      href: '/admin?tab=ringkasan',
-      tabId: 'ringkasan',
-      icon: LayoutDashboard,
-      badge: null,
-    },
-    {
-      label: 'Kelola Produk',
-      href: '/admin?tab=produk',
-      tabId: 'produk',
-      icon: ShoppingBag,
-      badge: null,
-    },
-    {
-      label: 'Kelola Pesanan',
-      href: '/admin?tab=pesanan',
-      tabId: 'pesanan',
-      icon: Package,
-      badge: null,
-    },
-    {
-      label: 'Promo & Diskon',
-      href: '/admin?tab=promo',
-      tabId: 'promo',
-      icon: Tag,
-      badge: 'Aktif',
-    },
-  ];
+  const isDashboardActive = pathname === '/admin';
+  const isTambahProdukActive = pathname === '/admin/produk/tambah';
+  const isDaftarProdukActive =
+    pathname === '/admin/produk' || (pathname.startsWith('/admin/produk/') && !isTambahProdukActive);
+  const isPesananActive = pathname.startsWith('/admin/pesanan');
+  const isStatistikActive = pathname.startsWith('/admin/statistik');
+  const isSettingActive = pathname.startsWith('/admin/setting');
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-slate-900 text-slate-200">
@@ -103,10 +91,10 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <div className="flex items-center gap-1.5">
               <span className="text-base font-black text-white tracking-tight">BabyKids</span>
               <span className="text-[10px] bg-rose-500/20 text-rose-400 font-bold px-1.5 py-0.5 rounded border border-rose-500/30">
-                PRO
+                SELLER
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">Admin Panel</p>
+            <p className="text-[11px] text-slate-400 font-medium">Seller Center</p>
           </div>
         </Link>
         {/* Mobile close button */}
@@ -121,49 +109,160 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       </div>
 
       {/* Navigation Links */}
-      <div className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <div className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
         <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
           Menu Utama
         </div>
 
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === '/admin' && currentTab === item.tabId;
-
-          return (
-            <Link
-              key={item.label}
-              href={item.href}
-              onClick={onClose}
-              className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
-                isActive
-                  ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-bold'
-                  : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+        {/* 1. Dashboard */}
+        <Link
+          href="/admin"
+          onClick={onClose}
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+            isDashboardActive
+              ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-bold'
+              : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <LayoutDashboard
+              className={`w-4 h-4 transition-colors ${
+                isDashboardActive ? 'text-white' : 'text-slate-400 group-hover:text-rose-400'
               }`}
-            >
-              <div className="flex items-center gap-3">
-                <Icon
-                  className={`w-4 h-4 transition-colors ${
-                    isActive ? 'text-white' : 'text-slate-400 group-hover:text-rose-400'
+            />
+            <span>Dashboard</span>
+          </div>
+        </Link>
+
+        {/* 2. Produk (Expandable Sub-Menu) */}
+        <div className="space-y-1">
+          <button
+            type="button"
+            onClick={() => setProductMenuOpen(!productMenuOpen)}
+            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+              isProductRoute
+                ? 'text-white bg-slate-800/70 font-bold'
+                : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <Package
+                className={`w-4 h-4 transition-colors ${
+                  isProductRoute ? 'text-rose-400' : 'text-slate-400 group-hover:text-rose-400'
+                }`}
+              />
+              <span>Produk</span>
+            </div>
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-slate-400 transition-transform duration-200 ${
+                productMenuOpen ? 'rotate-180 text-white' : ''
+              }`}
+            />
+          </button>
+
+          {/* Sub-menu items */}
+          {productMenuOpen && (
+            <div className="pl-3 ml-3 border-l border-slate-800 space-y-1 pt-1 pb-0.5 animate-in fade-in slide-in-from-top-1 duration-150">
+              {/* Tambah Produk */}
+              <Link
+                href="/admin/produk/tambah"
+                onClick={onClose}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                  isTambahProdukActive
+                    ? 'bg-rose-500 text-white font-bold shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                }`}
+              >
+                <PlusCircle
+                  className={`w-3.5 h-3.5 ${
+                    isTambahProdukActive ? 'text-white' : 'text-slate-400'
                   }`}
                 />
-                <span>{item.label}</span>
-              </div>
-              {item.badge && (
-                <span
-                  className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${
-                    isActive
-                      ? 'bg-white/20 text-white'
-                      : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                  }`}
-                >
-                  {item.badge}
-                </span>
-              )}
-            </Link>
-          );
-        })}
+                <span>Tambah Produk</span>
+              </Link>
 
+              {/* Daftar Produk */}
+              <Link
+                href="/admin/produk"
+                onClick={onClose}
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                  isDaftarProdukActive
+                    ? 'bg-rose-500 text-white font-bold shadow-xs'
+                    : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                }`}
+              >
+                <ListFilter
+                  className={`w-3.5 h-3.5 ${
+                    isDaftarProdukActive ? 'text-white' : 'text-slate-400'
+                  }`}
+                />
+                <span>Daftar Produk</span>
+              </Link>
+            </div>
+          )}
+        </div>
+
+        {/* 3. Pesanan */}
+        <Link
+          href="/admin/pesanan"
+          onClick={onClose}
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+            isPesananActive
+              ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-bold'
+              : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <ShoppingBag
+              className={`w-4 h-4 transition-colors ${
+                isPesananActive ? 'text-white' : 'text-slate-400 group-hover:text-rose-400'
+              }`}
+            />
+            <span>Pesanan</span>
+          </div>
+        </Link>
+
+        {/* 4. Statistik */}
+        <Link
+          href="/admin/statistik"
+          onClick={onClose}
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+            isStatistikActive
+              ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-bold'
+              : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <TrendingUp
+              className={`w-4 h-4 transition-colors ${
+                isStatistikActive ? 'text-white' : 'text-slate-400 group-hover:text-rose-400'
+              }`}
+            />
+            <span>Statistik</span>
+          </div>
+        </Link>
+
+        {/* 5. Setting */}
+        <Link
+          href="/admin/setting"
+          onClick={onClose}
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+            isSettingActive
+              ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-bold'
+              : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <Settings
+              className={`w-4 h-4 transition-colors ${
+                isSettingActive ? 'text-white' : 'text-slate-400 group-hover:text-rose-400'
+              }`}
+            />
+            <span>Setting</span>
+          </div>
+        </Link>
+
+        {/* Akses Luar Section */}
         <div className="pt-4 px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
           Akses Luar
         </div>
@@ -202,7 +301,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             type="button"
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-slate-700/80 hover:bg-rose-600/90 text-slate-200 hover:text-white rounded-xl text-xs font-semibold transition-all border border-slate-600/50 hover:border-rose-500 disabled:opacity-50"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 bg-slate-700/80 hover:bg-rose-600/90 text-slate-200 hover:text-white rounded-xl text-xs font-semibold transition-all border border-slate-600/50 hover:border-rose-500 disabled:opacity-50 cursor-pointer"
           >
             {isLoggingOut ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />

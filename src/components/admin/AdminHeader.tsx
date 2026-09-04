@@ -2,11 +2,9 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import {
   Menu,
-  Bell,
-  User,
   ShieldCheck,
   LogOut,
   ChevronDown,
@@ -14,7 +12,6 @@ import {
   Clock,
   CheckCircle2,
   Loader2,
-  Sparkles,
 } from 'lucide-react';
 import { useSession, signOut } from '@/lib/auth-client';
 
@@ -23,9 +20,9 @@ interface AdminHeaderProps {
 }
 
 export function AdminHeader({ onOpenSidebar }: AdminHeaderProps) {
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const router = useRouter();
-  const currentTab = searchParams.get('tab') || 'ringkasan';
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [currentTime, setCurrentTime] = useState<string>('');
@@ -91,32 +88,78 @@ export function AdminHeader({ onOpenSidebar }: AdminHeaderProps) {
     }
   };
 
-  const tabTitles: { [key: string]: { title: string; subtitle: string } } = {
-    ringkasan: {
-      title: 'Ringkasan & Analitik Toko',
-      subtitle: 'Pantau performa penjualan, pesanan masuk, dan ringkasan inventori',
-    },
-    produk: {
-      title: 'Kelola Katalog Produk',
-      subtitle: 'Tambah, perbarui varian warna & ukuran, dan pantau stok produk anak',
-    },
-    pesanan: {
-      title: 'Kelola Pesanan Pembeli',
-      subtitle: 'Proses verifikasi pesanan, update status pengiriman, dan input nomor resi',
-    },
-    promo: {
-      title: 'Diskon & Voucher Promo',
-      subtitle: 'Atur kode voucher dan program promosi hemat kebutuhan anak',
-    },
+  const getHeaderInfo = () => {
+    if (pathname === '/admin/produk/tambah') {
+      return {
+        title: 'Tambah Produk Baru',
+        subtitle: 'Upload foto produk, isi detail spesifikasi, harga & berat paket',
+      };
+    }
+    if (pathname.includes('/edit')) {
+      return {
+        title: 'Edit Produk Toko',
+        subtitle: 'Perbarui informasi, foto, varian & stok produk',
+      };
+    }
+    if (pathname === '/admin/produk' || pathname.startsWith('/admin/produk/')) {
+      return {
+        title: 'Daftar Produk Toko',
+        subtitle: 'Kelola katalog produk, pantau stok, harga, dan varian',
+      };
+    }
+    if (pathname.startsWith('/admin/pesanan')) {
+      return {
+        title: 'Kelola Pesanan Pembeli',
+        subtitle: 'Pantau pesanan masuk, verifikasi pembayaran, dan input resi pengiriman',
+      };
+    }
+    if (pathname.startsWith('/admin/statistik')) {
+      return {
+        title: 'Statistik & Performa Penjualan',
+        subtitle: 'Analisis pendapatan, pesanan, dan tren produk terlaris',
+      };
+    }
+    if (pathname.startsWith('/admin/setting')) {
+      return {
+        title: 'Pengaturan Toko & Logistik',
+        subtitle: 'Atur alamat toko, profil merchant, kurir pengiriman & rekening bank',
+      };
+    }
+
+    // Fallback for /admin query tab backwards compatibility
+    const currentTab = searchParams.get('tab');
+    if (currentTab === 'produk') {
+      return {
+        title: 'Daftar Produk Toko',
+        subtitle: 'Kelola katalog produk, pantau stok, harga, dan varian',
+      };
+    }
+    if (currentTab === 'pesanan') {
+      return {
+        title: 'Kelola Pesanan Pembeli',
+        subtitle: 'Pantau pesanan masuk, verifikasi pembayaran, dan input resi pengiriman',
+      };
+    }
+    if (currentTab === 'promo') {
+      return {
+        title: 'Diskon & Voucher Promo',
+        subtitle: 'Atur kode voucher dan program promosi hemat kebutuhan anak',
+      };
+    }
+
+    return {
+      title: 'Dashboard Seller Center',
+      subtitle: 'Ringkasan metrik toko, aksi penting, dan performa harian',
+    };
   };
 
-  const currentInfo = tabTitles[currentTab] || tabTitles.ringkasan;
+  const currentInfo = getHeaderInfo();
 
   return (
     <header className="sticky top-0 z-20 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
       <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
-          {/* Left: Mobile Menu Toggle & Breadcrumb / Section Info */}
+          {/* Left: Mobile Menu Toggle & Title / Subtitle */}
           <div className="flex items-center gap-3">
             <button
               type="button"
@@ -174,7 +217,7 @@ export function AdminHeader({ onOpenSidebar }: AdminHeaderProps) {
               <button
                 type="button"
                 onClick={() => setUserDropdownOpen(!userDropdownOpen)}
-                className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-2xl hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200"
+                className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-1.5 rounded-2xl hover:bg-slate-100 transition-colors border border-transparent hover:border-slate-200 cursor-pointer"
                 aria-expanded={userDropdownOpen}
               >
                 <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center font-bold text-xs shadow-xs">
@@ -223,7 +266,7 @@ export function AdminHeader({ onOpenSidebar }: AdminHeaderProps) {
                       type="button"
                       onClick={handleLogout}
                       disabled={isLoggingOut}
-                      className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50 text-left"
+                      className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50 text-left cursor-pointer"
                     >
                       {isLoggingOut ? (
                         <Loader2 className="w-4 h-4 animate-spin text-rose-600" />
