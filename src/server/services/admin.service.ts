@@ -1,4 +1,4 @@
-import { eq, ne, and, or, ilike, inArray, desc, asc, count, sum, sql, type SQL } from 'drizzle-orm';
+import { eq, ne, and, or, ilike, inArray, desc, asc, count, sum, lte, sql, type SQL } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   categoriesTable,
@@ -40,6 +40,9 @@ export interface DashboardStats {
   ordersByStatus: Record<string, number>;
   totalProducts: number;
   totalStock: number;
+  lowStockCount: number;
+  averageRating: number;
+  completedTodayCount: number;
   recentOrders: DetailedOrder[];
 }
 
@@ -105,7 +108,36 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .from(productsTable);
   const totalStock = Number(stockResult?.totalStock) || 0;
 
-  // 6. Recent 5 orders with items & tracking
+  // 6. Low stock products (stock <= 5)
+  const [lowStockResult] = await db
+    .select({ lowStockCount: count() })
+    .from(productsTable)
+    .where(lte(productsTable.stock, 5));
+  const lowStockCount = Number(lowStockResult?.lowStockCount) || 0;
+
+  // 7. Average store rating
+  const [ratingResult] = await db
+    .select({
+      avgRating: sql<number>`COALESCE(AVG(CAST(${productsTable.rating} AS NUMERIC)), 5.0)`,
+    })
+    .from(productsTable);
+  const averageRating = Number(Number(ratingResult?.avgRating || 5.0).toFixed(1));
+
+  // 8. Orders completed today
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const [completedTodayResult] = await db
+    .select({ count: count() })
+    .from(ordersTable)
+    .where(
+      and(
+        eq(ordersTable.status, 'selesai'),
+        sql`${ordersTable.updated_at} >= ${todayStart}`
+      )
+    );
+  const completedTodayCount = Number(completedTodayResult?.count) || ordersByStatus.selesai || 0;
+
+  // 9. Recent 5 orders with items & tracking
   const recentOrderRecords = await db.query.ordersTable.findMany({
     orderBy: [desc(ordersTable.created_at)],
     limit: 5,
@@ -129,6 +161,9 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     ordersByStatus,
     totalProducts,
     totalStock,
+    lowStockCount,
+    averageRating,
+    completedTodayCount,
     recentOrders,
   };
 }
