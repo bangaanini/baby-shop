@@ -33,9 +33,6 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
   const router = useRouter();
 
   // Selected state
-  const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
-    product.varian && product.varian.length > 0 ? product.varian[0] : undefined
-  );
   const [selectedImage, setSelectedImage] = useState<string>(product.gambar);
   const [quantity, setQuantity] = useState<number>(1);
   const [isWishlist, setIsWishlist] = useState<boolean>(false);
@@ -59,26 +56,30 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
     product.varian && product.varian.length > 0 ? product.varian[0].ukuran : ''
   );
 
+  // Exact matching variant for current selectedColor & selectedSize
+  const selectedVariant = product.varian && product.varian.length > 0
+    ? product.varian.find(
+        (v) =>
+          (!selectedColor || v.warna === selectedColor) &&
+          (!selectedSize || v.ukuran === selectedSize)
+      )
+    : undefined;
+
+  // Compute current stock and price
+  const hasVariants = Boolean(product.varian && product.varian.length > 0);
+  const currentStock = hasVariants
+    ? (selectedVariant ? selectedVariant.stok : 0)
+    : product.stok;
+  const isOutOfStock = currentStock <= 0;
+
+  const currentPrice = product.harga + (selectedVariant?.hargaTambahan || 0);
+
   const handleColorChange = (warna: string) => {
     setSelectedColor(warna);
-    const matched =
-      product.varian?.find((v) => v.warna === warna && v.ukuran === selectedSize) ||
-      product.varian?.find((v) => v.warna === warna);
-    if (matched) {
-      setSelectedVariant(matched);
-      if (matched.ukuran) setSelectedSize(matched.ukuran);
-    }
   };
 
   const handleSizeChange = (ukuran: string) => {
     setSelectedSize(ukuran);
-    const matched =
-      product.varian?.find((v) => v.ukuran === ukuran && v.warna === selectedColor) ||
-      product.varian?.find((v) => v.ukuran === ukuran);
-    if (matched) {
-      setSelectedVariant(matched);
-      if (matched.warna) setSelectedColor(matched.warna);
-    }
   };
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
@@ -91,6 +92,17 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
   const handleAddToCart = async () => {
     if (isAddingToCart || isBuyingNow) return;
+
+    if (hasVariants && (!selectedVariant || isOutOfStock)) {
+      showToast(`Maaf, varian warna "${selectedColor}" ukuran "${selectedSize}" sedang habis`, 'error');
+      return;
+    }
+
+    if (currentStock <= 0) {
+      showToast('Maaf, stok produk saat ini sedang habis', 'error');
+      return;
+    }
+
     setIsAddingToCart(true);
 
     try {
@@ -113,7 +125,7 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
         return;
       }
 
-      showToast(`🎉 Berhasil menambahkan ${quantity}x "${product.nama}" ke keranjang belanja!`, 'success');
+      showToast(`🎉 Berhasil menambahkan ${quantity}x "${product.nama}" (${selectedColor} - ${selectedSize}) ke keranjang belanja!`, 'success');
     } catch (err: any) {
       console.error('Error adding to cart:', err);
       showToast('Terjadi kesalahan jaringan saat menambahkan ke keranjang', 'error');
@@ -124,6 +136,17 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
 
   const handleBuyNow = async () => {
     if (isAddingToCart || isBuyingNow) return;
+
+    if (hasVariants && (!selectedVariant || isOutOfStock)) {
+      showToast(`Maaf, varian warna "${selectedColor}" ukuran "${selectedSize}" sedang habis`, 'error');
+      return;
+    }
+
+    if (currentStock <= 0) {
+      showToast('Maaf, stok produk saat ini sedang habis', 'error');
+      return;
+    }
+
     setIsBuyingNow(true);
 
     try {
@@ -164,9 +187,6 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
           'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=500&auto=format&fit=crop&q=60',
           'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&auto=format&fit=crop&q=60',
         ].filter(Boolean);
-
-  const currentPrice = product.harga + (selectedVariant?.hargaTambahan || 0);
-  const currentStock = selectedVariant ? selectedVariant.stok : product.stok;
 
   return (
     <div className="py-4">
@@ -337,8 +357,8 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
               </div>
               <div>
                 <span className="text-slate-400 block mb-0.5">Sisa Ketersediaan:</span>
-                <strong className={currentStock > 0 ? 'text-emerald-600' : 'text-rose-600'}>
-                  {currentStock > 0 ? `Tersedia (${currentStock} pcs)` : 'Stok Habis'}
+                <strong className={!isOutOfStock ? 'text-emerald-600 font-bold' : 'text-rose-600 font-bold'}>
+                  {!isOutOfStock ? `Tersedia (${currentStock} pcs)` : 'Stok Habis (0 pcs)'}
                 </strong>
               </div>
             </div>
@@ -346,24 +366,38 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
             {/* Pilihan Varian Warna */}
             {availableColors.length > 0 && (
               <div className="mb-5">
-                <label className="text-xs font-bold text-slate-700 block mb-2">
-                  Pilih Warna: <span className="text-rose-600 font-semibold">{selectedColor}</span>
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-slate-700">
+                    Pilih Warna: <span className="text-rose-600 font-semibold">{selectedColor}</span>
+                  </label>
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {availableColors.map((warna) => (
-                    <button
-                      key={warna}
-                      type="button"
-                      onClick={() => handleColorChange(warna)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-semibold border-2 transition-all ${
-                        selectedColor === warna
-                          ? 'border-rose-500 bg-rose-50 text-rose-600 shadow-xs'
-                          : 'border-slate-200 hover:border-slate-300 text-slate-700 bg-white'
-                      }`}
-                    >
-                      {warna}
-                    </button>
-                  ))}
+                  {availableColors.map((warna) => {
+                    const isSelected = selectedColor === warna;
+                    const hasStockForColor = product.varian?.some(
+                      (v) => v.warna === warna && v.stok > 0
+                    );
+
+                    return (
+                      <button
+                        key={warna}
+                        type="button"
+                        onClick={() => handleColorChange(warna)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold border-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+                          isSelected
+                            ? 'border-rose-500 bg-rose-50 text-rose-600 shadow-xs'
+                            : 'border-slate-200 hover:border-slate-300 text-slate-700 bg-white'
+                        }`}
+                      >
+                        <span>{warna}</span>
+                        {!hasStockForColor && (
+                          <span className="text-[10px] text-rose-500 bg-rose-100/70 px-1.5 py-0.2 rounded font-medium">
+                            Habis
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -371,24 +405,61 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
             {/* Pilihan Varian Ukuran */}
             {availableSizes.length > 0 && (
               <div className="mb-6">
-                <label className="text-xs font-bold text-slate-700 block mb-2">
-                  Pilih Ukuran / Tipe: <span className="text-rose-600 font-semibold">{selectedSize}</span>
-                </label>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-slate-700">
+                    Pilih Ukuran / Tipe: <span className="text-rose-600 font-semibold">{selectedSize}</span>
+                  </label>
+                </div>
                 <div className="flex flex-wrap gap-2">
-                  {availableSizes.map((ukuran) => (
-                    <button
-                      key={ukuran}
-                      type="button"
-                      onClick={() => handleSizeChange(ukuran)}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-semibold border-2 transition-all ${
-                        selectedSize === ukuran
-                          ? 'border-rose-500 bg-rose-50 text-rose-600 shadow-xs'
-                          : 'border-slate-200 hover:border-slate-300 text-slate-700 bg-white'
-                      }`}
-                    >
-                      {ukuran}
-                    </button>
-                  ))}
+                  {availableSizes.map((ukuran) => {
+                    const isSelected = selectedSize === ukuran;
+                    const matchedVar = product.varian?.find(
+                      (v) =>
+                        (!selectedColor || v.warna === selectedColor) &&
+                        v.ukuran === ukuran
+                    );
+                    const isVariantPresent = Boolean(matchedVar);
+                    const isStockAvailable = Boolean(matchedVar && matchedVar.stok > 0);
+
+                    return (
+                      <button
+                        key={ukuran}
+                        type="button"
+                        onClick={() => handleSizeChange(ukuran)}
+                        className={`px-3.5 py-2 rounded-xl text-xs font-semibold border-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+                          isSelected
+                            ? isStockAvailable
+                              ? 'border-rose-500 bg-rose-50 text-rose-600 shadow-xs'
+                              : 'border-rose-400 bg-rose-50/60 text-rose-600 shadow-xs ring-2 ring-rose-200'
+                            : isStockAvailable
+                            ? 'border-slate-200 hover:border-slate-300 text-slate-700 bg-white'
+                            : 'border-slate-200 text-slate-400 bg-slate-50 hover:bg-slate-100'
+                        }`}
+                      >
+                        <span>{ukuran}</span>
+                        {!isStockAvailable && (
+                          <span className="text-[10px] text-rose-500 bg-rose-100/70 px-1.5 py-0.2 rounded font-medium">
+                            {!isVariantPresent ? 'Kosong' : 'Habis'}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Warning Alert if Current Variant Combination is Out of Stock */}
+            {hasVariants && isOutOfStock && (
+              <div className="mb-6 p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-3 text-xs text-rose-800 animate-in fade-in duration-200">
+                <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-bold text-rose-700">
+                    Stok Varian &ldquo;{selectedColor}&rdquo; Ukuran &ldquo;{selectedSize}&rdquo; Tidak Tersedia
+                  </p>
+                  <p className="text-slate-600 leading-relaxed">
+                    Kombinasi warna dan ukuran yang Anda pilih saat ini sedang habis atau tidak diproduksi. Anda tetap berada di pilihan ini untuk melihat informasi, tetapi tidak dapat memasukkan ke keranjang. Silakan pilih warna atau ukuran lain yang masih tersedia.
+                  </p>
                 </div>
               </div>
             )}
@@ -401,25 +472,28 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                   <button
                     type="button"
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    disabled={quantity <= 1}
+                    disabled={quantity <= 1 || isOutOfStock}
                     className="p-2 text-slate-600 hover:bg-slate-200 disabled:opacity-30 transition-colors"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
                   <span className="px-4 py-1.5 text-xs font-bold text-slate-800 min-w-10 text-center bg-white">
-                    {quantity}
+                    {isOutOfStock ? 0 : quantity}
                   </span>
                   <button
                     type="button"
                     onClick={() => setQuantity(Math.min(currentStock, quantity + 1))}
-                    disabled={quantity >= currentStock}
+                    disabled={quantity >= currentStock || isOutOfStock}
                     className="p-2 text-slate-600 hover:bg-slate-200 disabled:opacity-30 transition-colors"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
                 <span className="text-xs text-slate-400">
-                  Total: <strong className="text-slate-800 font-bold">{formatRupiah(currentPrice * quantity)}</strong>
+                  Total:{' '}
+                  <strong className="text-slate-800 font-bold">
+                    {formatRupiah(currentPrice * (isOutOfStock ? 0 : quantity))}
+                  </strong>
                 </span>
               </div>
 
@@ -428,13 +502,22 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                 <button
                   type="button"
                   onClick={handleAddToCart}
-                  disabled={isAddingToCart || isBuyingNow || currentStock <= 0}
-                  className="py-3.5 px-5 rounded-2xl bg-rose-50 hover:bg-rose-100 disabled:opacity-50 disabled:cursor-not-allowed text-rose-600 font-bold text-xs sm:text-sm border border-rose-200 flex items-center justify-center gap-2 transition-all active:scale-95 cursor-pointer"
+                  disabled={isAddingToCart || isBuyingNow || isOutOfStock}
+                  className={`py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm border flex items-center justify-center gap-2 transition-all ${
+                    isOutOfStock
+                      ? 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
+                      : 'bg-rose-50 hover:bg-rose-100 text-rose-600 border-rose-200 active:scale-95 cursor-pointer'
+                  }`}
                 >
                   {isAddingToCart ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
                       <span>Menambahkan...</span>
+                    </>
+                  ) : isOutOfStock ? (
+                    <>
+                      <AlertCircle className="w-4 h-4 text-slate-400" />
+                      <span>Stok Varian Kosong</span>
                     </>
                   ) : (
                     <>
@@ -447,14 +530,20 @@ export function ProductDetailView({ product, relatedProducts }: ProductDetailVie
                 <button
                   type="button"
                   onClick={handleBuyNow}
-                  disabled={isAddingToCart || isBuyingNow || currentStock <= 0}
-                  className="py-3.5 px-5 rounded-2xl bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-95 cursor-pointer"
+                  disabled={isAddingToCart || isBuyingNow || isOutOfStock}
+                  className={`py-3.5 px-5 rounded-2xl font-bold text-xs sm:text-sm shadow-md flex items-center justify-center gap-2 transition-all ${
+                    isOutOfStock
+                      ? 'bg-slate-200 text-slate-400 border border-slate-300 shadow-none cursor-not-allowed'
+                      : 'bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white hover:scale-[1.02] active:scale-95 cursor-pointer'
+                  }`}
                 >
                   {isBuyingNow ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Memproses...</span>
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <span>Menyiapkan Checkout...</span>
                     </>
+                  ) : isOutOfStock ? (
+                    <span>Stok Tidak Tersedia</span>
                   ) : (
                     <>
                       <Sparkles className="w-4 h-4" />

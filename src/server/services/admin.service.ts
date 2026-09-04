@@ -308,6 +308,35 @@ export async function updateOrderStatus(
     ? (notes && notes.trim() ? notes.trim() : null)
     : existingOrder.notes;
 
+  // If order is cancelled and was not already cancelled, restore inventory
+  if (status === 'dibatalkan' && existingOrder.status !== 'dibatalkan') {
+    const orderItems = await db.query.orderItemsTable.findMany({
+      where: eq(orderItemsTable.order_id, existingOrder.id),
+    });
+
+    for (const item of orderItems) {
+      if (item.product_id) {
+        await db
+          .update(productsTable)
+          .set({
+            stock: sql`${productsTable.stock} + ${item.quantity}`,
+            sold_count: sql`GREATEST(0, ${productsTable.sold_count} - ${item.quantity})`,
+            updated_at: now,
+          })
+          .where(eq(productsTable.id, item.product_id));
+      }
+
+      if (item.variant_id) {
+        await db
+          .update(productVariantsTable)
+          .set({
+            stock: sql`${productVariantsTable.stock} + ${item.quantity}`,
+          })
+          .where(eq(productVariantsTable.id, item.variant_id));
+      }
+    }
+  }
+
   // Update order status and details
   await db
     .update(ordersTable)
