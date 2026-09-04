@@ -35,27 +35,46 @@ export interface UserProfileData {
 
 export interface BiodataTabProps {
   initialProfile?: UserProfileData;
+  user?: {
+    id?: string;
+    name?: string;
+    email?: string;
+    phone?: string;
+    image?: string;
+    role?: string;
+  };
   onProfileUpdated?: (updated: UserProfileData) => void;
   userId?: string;
 }
 
 export function BiodataTab({
   initialProfile,
+  user,
   onProfileUpdated,
-  userId,
+  userId: propUserId,
 }: BiodataTabProps) {
+  const userId = propUserId || user?.id;
+  const initialData = initialProfile || (user ? {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    phone: user.phone,
+    image: user.image,
+    role: user.role,
+  } : undefined);
+
   // Profile form state
   const [profile, setProfile] = useState<UserProfileData>({
-    name: initialProfile?.name || 'Bunda Sarah Clarissa',
-    email: initialProfile?.email || 'sarah.clarissa@example.com',
-    phone: initialProfile?.phone || '0812-3456-7890',
-    image: initialProfile?.image || null,
-    birthDate: initialProfile?.birthDate || '1994-05-14',
-    gender: (initialProfile?.gender as 'female' | 'male') || 'female',
-    childrenInfo: initialProfile?.childrenInfo || '2 Orang Anak (3 th & 6 bln)',
-    emailVerified: initialProfile?.emailVerified ?? true,
-    memberSince: initialProfile?.memberSince || 'Januari 2025',
-    role: initialProfile?.role || 'buyer',
+    name: initialData?.name || 'Bunda Sarah Clarissa',
+    email: initialData?.email || 'sarah.clarissa@example.com',
+    phone: initialData?.phone || '0812-3456-7890',
+    image: initialData?.image || null,
+    birthDate: initialData?.birthDate || '1994-05-14',
+    gender: (initialData?.gender as 'female' | 'male') || 'female',
+    childrenInfo: initialData?.childrenInfo || '2 Orang Anak (3 th & 6 bln)',
+    emailVerified: initialData?.emailVerified ?? true,
+    memberSince: initialData?.memberSince || 'Januari 2025',
+    role: initialData?.role || 'buyer',
   });
 
   // Original snapshot for reset / cancellation
@@ -77,20 +96,22 @@ export function BiodataTab({
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Sync with initialProfile when prop changes
+  // Sync with initialProfile or user when prop changes
   useEffect(() => {
-    if (initialProfile) {
+    if (initialProfile || user) {
+      const source = initialProfile || user;
       const merged: UserProfileData = {
-        name: initialProfile.name || 'Bunda Sarah Clarissa',
-        email: initialProfile.email || 'sarah.clarissa@example.com',
-        phone: initialProfile.phone || '0812-3456-7890',
-        image: initialProfile.image || null,
-        birthDate: initialProfile.birthDate || '1994-05-14',
-        gender: (initialProfile.gender as 'female' | 'male') || 'female',
-        childrenInfo: initialProfile.childrenInfo || '2 Orang Anak (3 th & 6 bln)',
-        emailVerified: initialProfile.emailVerified ?? true,
-        memberSince: initialProfile.memberSince || 'Januari 2025',
-        role: initialProfile.role || 'buyer',
+        id: source?.id,
+        name: source?.name || 'Bunda Sarah Clarissa',
+        email: source?.email || 'sarah.clarissa@example.com',
+        phone: source?.phone || '0812-3456-7890',
+        image: source?.image || null,
+        birthDate: (source as UserProfileData)?.birthDate || '1994-05-14',
+        gender: ((source as UserProfileData)?.gender as 'female' | 'male') || 'female',
+        childrenInfo: (source as UserProfileData)?.childrenInfo || '2 Orang Anak (3 th & 6 bln)',
+        emailVerified: (source as UserProfileData)?.emailVerified ?? true,
+        memberSince: (source as UserProfileData)?.memberSince || 'Januari 2025',
+        role: source?.role || 'buyer',
       };
       setProfile(merged);
       setOriginalProfile(merged);
@@ -98,7 +119,7 @@ export function BiodataTab({
     } else {
       fetchUserProfile();
     }
-  }, [initialProfile]);
+  }, [initialProfile, user]);
 
   // Fetch from API if no initialProfile provided
   const fetchUserProfile = async () => {
