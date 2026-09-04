@@ -50,6 +50,7 @@ interface DashboardStatsData {
 }
 
 function SellerCenterDashboardContent() {
+  const [isMounted, setIsMounted] = useState<boolean>(false);
   const [stats, setStats] = useState<DashboardStatsData | null>(null);
   const [loadingStats, setLoadingStats] = useState<boolean>(true);
   const [statsError, setStatsError] = useState<string | null>(null);
@@ -70,6 +71,10 @@ function SellerCenterDashboardContent() {
     setToast({ text, type });
     setTimeout(() => setToast(null), 3500);
   };
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // 1. Fetch Dashboard Stats
   const fetchStats = useCallback(async () => {
@@ -219,13 +224,13 @@ function SellerCenterDashboardContent() {
           <div className="flex flex-wrap items-center gap-3 self-start lg:self-center">
             <button
               onClick={refreshAll}
-              disabled={loadingStats || loadingRecentOrders}
+              disabled={isMounted ? (loadingStats || loadingRecentOrders) : false}
               title="Perbarui Data"
               className="p-3 bg-white/10 hover:bg-white/15 active:bg-white/20 text-slate-200 hover:text-white rounded-2xl border border-white/10 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center shadow-xs"
             >
               <RefreshCw
                 className={`w-4 h-4 ${
-                  loadingStats || loadingRecentOrders ? 'animate-spin text-rose-400' : ''
+                  isMounted && (loadingStats || loadingRecentOrders) ? 'animate-spin text-rose-400' : ''
                 }`}
               />
             </button>

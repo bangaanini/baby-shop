@@ -1,4 +1,4 @@
-import { eq, ne, and, or, ilike, inArray, desc, asc, count, sum, lte, sql, type SQL } from 'drizzle-orm';
+import { eq, ne, and, or, ilike, inArray, desc, asc, count, sum, lte, gte, sql, type SQL } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   categoriesTable,
@@ -132,7 +132,7 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     .where(
       and(
         eq(ordersTable.status, 'selesai'),
-        sql`${ordersTable.updated_at} >= ${todayStart}`
+        gte(ordersTable.updated_at, todayStart)
       )
     );
   const completedTodayCount = Number(completedTodayResult?.count) || ordersByStatus.selesai || 0;
