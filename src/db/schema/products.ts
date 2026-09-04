@@ -25,6 +25,10 @@ export const productsTable = pgTable('products', {
   is_recommended: boolean('is_recommended').default(false).notNull(),
   is_promo: boolean('is_promo').default(false).notNull(),
   tag: varchar('tag', { length: 100 }),
+  weight_gram: integer('weight_gram').default(500).notNull(),
+  dimension_length: integer('dimension_length').default(10).notNull(),
+  dimension_width: integer('dimension_width').default(10).notNull(),
+  dimension_height: integer('dimension_height').default(10).notNull(),
   created_at: timestamp('created_at').defaultNow().notNull(),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
 });

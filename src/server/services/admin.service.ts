@@ -415,6 +415,10 @@ export async function createProduct(payload: AdminProductInput) {
       is_recommended: Boolean(payload.isRecommended),
       is_promo: Boolean(payload.isPromo),
       tag: payload.tag?.trim() || null,
+      weight_gram: payload.weightGram !== undefined ? payload.weightGram : 500,
+      dimension_length: payload.dimensionLength !== undefined ? payload.dimensionLength : 10,
+      dimension_width: payload.dimensionWidth !== undefined ? payload.dimensionWidth : 10,
+      dimension_height: payload.dimensionHeight !== undefined ? payload.dimensionHeight : 10,
     })
     .returning();
 
@@ -574,6 +578,10 @@ export async function updateProduct(id: string, payload: Partial<AdminProductInp
       is_recommended: payload.isRecommended !== undefined ? Boolean(payload.isRecommended) : existingProduct.is_recommended,
       is_promo: payload.isPromo !== undefined ? Boolean(payload.isPromo) : existingProduct.is_promo,
       tag: payload.tag !== undefined ? (payload.tag?.trim() || null) : existingProduct.tag,
+      weight_gram: payload.weightGram !== undefined ? payload.weightGram : existingProduct.weight_gram,
+      dimension_length: payload.dimensionLength !== undefined ? payload.dimensionLength : existingProduct.dimension_length,
+      dimension_width: payload.dimensionWidth !== undefined ? payload.dimensionWidth : existingProduct.dimension_width,
+      dimension_height: payload.dimensionHeight !== undefined ? payload.dimensionHeight : existingProduct.dimension_height,
       updated_at: new Date(),
     })
     .where(eq(productsTable.id, productId));

@@ -40,6 +40,10 @@ export const adminProductSchema = z.object({
   isRecommended: z.preprocess((val) => (val === 'true' || val === true ? true : val === 'false' || val === false ? false : undefined), z.boolean().optional().default(false)),
   isPromo: z.preprocess((val) => (val === 'true' || val === true ? true : val === 'false' || val === false ? false : undefined), z.boolean().optional().default(false)),
   tag: z.string().trim().optional().nullable(),
+  weightGram: z.coerce.number().int().min(1).default(500),
+  dimensionLength: z.coerce.number().int().min(1).default(10),
+  dimensionWidth: z.coerce.number().int().min(1).default(10),
+  dimensionHeight: z.coerce.number().int().min(1).default(10),
   variants: z.array(productVariantInputSchema).optional().default([]),
   images: z.array(productImageInputSchema).optional().default([]),
 });

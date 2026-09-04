@@ -36,6 +36,10 @@ export interface Product {
   isRekomendasi?: boolean;
   isPromo?: boolean;
   tag?: string;
+  weightGram?: number;
+  dimensionLength?: number;
+  dimensionWidth?: number;
+  dimensionHeight?: number;
 }
 
 export interface CategoryItem {

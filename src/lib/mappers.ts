@@ -91,6 +91,10 @@ export function mapDbProductToProduct(item: any): Product {
         : Boolean(item.isRekomendasi),
     isPromo: item.is_promo !== undefined ? Boolean(item.is_promo) : Boolean(item.isPromo),
     tag: item.tag || undefined,
+    weightGram: item.weight_gram ?? item.weightGram ?? 500,
+    dimensionLength: item.dimension_length ?? item.dimensionLength ?? 10,
+    dimensionWidth: item.dimension_width ?? item.dimensionWidth ?? 10,
+    dimensionHeight: item.dimension_height ?? item.dimensionHeight ?? 10,
   };
 }
 
