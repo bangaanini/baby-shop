@@ -12,6 +12,8 @@ export async function GET() {
       success: true,
       data: {
         activeGateway: settings.active_payment_gateway || 'midtrans',
+        clientKey: settings.midtrans_client_key || process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY || null,
+        isProduction: settings.midtrans_is_production ?? false,
         methods,
       },
     });

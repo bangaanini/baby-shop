@@ -8,6 +8,7 @@ import {
   productVariantsTable,
   cartItemsTable,
   cartsTable,
+  usersTable,
 } from '@/db/schema';
 import {
   CheckoutItemInput,
@@ -16,6 +17,10 @@ import {
 } from '@/server/validators/checkout.schema';
 import { calculateRates } from '@/server/services/shipping.service';
 import { ShippingRateOption } from '@/server/validators/shipping.schema';
+import {
+  paymentService,
+  PaymentTransactionResult,
+} from '@/server/services/payment.service';
 
 function isValidUUID(str: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -259,6 +264,7 @@ export interface CreatedOrderResult {
   courierCode: string;
   courierService: string;
   createdAt: Date;
+  paymentTransaction?: PaymentTransactionResult;
 }
 
 /**
@@ -499,7 +505,7 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
     ? findMatchingRate(shippingResult.rates, courierCode, courierService)
     : undefined;
 
-  return await db.transaction(async (tx) => {
+  const { orderRecord, itemSnapshots } = await db.transaction(async (tx) => {
     let subtotal = 0;
     let totalWeightGram = 0;
     let totalVolumeWeightGram = 0;
@@ -717,23 +723,59 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
     }
 
     return {
-      orderId: newOrder.id,
-      invoiceNumber: newOrder.invoice_number,
-      totalBayar: newOrder.total_amount,
-      status: newOrder.status,
-      paymentMethod: newOrder.payment_method,
-      subtotal: newOrder.subtotal,
-      shippingCost: newOrder.shipping_cost,
-      discountAmount: newOrder.discount_amount,
-      serviceFee: newOrder.service_fee,
-      recipientName: newOrder.recipient_name,
-      recipientPhone: newOrder.recipient_phone,
-      shippingAddress: newOrder.shipping_address,
-      courierCode: newOrder.courier_code,
-      courierService: newOrder.courier_service,
-      createdAt: newOrder.created_at,
+      orderRecord: newOrder,
+      itemSnapshots,
     };
   });
+
+  // After the transaction completes, generate payment transaction
+  let customerEmail = 'pembeli@example.com';
+  if (orderRecord.user_id) {
+    try {
+      const userRecord = await db.query.usersTable.findFirst({
+        where: eq(usersTable.id, orderRecord.user_id),
+      });
+      if (userRecord?.email) {
+        customerEmail = userRecord.email;
+      }
+    } catch (err) {
+      console.warn('[checkoutService] Failed to query user email:', err);
+    }
+  }
+
+  const paymentTx = await paymentService.createPaymentTransaction({
+    orderId: orderRecord.id,
+    invoiceNumber: orderRecord.invoice_number,
+    grossAmount: orderRecord.total_amount,
+    customerName: orderRecord.recipient_name,
+    customerEmail,
+    customerPhone: orderRecord.recipient_phone,
+    paymentMethodId: payload.paymentMethod,
+    items: itemSnapshots.map((it) => ({
+      name: it.productName,
+      price: it.price,
+      quantity: it.quantity,
+    })),
+  });
+
+  return {
+    orderId: orderRecord.id,
+    invoiceNumber: orderRecord.invoice_number,
+    totalBayar: orderRecord.total_amount,
+    status: orderRecord.status,
+    paymentMethod: orderRecord.payment_method,
+    subtotal: orderRecord.subtotal,
+    shippingCost: orderRecord.shipping_cost,
+    discountAmount: orderRecord.discount_amount,
+    serviceFee: orderRecord.service_fee,
+    recipientName: orderRecord.recipient_name,
+    recipientPhone: orderRecord.recipient_phone,
+    shippingAddress: orderRecord.shipping_address,
+    courierCode: orderRecord.courier_code,
+    courierService: orderRecord.courier_service,
+    createdAt: orderRecord.created_at,
+    paymentTransaction: paymentTx,
+  };
 }
 
 export const checkoutService = {

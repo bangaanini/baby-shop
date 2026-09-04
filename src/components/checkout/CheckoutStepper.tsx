@@ -21,6 +21,7 @@ import {
   Building2,
   Loader2,
   Scale,
+  ExternalLink,
 } from 'lucide-react';
 import {
   MOCK_INITIAL_CART,
@@ -43,6 +44,60 @@ function getCourierIconText(code: string): string {
   if (lower.includes('lion')) return '🦁 Lion';
   if (lower.includes('wahana')) return '🚛 Wahana';
   return '🚚 ' + (code ? code.toUpperCase() : 'Kurir');
+}
+
+function loadMidtransSnapScript(clientKey?: string, isProduction?: boolean): Promise<boolean> {
+  return new Promise((resolve) => {
+    if (typeof window === 'undefined') {
+      resolve(false);
+      return;
+    }
+
+    if ((window as any).snap) {
+      resolve(true);
+      return;
+    }
+
+    const scriptId = 'midtrans-snap-script';
+    const existingScript = document.getElementById(scriptId) as HTMLScriptElement | null;
+    if (existingScript) {
+      if ((window as any).snap) {
+        resolve(true);
+      } else {
+        existingScript.addEventListener('load', () => resolve(true));
+        existingScript.addEventListener('error', () => resolve(false));
+      }
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.id = scriptId;
+    script.src = isProduction
+      ? 'https://app.midtrans.com/snap/snap.js'
+      : 'https://app.sandbox.midtrans.com/snap/snap.js';
+    if (clientKey) {
+      script.setAttribute('data-client-key', clientKey);
+    }
+    script.async = true;
+    script.onload = () => resolve(true);
+    script.onerror = () => {
+      console.error('Failed to load Midtrans Snap JS SDK');
+      resolve(false);
+    };
+    document.body.appendChild(script);
+  });
+}
+
+interface PaymentTransactionState {
+  provider: 'midtrans' | 'xendit' | 'simulator';
+  token?: string;
+  snapToken?: string;
+  redirectUrl?: string;
+  invoiceUrl?: string;
+  clientKey?: string;
+  isProduction?: boolean;
+  isSimulator: boolean;
+  message?: string;
 }
 
 const FALLBACK_COURIER_OPTIONS: ShippingRateOption[] = MOCK_COURIERS.map((m) => ({
@@ -99,6 +154,14 @@ export function CheckoutStepper() {
     totalVolumeWeightGram: 500,
     isLiveRate: false,
   });
+  // Payment methods state
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>(MOCK_PAYMENT_METHODS);
+  const [activeGateway, setActiveGateway] = useState<'midtrans' | 'xendit' | 'simulator'>('midtrans');
+  const [midtransClientKey, setMidtransClientKey] = useState<string>('');
+  const [isMidtransProduction, setIsMidtransProduction] = useState<boolean>(false);
+  const [isLoadingPaymentMethods, setIsLoadingPaymentMethods] = useState<boolean>(false);
+  const [paymentTx, setPaymentTx] = useState<PaymentTransactionState | null>(null);
+
   const [selectedPaymentId, setSelectedPaymentId] = useState<string>(MOCK_PAYMENT_METHODS[0].id);
   const [buyerNotes, setBuyerNotes] = useState<string>('Tolong periksa jahitan & kemasan aman berlapis bubble wrap ya.');
 
@@ -126,7 +189,7 @@ export function CheckoutStepper() {
     availableCouriers.find((c) => c.id === selectedCourierId) ||
     availableCouriers[0] ||
     FALLBACK_COURIER_OPTIONS[0];
-  const selectedPayment = MOCK_PAYMENT_METHODS.find((p) => p.id === selectedPaymentId) || MOCK_PAYMENT_METHODS[0];
+  const selectedPayment = paymentMethods.find((p) => p.id === selectedPaymentId) || paymentMethods[0] || MOCK_PAYMENT_METHODS[0];
 
   // Fallback initial computations
   const fallbackSubtotal = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
@@ -196,6 +259,49 @@ export function CheckoutStepper() {
     }
 
     fetchCart();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // 1b. Fetch active payment methods & gateway settings from GET /api/payment/methods
+  useEffect(() => {
+    let isMounted = true;
+    async function fetchPaymentMethods() {
+      try {
+        setIsLoadingPaymentMethods(true);
+        const res = await fetch('/api/payment/methods');
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && json.data && isMounted) {
+            if (json.data.activeGateway) {
+              setActiveGateway(json.data.activeGateway.toLowerCase());
+            }
+            if (json.data.clientKey) {
+              setMidtransClientKey(json.data.clientKey);
+            }
+            if (typeof json.data.isProduction === 'boolean') {
+              setIsMidtransProduction(json.data.isProduction);
+            }
+            if (Array.isArray(json.data.methods) && json.data.methods.length > 0) {
+              setPaymentMethods(json.data.methods);
+              setSelectedPaymentId((prevId) => {
+                const exists = json.data.methods.some((m: PaymentMethod) => m.id === prevId);
+                return exists ? prevId : json.data.methods[0].id;
+              });
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Failed to fetch active payment methods:', err);
+      } finally {
+        if (isMounted) {
+          setIsLoadingPaymentMethods(false);
+        }
+      }
+    }
+
+    fetchPaymentMethods();
     return () => {
       isMounted = false;
     };
@@ -476,6 +582,21 @@ export function CheckoutStepper() {
         setOrderCode(createdInvoice);
         setIsOrderPlaced(true);
         window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        const tx = json.data.paymentTransaction;
+        if (tx) {
+          setPaymentTx(tx);
+
+          if (tx.provider === 'midtrans' && (tx.snapToken || tx.token)) {
+            const snapToken = tx.snapToken || tx.token;
+            const clientKey = tx.clientKey || midtransClientKey;
+            const isProd = tx.isProduction ?? isMidtransProduction;
+            handleOpenMidtransSnap(snapToken, clientKey, isProd);
+          } else if (tx.provider === 'xendit' && (tx.invoiceUrl || tx.redirectUrl)) {
+            const invoiceUrl = tx.invoiceUrl || tx.redirectUrl;
+            window.open(invoiceUrl, '_blank');
+          }
+        }
         return;
       }
 
@@ -488,6 +609,32 @@ export function CheckoutStepper() {
       setErrorMessage(error?.message || 'Gagal terhubung ke server pembayaran. Silakan periksa koneksi internet Anda.');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  const handleOpenMidtransSnap = async (token?: string, cKey?: string, isProd?: boolean) => {
+    const sToken = token || paymentTx?.snapToken || paymentTx?.token;
+    if (!sToken) return;
+    const clientKey = cKey || paymentTx?.clientKey || midtransClientKey;
+    const isProduction = isProd ?? paymentTx?.isProduction ?? isMidtransProduction;
+    const loaded = await loadMidtransSnapScript(clientKey, isProduction);
+    if (loaded && (window as any).snap && typeof (window as any).snap.pay === 'function') {
+      (window as any).snap.pay(sToken, {
+        onSuccess: function (result: any) {
+          console.log('[Midtrans Snap] Pembayaran Berhasil:', result);
+          router.push(`/user/pesanan?invoice=${orderCode}&payment_status=success`);
+        },
+        onPending: function (result: any) {
+          console.log('[Midtrans Snap] Menunggu Pembayaran:', result);
+        },
+        onError: function (result: any) {
+          console.error('[Midtrans Snap] Pembayaran Gagal:', result);
+          setErrorMessage('Pembayaran gagal atau dibatalkan. Silakan coba kembali.');
+        },
+        onClose: function () {
+          console.log('[Midtrans Snap] Popup Snap ditutup.');
+        },
+      });
     }
   };
 
@@ -509,8 +656,80 @@ export function CheckoutStepper() {
             Pesanan Berhasil Dibuat!
           </h1>
           <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
-            Terima kasih telah berbelanja di BabyKids. Pesanan Anda akan segera kami kemas dan kirimkan ke tujuan.
+            Terima kasih telah berbelanja di BabyKids. Pesanan Anda akan segera kami kemas dan kirimkan ke tujuan setelah pembayaran diverifikasi.
           </p>
+
+          {/* Payment Gateway Actions if pending */}
+          {paymentTx && (
+            <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-rose-50/70 to-purple-50/70 border border-rose-100 max-w-md mx-auto text-left shadow-xs">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-xs font-bold text-slate-700">Gateway Pembayaran:</span>
+                {paymentTx.provider === 'midtrans' && (
+                  <span className="text-xs font-bold text-blue-700 bg-blue-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-blue-200">
+                    <span>🔵</span> Midtrans Snap
+                  </span>
+                )}
+                {paymentTx.provider === 'xendit' && (
+                  <span className="text-xs font-bold text-purple-700 bg-purple-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-purple-200">
+                    <span>🟣</span> Xendit Invoice
+                  </span>
+                )}
+                {(paymentTx.isSimulator || paymentTx.provider === 'simulator') && (
+                  <span className="text-xs font-bold text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-200">
+                    <span>🟡</span> Simulator
+                  </span>
+                )}
+              </div>
+
+              {paymentTx.provider === 'midtrans' && (paymentTx.snapToken || paymentTx.token) && (
+                <div className="space-y-2">
+                  <button
+                    type="button"
+                    onClick={() => handleOpenMidtransSnap()}
+                    className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                  >
+                    <span>Buka Popup Pembayaran Midtrans Snap</span>
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </button>
+                  <p className="text-[11px] text-slate-500 text-center">
+                    Klik tombol di atas jika jendela pembayaran Midtrans tidak muncul otomatis.
+                  </p>
+                </div>
+              )}
+
+              {paymentTx.provider === 'xendit' && (paymentTx.invoiceUrl || paymentTx.redirectUrl) && (
+                <div className="space-y-2">
+                  <a
+                    href={paymentTx.invoiceUrl || paymentTx.redirectUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                  >
+                    <span>Buka Halaman Pembayaran Xendit</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                  <p className="text-[11px] text-slate-500 text-center">
+                    Anda akan dialihkan ke halaman tagihan resmi Xendit XenInvoice.
+                  </p>
+                </div>
+              )}
+
+              {(paymentTx.isSimulator || paymentTx.provider === 'simulator') && (
+                <div className="space-y-2">
+                  <Link
+                    href={paymentTx.redirectUrl || `/user/pesanan?invoice=${orderCode}&simulated=true`}
+                    className="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                  >
+                    <span>Simulasikan Pembayaran Berhasil</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </Link>
+                  <p className="text-[11px] text-slate-500 text-center">
+                    Mode simulasi aktif untuk menyelesaikan pembayaran secara instan tanpa gateway nyata.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Kode Pesanan Card */}
           <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 max-w-md mx-auto mb-8 text-left">
@@ -981,15 +1200,53 @@ export function CheckoutStepper() {
           {currentStep === 3 && (
             <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs">
               <div className="pb-4 border-b border-slate-100 mb-5">
-                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-rose-500" />
-                  <span>Langkah 3: Pilih Metode Pembayaran Terverifikasi</span>
-                </h2>
-                <p className="text-xs text-slate-500">Semua transaksi diamankan dengan enkripsi SSL 256-bit standar perbankan</p>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <div>
+                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                      <CreditCard className="w-5 h-5 text-rose-500" />
+                      <span>Langkah 3: Pilih Metode Pembayaran Terverifikasi</span>
+                    </h2>
+                    <p className="text-xs text-slate-500">Semua transaksi diamankan dengan enkripsi SSL 256-bit standar perbankan</p>
+                  </div>
+
+                  <div>
+                    {activeGateway === 'midtrans' && (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                        <span>🔵 Midtrans Snap</span>
+                        <span className="text-[10px] font-semibold bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
+                          {isMidtransProduction ? 'Production' : 'Sandbox'}
+                        </span>
+                      </span>
+                    )}
+                    {activeGateway === 'xendit' && (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                        <span>🟣 Xendit</span>
+                        <span className="text-[10px] font-semibold bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">
+                          XenInvoice
+                        </span>
+                      </span>
+                    )}
+                    {activeGateway === 'simulator' && (
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                        <span>🟡 Simulator</span>
+                        <span className="text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
+                          Lokal
+                        </span>
+                      </span>
+                    )}
+                  </div>
+                </div>
               </div>
 
               <div className="space-y-3 mb-6">
-                {MOCK_PAYMENT_METHODS.map((pay) => {
+                {isLoadingPaymentMethods && (
+                  <div className="py-8 text-center text-xs text-slate-500 flex flex-col items-center justify-center gap-2 bg-slate-50 rounded-2xl border border-slate-100">
+                    <Loader2 className="w-5 h-5 animate-spin text-rose-500" />
+                    <span>Memuat metode pembayaran aktif...</span>
+                  </div>
+                )}
+
+                {!isLoadingPaymentMethods && paymentMethods.map((pay) => {
                   const isSelected = pay.id === selectedPaymentId;
 
                   return (
@@ -1005,11 +1262,30 @@ export function CheckoutStepper() {
                       <div className="flex items-start gap-3">
                         <span className="text-2xl">{pay.icon}</span>
                         <div>
-                          <div className="flex items-center gap-2">
+                          <div className="flex flex-wrap items-center gap-2">
                             <span className="font-bold text-sm text-slate-800">{pay.nama}</span>
                             <span className="text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
                               {pay.kategori.replace('_', ' ')}
                             </span>
+                            {/* Provider Badge */}
+                            {activeGateway === 'midtrans' && (
+                              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span>🔵</span>
+                                <span>Midtrans Snap</span>
+                              </span>
+                            )}
+                            {activeGateway === 'xendit' && (
+                              <span className="text-[10px] font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span>🟣</span>
+                                <span>Xendit</span>
+                              </span>
+                            )}
+                            {activeGateway === 'simulator' && (
+                              <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span>🟡</span>
+                                <span>Simulator</span>
+                              </span>
+                            )}
                           </div>
                           <p className="text-xs text-slate-500 mt-1 leading-relaxed">
                             {pay.deskripsi}

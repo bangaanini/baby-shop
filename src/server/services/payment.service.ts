@@ -13,7 +13,8 @@ import { PaymentMethod } from '@/types/checkout';
 export interface CreatePaymentTransactionParams {
   orderId: string;
   invoiceNumber: string;
-  totalAmount: number;
+  totalAmount?: number;
+  grossAmount?: number;
   customerName: string;
   customerEmail?: string;
   customerPhone?: string;
@@ -29,7 +30,11 @@ export interface CreatePaymentTransactionParams {
 export interface PaymentTransactionResult {
   provider: 'midtrans' | 'xendit' | 'simulator';
   token?: string;
+  snapToken?: string;
   redirectUrl?: string;
+  invoiceUrl?: string;
+  clientKey?: string;
+  isProduction?: boolean;
   isSimulator: boolean;
   message?: string;
 }
@@ -243,7 +248,7 @@ export async function createPaymentTransaction(
     'midtrans'
   ).toLowerCase();
 
-  const totalAmount = Math.round(params.totalAmount);
+  const totalAmount = Math.round(params.totalAmount ?? params.grossAmount ?? 0);
 
   // 1. Jalur Midtrans Snap API
   if (activeGateway === 'midtrans') {
@@ -260,7 +265,10 @@ export async function createPaymentTransaction(
       return {
         provider: 'simulator',
         token: `sim-snap-${params.invoiceNumber}`,
+        snapToken: `sim-snap-${params.invoiceNumber}`,
         redirectUrl: `/user/pesanan?invoice=${params.invoiceNumber}&simulated=true`,
+        clientKey: settings.midtrans_client_key || undefined,
+        isProduction: settings.midtrans_is_production,
         isSimulator: true,
         message: 'Midtrans belum dikonfigurasi, mode simulator aktif.',
       };
@@ -330,7 +338,10 @@ export async function createPaymentTransaction(
         return {
           provider: 'midtrans',
           token: data.token,
+          snapToken: data.token,
           redirectUrl: data.redirect_url,
+          clientKey: settings.midtrans_client_key || undefined,
+          isProduction: settings.midtrans_is_production,
           isSimulator: false,
         };
       } else {
@@ -348,7 +359,10 @@ export async function createPaymentTransaction(
     return {
       provider: 'simulator',
       token: `sim-snap-${params.invoiceNumber}`,
+      snapToken: `sim-snap-${params.invoiceNumber}`,
       redirectUrl: `/user/pesanan?invoice=${params.invoiceNumber}&simulated=true`,
+      clientKey: settings.midtrans_client_key || undefined,
+      isProduction: settings.midtrans_is_production,
       isSimulator: true,
       message: 'Koneksi Midtrans gagal, menggunakan mode simulasi.',
     };
@@ -370,6 +384,7 @@ export async function createPaymentTransaction(
         provider: 'simulator',
         token: `sim-xendit-${params.invoiceNumber}`,
         redirectUrl: `/user/pesanan?invoice=${params.invoiceNumber}&simulated=true`,
+        invoiceUrl: `/user/pesanan?invoice=${params.invoiceNumber}&simulated=true`,
         isSimulator: true,
         message: 'Xendit belum dikonfigurasi, mode simulator aktif.',
       };
@@ -410,6 +425,7 @@ export async function createPaymentTransaction(
           provider: 'xendit',
           token: data.id,
           redirectUrl: data.invoice_url,
+          invoiceUrl: data.invoice_url,
           isSimulator: false,
         };
       } else {
@@ -428,6 +444,7 @@ export async function createPaymentTransaction(
       provider: 'simulator',
       token: `sim-xendit-${params.invoiceNumber}`,
       redirectUrl: `/user/pesanan?invoice=${params.invoiceNumber}&simulated=true`,
+      invoiceUrl: `/user/pesanan?invoice=${params.invoiceNumber}&simulated=true`,
       isSimulator: true,
       message: 'Koneksi Xendit gagal, menggunakan mode simulasi.',
     };
@@ -438,6 +455,7 @@ export async function createPaymentTransaction(
     provider: 'simulator',
     token: `sim-${params.invoiceNumber}`,
     redirectUrl: `/user/pesanan?invoice=${params.invoiceNumber}&simulated=true`,
+    invoiceUrl: `/user/pesanan?invoice=${params.invoiceNumber}&simulated=true`,
     isSimulator: true,
     message: 'Transaksi dibuat dalam mode simulator lokal.',
   };
