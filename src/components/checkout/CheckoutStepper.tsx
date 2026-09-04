@@ -656,7 +656,7 @@ export function CheckoutStepper() {
             Pesanan Berhasil Dibuat!
           </h1>
           <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
-            Terima kasih telah berbelanja di BabyKids. Pesanan Anda akan segera kami kemas dan kirimkan ke tujuan setelah pembayaran diverifikasi.
+            Terima kasih telah berbelanja di NBusiness. Pesanan Anda akan segera kami kemas dan kirimkan ke tujuan setelah pembayaran diverifikasi.
           </p>
 
           {/* Payment Gateway Actions if pending */}

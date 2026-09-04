@@ -244,7 +244,7 @@ export function AdminHeader({ onOpenSidebar }: AdminHeaderProps) {
                     <p className="text-[11px] text-slate-500 truncate">{userEmail}</p>
                     <div className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold bg-rose-50 text-rose-700 px-2 py-0.5 rounded-md border border-rose-100">
                       <ShieldCheck className="w-3 h-3 text-rose-500" />
-                      Role: Admin Toko BabyKids
+                      Role: Admin Toko NBusiness
                     </div>
                   </div>
 

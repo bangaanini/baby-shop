@@ -327,7 +327,7 @@ export async function createPaymentTransaction(
         },
         customer_details: {
           first_name: params.customerName,
-          email: params.customerEmail || 'customer@babykids.id',
+          email: params.customerEmail || 'customer@nbusiness.id',
           phone: params.customerPhone || '08123456789',
         },
       };
@@ -436,11 +436,11 @@ export async function createPaymentTransaction(
       const payload = {
         external_id: params.invoiceNumber,
         amount: totalAmount,
-        description: `Pembayaran Pesanan #${params.invoiceNumber} - BabyKids`,
-        payer_email: params.customerEmail || 'customer@babykids.id',
+        description: `Pembayaran Pesanan #${params.invoiceNumber} - NBusiness`,
+        payer_email: params.customerEmail || 'customer@nbusiness.id',
         customer: {
           given_names: params.customerName,
-          email: params.customerEmail || 'customer@babykids.id',
+          email: params.customerEmail || 'customer@nbusiness.id',
           mobile_number: params.customerPhone || '08123456789',
         },
         success_redirect_url: `${appUrl}/user/pesanan?invoice=${params.invoiceNumber}&payment_status=success`,

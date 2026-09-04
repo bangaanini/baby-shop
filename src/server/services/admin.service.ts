@@ -360,7 +360,7 @@ export async function updateOrderStatus(
       trackingEvent = {
         status_title: 'Pesanan Sedang Diproses Penjual',
         description: 'Penjual sedang menyiapkan dan mengemas barang pesanan.',
-        location: 'Toko BabyKids',
+        location: 'Toko NBusiness',
       };
       break;
     case 'dikirim':

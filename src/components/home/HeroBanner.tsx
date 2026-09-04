@@ -12,7 +12,7 @@ export function HeroBanner() {
       <div className="relative z-10 max-w-2xl">
         <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider mb-4 border border-white/20">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Marketplace Kebutuhan Anak No. 1</span>
+          <span>NBusiness • Marketplace Kebutuhan Anak No. 1</span>
         </div>
         <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-tight mb-4">
           Semua Kebutuhan Si Kecil dalam Satu Sentuhan 👶✨

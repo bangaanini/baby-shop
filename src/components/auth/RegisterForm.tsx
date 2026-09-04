@@ -111,13 +111,13 @@ function RegisterFormContent() {
           {/* Header */}
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/25 mb-3 text-2xl font-black">
-              👶
+              💼
             </div>
             <h1 className="text-2xl font-black text-slate-800 tracking-tight">
               Daftar Akun Baru
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Bergabung bersama ribuan Bunda & Ayah hebat di BabyKids
+              Bergabung bersama ribuan Bunda & Ayah hebat di NBusiness
             </p>
           </div>
 
@@ -265,7 +265,7 @@ function RegisterFormContent() {
             <p className="text-[11px] text-slate-500 leading-relaxed pt-1">
               Dengan mendaftar, Anda menyetujui{' '}
               <span className="text-rose-600 font-medium">Syarat & Ketentuan</span> serta{' '}
-              <span className="text-rose-600 font-medium">Kebijakan Privasi</span> BabyKids Store.
+              <span className="text-rose-600 font-medium">Kebijakan Privasi</span> NBusiness Store.
             </p>
 
             {/* Submit Button */}
@@ -290,7 +290,7 @@ function RegisterFormContent() {
 
           {/* Footer link to Login */}
           <div className="mt-6 text-center text-xs text-slate-500">
-            <span>Sudah memiliki akun BabyKids? </span>
+            <span>Sudah memiliki akun NBusiness? </span>
             <Link
               href={
                 redirectParam && redirectParam !== '/'

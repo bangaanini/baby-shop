@@ -46,7 +46,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
     | { id?: string; name?: string; email?: string; role?: string; phone?: string; image?: string }
     | undefined;
 
-  const displayName = user?.name || 'Admin BabyKids';
+  const displayName = user?.name || 'Admin NBusiness';
   const userEmail = user?.email || 'admin@babyshop.id';
 
   const getInitials = (name?: string) => {
@@ -85,16 +85,16 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       <div className="p-5 border-b border-slate-800 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-3 group" onClick={onClose}>
           <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-rose-500/20 group-hover:scale-105 transition-transform">
-            👶
+            💼
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-base font-black text-white tracking-tight">BabyKids</span>
+              <span className="text-base font-black text-white tracking-tight">NBusiness</span>
               <span className="text-[10px] bg-rose-500/20 text-rose-400 font-bold px-1.5 py-0.5 rounded border border-rose-500/30">
                 SELLER
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">Seller Center</p>
+            <p className="text-[11px] text-slate-400 font-medium">NBusiness Seller Center</p>
           </div>
         </Link>
         {/* Mobile close button */}

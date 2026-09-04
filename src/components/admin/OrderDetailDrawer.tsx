@@ -106,7 +106,7 @@ export function OrderDetailDrawer({
       formattedPhone = '62' + formattedPhone;
     }
     const message = encodeURIComponent(
-      `Halo Kak ${recipient},\n\nTerima kasih telah berbelanja di BabyKids! Kami ingin mengonfirmasi pesanan Anda dengan nomor invoice *${invoice}*.\n\nJika ada pertanyaan mengenai pesanan Anda, silakan balas pesan ini ya Kak.`
+      `Halo Kak ${recipient},\n\nTerima kasih telah berbelanja di NBusiness! Kami ingin mengonfirmasi pesanan Anda dengan nomor invoice *${invoice}*.\n\nJika ada pertanyaan mengenai pesanan Anda, silakan balas pesan ini ya Kak.`
     );
     return `https://wa.me/${formattedPhone}?text=${message}`;
   };
@@ -799,12 +799,12 @@ export function OrderDetailDrawer({
               {/* Toko Header */}
               <div className="flex items-center justify-between pb-3 border-b-2 border-slate-900">
                 <div className="flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-rose-500 text-white font-black flex items-center justify-center text-sm">
-                    👶
+                  <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-rose-500 to-pink-500 text-white font-black flex items-center justify-center text-xs">
+                    💼
                   </div>
                   <div>
-                    <h2 className="font-black text-sm tracking-tight">BabyKids Store</h2>
-                    <p className="text-[10px] text-slate-500">Jakarta Barat, DKI Jakarta</p>
+                    <h2 className="font-black text-sm tracking-tight">NBusiness Store</h2>
+                    <p className="text-[10px] text-slate-500">Jakarta Selatan, DKI Jakarta</p>
                   </div>
                 </div>
                 <div className="text-right">
@@ -835,10 +835,10 @@ export function OrderDetailDrawer({
                 </div>
                 <div className="space-y-1 border-l pl-3 border-slate-200">
                   <span className="text-[10px] font-bold uppercase text-slate-500">Pengirim:</span>
-                  <div className="font-bold text-slate-900">BabyKids Official</div>
-                  <div className="text-[11px] font-mono">0812-9988-7766</div>
+                  <div className="font-bold text-slate-900">NBusiness Official</div>
+                  <div className="text-[11px] font-mono">0812-3456-7890</div>
                   <p className="text-[11px] leading-tight text-slate-700">
-                    Gudang Pusat BabyKids, Kebon Jeruk, Jakarta Barat, DKI Jakarta 11530
+                    Gudang Pusat NBusiness, Jakarta Selatan, DKI Jakarta 12160
                   </p>
                 </div>
               </div>

@@ -24,11 +24,11 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
     if (dbProduct) {
       const product = mapDbProductToProduct(dbProduct);
       return {
-        title: `${product.nama} — BabyKids`,
-        description: product.deskripsi || `Beli ${product.nama} berkualitas hanya di BabyKids.`,
+        title: `${product.nama} — NBusiness`,
+        description: product.deskripsi || `Beli ${product.nama} berkualitas hanya di NBusiness.`,
         openGraph: {
-          title: `${product.nama} — BabyKids`,
-          description: product.deskripsi || `Beli ${product.nama} berkualitas hanya di BabyKids.`,
+          title: `${product.nama} — NBusiness`,
+          description: product.deskripsi || `Beli ${product.nama} berkualitas hanya di NBusiness.`,
           images: product.gambar ? [{ url: product.gambar }] : [],
         },
       };
@@ -40,11 +40,11 @@ export async function generateMetadata({ params }: ProductDetailPageProps): Prom
   // Fallback to mock product
   const mockProduct = MOCK_PRODUCTS.find((p) => p.slug === slug);
   if (!mockProduct) {
-    return { title: 'Produk Tidak Ditemukan — BabyKids' };
+    return { title: 'Produk Tidak Ditemukan — NBusiness' };
   }
 
   return {
-    title: `${mockProduct.nama} — BabyKids`,
+    title: `${mockProduct.nama} — NBusiness`,
     description: mockProduct.deskripsi,
   };
 }

@@ -59,7 +59,7 @@ function determineCourierCode(courierName: string): string {
 }
 
 async function seed() {
-  console.log('🌱 Starting database seed for BabyKids...');
+  console.log('🌱 Starting database seed for NBusiness...');
 
   try {
     // 1. Clean existing tables (in foreign key safe order)

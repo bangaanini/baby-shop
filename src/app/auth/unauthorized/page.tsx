@@ -14,9 +14,9 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Akses Ditolak (403) — BabyKids Store',
+  title: 'Akses Ditolak (403) — NBusiness Store',
   description:
-    'Halaman panel admin hanya dapat diakses oleh administrator resmi BabyKids Store.',
+    'Halaman panel admin hanya dapat diakses oleh administrator resmi NBusiness Store.',
 };
 
 export default function UnauthorizedPage() {
@@ -79,12 +79,12 @@ export default function UnauthorizedPage() {
                   Butuh bantuan akun atau peran?
                 </h3>
                 <p className="text-[11px] sm:text-xs text-slate-500">
-                  Tim dukungan BabyKids siap membantu verifikasi hak akses Anda.
+                  Tim dukungan NBusiness siap membantu verifikasi hak akses Anda.
                 </p>
               </div>
             </div>
             <a
-              href="mailto:support@babykids.id?subject=Permintaan%20Akses%20Admin%20BabyKids"
+              href="mailto:support@nbusiness.id?subject=Permintaan%20Akses%20Admin%20NBusiness"
               className="px-3 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold text-xs shrink-0 transition-colors inline-flex items-center gap-1"
             >
               <span>Hubungi Dukungan</span>

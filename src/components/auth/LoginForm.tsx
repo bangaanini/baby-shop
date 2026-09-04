@@ -129,13 +129,13 @@ function LoginFormContent() {
           {/* Header */}
           <div className="text-center mb-6">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/25 mb-3 text-2xl font-black">
-              👶
+              💼
             </div>
             <h1 className="text-2xl font-black text-slate-800 tracking-tight">
               Selamat Datang Kembali!
             </h1>
             <p className="text-xs sm:text-sm text-slate-500 mt-1">
-              Masuk ke akun BabyKids Anda untuk melanjutkan belanja
+              Masuk ke akun NBusiness Anda untuk melanjutkan belanja
             </p>
           </div>
 
@@ -190,7 +190,7 @@ function LoginFormContent() {
                 ) : (
                   <ShieldCheck className="w-3.5 h-3.5 text-sky-600" />
                 )}
-                <span>🔵 Admin Toko</span>
+                <span>🔵 Admin NBusiness</span>
               </button>
             </div>
           </div>
@@ -277,7 +277,7 @@ function LoginFormContent() {
 
           {/* Footer link to Register */}
           <div className="mt-6 text-center text-xs text-slate-500">
-            <span>Belum memiliki akun BabyKids? </span>
+            <span>Belum memiliki akun NBusiness? </span>
             <Link
               href={
                 redirectParam && redirectParam !== '/'

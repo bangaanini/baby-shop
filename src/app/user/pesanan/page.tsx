@@ -4,7 +4,7 @@ import { Navbar, Footer } from '@/components/layout/NavbarFooter';
 import { OrderHistoryView } from '@/components/order/OrderHistoryView';
 
 export const metadata: Metadata = {
-  title: 'Riwayat Pesanan Saya — BabyKids',
+  title: 'Riwayat Pesanan Saya — NBusiness',
   description: 'Daftar riwayat pesanan, pelacakan posisi paket kurir, dan konfirmasi barang diterima.',
 };
 

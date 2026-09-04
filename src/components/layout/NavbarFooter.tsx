@@ -91,14 +91,14 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo & Brand */}
           <Link href="/" className="flex items-center gap-2 shrink-0 group">
-            <div className="w-10 h-10 rounded-2xl bg-rose-500 text-white flex items-center justify-center font-black text-xl shadow-md group-hover:scale-105 transition-transform">
-              👶
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center font-black text-xl shadow-md group-hover:scale-105 transition-transform">
+              💼
             </div>
             <div>
               <span className="text-xl font-bold bg-gradient-to-r from-rose-600 to-pink-600 bg-clip-text text-transparent">
-                BabyKids
+                NBusiness
               </span>
-              <span className="text-xs block text-slate-500 font-medium">Toko Kebutuhan Anak</span>
+              <span className="text-xs block text-slate-500 font-medium">Toko Kebutuhan Anak & Perlengkapan</span>
             </div>
           </Link>
 
@@ -314,13 +314,13 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-xl bg-rose-500 text-white flex items-center justify-center font-bold text-lg">
-                👶
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center font-bold text-base">
+                💼
               </div>
-              <span className="text-xl font-bold text-white">BabyKids</span>
+              <span className="text-xl font-bold text-white tracking-tight">NBusiness</span>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed mb-4">
-              Toko online kebutuhan anak terlengkap di Indonesia. Dari perlengkapan bayi, pakaian modis anak, hingga mainan edukatif berkualitas.
+              Toko online kebutuhan anak dan perlengkapan keluarga terlengkap di Indonesia. Dari perlengkapan bayi, pakaian modis anak, hingga mainan edukatif berkualitas.
             </p>
             <div className="text-xs text-slate-400 space-y-1">
               <p>📍 Pengiriman dari: Jakarta & Surabaya</p>
@@ -363,7 +363,7 @@ export function Footer() {
         </div>
 
         <div className="border-t border-slate-800 pt-6 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 gap-4">
-          <p>© 2026 BabyKids Store — Toko Kebutuhan Anak Terpercaya di Indonesia.</p>
+          <p>© 2026 NBusiness — Toko Kebutuhan Anak & Perlengkapan Terpercaya di Indonesia.</p>
           <p className="text-slate-400">Dibangun untuk kenyamanan belanja orang tua Indonesia ❤️</p>
         </div>
       </div>

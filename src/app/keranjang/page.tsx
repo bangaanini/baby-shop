@@ -4,7 +4,7 @@ import { Navbar, Footer } from '@/components/layout/NavbarFooter';
 import { CartView } from '@/components/checkout/CartView';
 
 export const metadata: Metadata = {
-  title: 'Keranjang Belanja — BabyKids',
+  title: 'Keranjang Belanja — NBusiness',
   description: 'Daftar belanja perlengkapan, pakaian anak, dan mainan.',
 };
 

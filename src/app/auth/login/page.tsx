@@ -5,8 +5,8 @@ import { LoginForm } from '@/components/auth/LoginForm';
 import { ShieldCheck, Sparkles, HeartHandshake } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Masuk ke Akun — BabyKids Store',
-  description: 'Masuk ke akun BabyKids Anda untuk menikmati kemudahan belanja kebutuhan bayi dan anak terlengkap di Indonesia.',
+  title: 'Masuk ke Akun — NBusiness Store',
+  description: 'Masuk ke akun NBusiness Anda untuk menikmati kemudahan belanja kebutuhan bayi, anak, dan perlengkapan terlengkap di Indonesia.',
 };
 
 export default function LoginPage() {

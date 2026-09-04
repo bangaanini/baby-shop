@@ -15,10 +15,10 @@ export async function generateMetadata({ params }: CategoryPageProps): Promise<M
   const { slug } = await params;
   const category = MOCK_CATEGORIES.find((c) => c.slug === slug);
   if (!category) {
-    return { title: 'Kategori Tidak Ditemukan — BabyKids' };
+    return { title: 'Kategori Tidak Ditemukan — NBusiness' };
   }
   return {
-    title: `${category.nama} — BabyKids`,
+    title: `${category.nama} — NBusiness`,
     description: category.deskripsi,
   };
 }

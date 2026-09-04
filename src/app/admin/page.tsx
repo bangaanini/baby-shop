@@ -209,11 +209,11 @@ function SellerCenterDashboardContent() {
               </span>
               <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/10 text-slate-300 text-xs font-medium">
                 <Store className="w-3.5 h-3.5 text-rose-400" />
-                BabyKids Official Store
+                NBusiness Official Store
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-2">
-              Selamat Datang di Seller Center BabyKids 👶
+              Selamat Datang di Seller Center NBusiness 💼
             </h1>
             <p className="text-sm text-slate-300 max-w-2xl leading-relaxed">
               Pantau pesanan pelanggan, kelola inventaris produk bayi, dan tingkatkan performa penjualan toko Anda dalam satu dasbor terpadu.

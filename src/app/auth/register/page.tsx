@@ -13,8 +13,8 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Daftar Akun Baru — BabyKids Store',
-  description: 'Daftar akun BabyKids untuk kemudahan pelacakan pesanan, voucher member eksklusif, dan simpan alamat pengiriman tanpa batas.',
+  title: 'Daftar Akun Baru — NBusiness Store',
+  description: 'Daftar akun NBusiness untuk kemudahan pelacakan pesanan, voucher member eksklusif, dan simpan alamat pengiriman tanpa batas.',
 };
 
 export default function RegisterPage() {
@@ -52,13 +52,13 @@ export default function RegisterPage() {
             <div className="space-y-3">
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-rose-100/80 text-rose-700 text-xs font-bold">
                 <Sparkles className="w-3.5 h-3.5 text-rose-600" />
-                <span>Keuntungan Member BabyKids</span>
+                <span>Keuntungan Member NBusiness</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-slate-800 leading-tight">
                 Belanja Praktis & Nyaman untuk Si Buah Hati
               </h2>
               <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
-                Nikmati berbagai kemudahan dan promo eksklusif dengan menjadi bagian dari keluarga besar BabyKids Store.
+                Nikmati berbagai kemudahan dan promo eksklusif dengan menjadi bagian dari keluarga besar NBusiness Store.
               </p>
             </div>
 

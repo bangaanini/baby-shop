@@ -4,8 +4,8 @@ import { Navbar, Footer } from '@/components/layout/NavbarFooter';
 import { UserProfileView } from '@/components/user/UserProfileView';
 
 export const metadata: Metadata = {
-  title: 'Profil Saya & Pengaturan Akun — BabyKids',
-  description: 'Kelola data diri, data anak, dan alamat pengiriman Anda di BabyKids.',
+  title: 'Profil Saya & Pengaturan Akun — NBusiness',
+  description: 'Kelola data diri, data anak, dan alamat pengiriman Anda di NBusiness.',
 };
 
 export default function UserProfilePage() {

@@ -4,7 +4,7 @@ import { Navbar, Footer } from '@/components/layout/NavbarFooter';
 import { CatalogView } from '@/components/catalog/CatalogView';
 
 export const metadata: Metadata = {
-  title: 'Katalog Produk Kebutuhan Anak — BabyKids',
+  title: 'Katalog Produk Kebutuhan Anak — NBusiness',
   description: 'Cari dan saring aneka perlengkapan bayi, pakaian anak, dan mainan edukatif dengan harga terbaik.',
 };
 

@@ -4,7 +4,7 @@ import { Navbar, Footer } from '@/components/layout/NavbarFooter';
 import { CheckoutStepper } from '@/components/checkout/CheckoutStepper';
 
 export const metadata: Metadata = {
-  title: 'Checkout & Pengiriman — BabyKids',
+  title: 'Checkout & Pengiriman — NBusiness',
   description: 'Pengisian alamat pengiriman se-Indonesia, pilih kurir, dan metode pembayaran.',
 };
 
