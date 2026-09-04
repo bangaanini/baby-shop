@@ -35,11 +35,19 @@ export async function GET() {
           id: storeSettings.id,
           storeName: storeSettings.store_name,
           tagline: storeSettings.store_tagline,
+          description: storeSettings.store_description,
           email: storeSettings.store_email,
           phone: storeSettings.store_phone,
           address: storeSettings.store_address,
           city: storeSettings.store_city,
           postalCode: storeSettings.store_postal_code,
+        },
+        seo: {
+          metaTitle: storeSettings.seo_meta_title,
+          metaDescription: storeSettings.seo_meta_description,
+          keywords: storeSettings.seo_keywords,
+          googleVerification: storeSettings.seo_google_verification,
+          ogImage: storeSettings.seo_og_image,
         },
         settings: {
           ...storeSettings,
@@ -112,10 +120,34 @@ export async function POST(request: NextRequest) {
     if (body.profile) {
       if (body.profile.storeName !== undefined) updatePayload.store_name = body.profile.storeName;
       if (body.profile.tagline !== undefined) updatePayload.store_tagline = body.profile.tagline;
+      if (body.profile.storeDescription !== undefined)
+        updatePayload.store_description = body.profile.storeDescription;
+      if (body.profile.description !== undefined)
+        updatePayload.store_description = body.profile.description;
       if (body.profile.customerServiceEmail !== undefined)
         updatePayload.store_email = body.profile.customerServiceEmail;
       if (body.profile.whatsappNumber !== undefined)
         updatePayload.store_phone = body.profile.whatsappNumber;
+    }
+
+    if (body.seo) {
+      if (body.seo.metaTitle !== undefined) updatePayload.seo_meta_title = body.seo.metaTitle;
+      if (body.seo.metaDescription !== undefined)
+        updatePayload.seo_meta_description = body.seo.metaDescription;
+      if (body.seo.keywords !== undefined) updatePayload.seo_keywords = body.seo.keywords;
+      if (body.seo.googleVerification !== undefined)
+        updatePayload.seo_google_verification = body.seo.googleVerification;
+      if (body.seo.ogImage !== undefined) updatePayload.seo_og_image = body.seo.ogImage;
+      if (body.seo.seo_meta_title !== undefined)
+        updatePayload.seo_meta_title = body.seo.seo_meta_title;
+      if (body.seo.seo_meta_description !== undefined)
+        updatePayload.seo_meta_description = body.seo.seo_meta_description;
+      if (body.seo.seo_keywords !== undefined)
+        updatePayload.seo_keywords = body.seo.seo_keywords;
+      if (body.seo.seo_google_verification !== undefined)
+        updatePayload.seo_google_verification = body.seo.seo_google_verification;
+      if (body.seo.seo_og_image !== undefined)
+        updatePayload.seo_og_image = body.seo.seo_og_image;
     }
 
     if (body.warehouse) {
@@ -148,11 +180,17 @@ export async function POST(request: NextRequest) {
     const directKeys: (keyof NewStoreSettings)[] = [
       'store_name',
       'store_tagline',
+      'store_description',
       'store_email',
       'store_phone',
       'store_address',
       'store_city',
       'store_postal_code',
+      'seo_meta_title',
+      'seo_meta_description',
+      'seo_keywords',
+      'seo_google_verification',
+      'seo_og_image',
       'active_payment_gateway',
       'midtrans_server_key',
       'midtrans_client_key',

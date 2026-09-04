@@ -70,6 +70,24 @@ export async function getStoreSettings(): Promise<StoreSettings> {
     if (existing) {
       return {
         ...existing,
+        store_name: existing.store_name || 'NBusiness',
+        store_tagline:
+          existing.store_tagline ||
+          'Marketplace & Toko Kebutuhan Anak Terpercaya',
+        store_description:
+          existing.store_description ||
+          'Pusat belanja perlengkapan bayi, pakaian anak, dan mainan edukasi terstandar SNI di NBusiness.',
+        seo_meta_title:
+          existing.seo_meta_title ||
+          'NBusiness — Toko Kebutuhan Anak & Perlengkapan Terlengkap',
+        seo_meta_description:
+          existing.seo_meta_description ||
+          'Beli perlengkapan bayi, baju anak modis, dan mainan edukatif terpercaya dengan pengiriman cepat ke seluruh Indonesia di NBusiness.',
+        seo_keywords:
+          existing.seo_keywords ||
+          'nbusiness, toko anak, perlengkapan bayi, baju anak, mainan edukasi, belanja anak online',
+        seo_google_verification: existing.seo_google_verification || null,
+        seo_og_image: existing.seo_og_image || null,
         active_payment_gateway:
           existing.active_payment_gateway ||
           process.env.PAYMENT_GATEWAY_PROVIDER ||
@@ -107,13 +125,23 @@ export async function getStoreSettings(): Promise<StoreSettings> {
     // Jika belum ada record default di database, buat baris default baru
     const defaultSettings: NewStoreSettings = {
       id: 'default',
-      store_name: 'BabyKids Official Store',
-      store_tagline: 'Marketplace Kebutuhan Anak Terlengkap #1 di Indonesia',
+      store_name: 'NBusiness',
+      store_tagline: 'Marketplace & Toko Kebutuhan Anak Terpercaya',
+      store_description:
+        'Pusat belanja perlengkapan bayi, pakaian anak, dan mainan edukasi terstandar SNI di NBusiness.',
       store_email: 'halo@babykids.id',
       store_phone: '0812-3456-7890',
       store_address: 'Jl. Melati Indah No. 42, RT 03 / RW 07, Kebayoran Baru',
       store_city: process.env.SHIPPING_ORIGIN_CITY || 'Jakarta Selatan',
       store_postal_code: process.env.SHIPPING_ORIGIN_POSTAL_CODE || '12160',
+      seo_meta_title:
+        'NBusiness — Toko Kebutuhan Anak & Perlengkapan Terlengkap',
+      seo_meta_description:
+        'Beli perlengkapan bayi, baju anak modis, dan mainan edukatif terpercaya dengan pengiriman cepat ke seluruh Indonesia di NBusiness.',
+      seo_keywords:
+        'nbusiness, toko anak, perlengkapan bayi, baju anak, mainan edukasi, belanja anak online',
+      seo_google_verification: null,
+      seo_og_image: null,
       active_payment_gateway: process.env.PAYMENT_GATEWAY_PROVIDER || 'midtrans',
       midtrans_server_key: process.env.MIDTRANS_SERVER_KEY || null,
       midtrans_client_key: process.env.MIDTRANS_CLIENT_KEY || null,
@@ -151,13 +179,23 @@ export async function getStoreSettings(): Promise<StoreSettings> {
     console.error('[PaymentService] Error fetching store settings:', error);
     return {
       id: 'default',
-      store_name: 'BabyKids Official Store',
-      store_tagline: 'Marketplace Kebutuhan Anak Terlengkap #1 di Indonesia',
+      store_name: 'NBusiness',
+      store_tagline: 'Marketplace & Toko Kebutuhan Anak Terpercaya',
+      store_description:
+        'Pusat belanja perlengkapan bayi, pakaian anak, dan mainan edukasi terstandar SNI di NBusiness.',
       store_email: 'halo@babykids.id',
       store_phone: '0812-3456-7890',
       store_address: 'Jl. Melati Indah No. 42, RT 03 / RW 07, Kebayoran Baru',
       store_city: process.env.SHIPPING_ORIGIN_CITY || 'Jakarta Selatan',
       store_postal_code: process.env.SHIPPING_ORIGIN_POSTAL_CODE || '12160',
+      seo_meta_title:
+        'NBusiness — Toko Kebutuhan Anak & Perlengkapan Terlengkap',
+      seo_meta_description:
+        'Beli perlengkapan bayi, baju anak modis, dan mainan edukatif terpercaya dengan pengiriman cepat ke seluruh Indonesia di NBusiness.',
+      seo_keywords:
+        'nbusiness, toko anak, perlengkapan bayi, baju anak, mainan edukasi, belanja anak online',
+      seo_google_verification: null,
+      seo_og_image: null,
       active_payment_gateway: process.env.PAYMENT_GATEWAY_PROVIDER || 'midtrans',
       midtrans_server_key: process.env.MIDTRANS_SERVER_KEY || null,
       midtrans_client_key: process.env.MIDTRANS_CLIENT_KEY || null,
