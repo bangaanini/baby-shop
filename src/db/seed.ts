@@ -6,60 +6,9 @@ import * as schema from './schema';
 import { hashPassword } from 'better-auth/crypto';
 import { createLocalAccountIssuer } from 'better-auth';
 import { MOCK_CATEGORIES, MOCK_PRODUCTS } from '../data/mock-products';
-import { MOCK_SAVED_ADDRESSES, MOCK_INITIAL_CART } from '../data/mock-checkout';
-import { MOCK_ORDERS } from '../data/mock-orders';
-
-function parseIndonesianDate(dateStr: string): Date {
-  const months: Record<string, number> = {
-    jan: 0,
-    feb: 1,
-    mar: 2,
-    apr: 3,
-    mei: 4,
-    may: 4,
-    jun: 5,
-    jul: 6,
-    agu: 7,
-    ags: 7,
-    aug: 7,
-    sep: 8,
-    okt: 9,
-    oct: 9,
-    nov: 10,
-    des: 11,
-    dec: 11,
-  };
-
-  const regex = /(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})(?:,\s+(\d{1,2}):(\d{2}))?/;
-  const match = dateStr.match(regex);
-  if (match) {
-    const day = parseInt(match[1], 10);
-    const monthStr = match[2].toLowerCase().slice(0, 3);
-    const month = months[monthStr] ?? 0;
-    const year = parseInt(match[3], 10);
-    const hours = match[4] ? parseInt(match[4], 10) : 0;
-    const minutes = match[5] ? parseInt(match[5], 10) : 0;
-    return new Date(Date.UTC(year, month, day, hours - 7, minutes)); // WIB is UTC+7
-  }
-  const fallback = new Date(dateStr);
-  return isNaN(fallback.getTime()) ? new Date() : fallback;
-}
-
-function determineCourierCode(courierName: string): string {
-  const lower = courierName.toLowerCase();
-  if (lower.includes('sicepat')) return 'sicepat';
-  if (lower.includes('jne')) return 'jne';
-  if (lower.includes('j&t') || lower.includes('jnt')) return 'jnt';
-  if (lower.includes('anteraja')) return 'anteraja';
-  if (lower.includes('pos')) return 'pos';
-  if (lower.includes('tiki')) return 'tiki';
-  if (lower.includes('gosend') || lower.includes('gojek')) return 'gosend';
-  if (lower.includes('grab')) return 'grabexpress';
-  return 'custom';
-}
 
 async function seed() {
-  console.log('🌱 Starting database seed for NBusiness...');
+  console.log('🌱 Starting database seed for NBusiness (Products, Categories & Admin Only)...');
 
   try {
     // 1. Clean existing tables (in foreign key safe order)
@@ -99,7 +48,6 @@ async function seed() {
 
     // 3. Seed Products, Variants, and Images
     console.log(`🧸 Seeding ${MOCK_PRODUCTS.length} products with variants and images...`);
-    const productMap = new Map<string, { id: string; variants: Map<string, string> }>();
     let totalVariants = 0;
     let totalImages = 0;
 
@@ -119,9 +67,9 @@ async function seed() {
           price: prod.harga,
           original_price: prod.hargaCoret ?? null,
           discount_percent: prod.diskonPersen ?? null,
-          sold_count: prod.terjual,
-          rating: prod.rating.toFixed(1),
-          review_count: prod.reviewCount,
+          sold_count: 0,
+          rating: '5.0',
+          review_count: 0,
           stock: prod.stok,
           material: prod.bahan ?? null,
           suitable_age: prod.usiaCocok ?? null,
@@ -131,13 +79,16 @@ async function seed() {
           is_recommended: Boolean(prod.isRekomendasi),
           is_promo: Boolean(prod.isPromo),
           tag: prod.tag ?? null,
+          weight_gram: 500,
+          dimension_length: 15,
+          dimension_width: 10,
+          dimension_height: 5,
         })
         .returning({ id: schema.productsTable.id, slug: schema.productsTable.slug });
 
-      const variantMap = new Map<string, string>();
       if (prod.varian && prod.varian.length > 0) {
         for (const v of prod.varian) {
-          const [insertedVariant] = await db
+          await db
             .insert(schema.productVariantsTable)
             .values({
               product_id: insertedProd.id,
@@ -145,209 +96,90 @@ async function seed() {
               size: v.ukuran,
               stock: v.stok,
               additional_price: v.hargaTambahan ?? 0,
-            })
-            .returning({ id: schema.productVariantsTable.id });
-          const key = `${v.warna.toLowerCase().trim()}|${v.ukuran.toLowerCase().trim()}`;
-          variantMap.set(key, insertedVariant.id);
+            });
           totalVariants++;
         }
       }
 
-      // Insert primary image
-      await db.insert(schema.productImagesTable).values({
-        product_id: insertedProd.id,
-        url: prod.gambar,
-        alt_text: prod.nama,
-        sort_order: 0,
-      });
-      totalImages++;
+      const galleryUrls = [
+        prod.gambar,
+        'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=500&auto=format&fit=crop&q=60',
+        'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=500&auto=format&fit=crop&q=60',
+        'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=500&auto=format&fit=crop&q=60',
+      ];
 
-      // Insert gallery images if any
-      if (prod.galeri && prod.galeri.length > 0) {
-        let order = 1;
-        for (const img of prod.galeri) {
-          if (img.url !== prod.gambar) {
-            await db.insert(schema.productImagesTable).values({
-              product_id: insertedProd.id,
-              url: img.url,
-              alt_text: img.altText || prod.nama,
-              sort_order: order++,
-            });
-            totalImages++;
-          }
-        }
+      let sortOrder = 0;
+      for (const imgUrl of galleryUrls) {
+        await db.insert(schema.productImagesTable).values({
+          product_id: insertedProd.id,
+          url: imgUrl,
+          alt_text: `${prod.nama} - Foto ${sortOrder + 1}`,
+          sort_order: sortOrder,
+        });
+        totalImages++;
+        sortOrder++;
       }
-
-      productMap.set(insertedProd.slug, { id: insertedProd.id, variants: variantMap });
     }
     console.log(
-      `✅ Products seeded: ${productMap.size} products, ${totalVariants} variants, ${totalImages} images.`
+      `✅ Products seeded: ${MOCK_PRODUCTS.length} products, ${totalVariants} variants, ${totalImages} gallery images.`
     );
 
-    // 4. Seed Users (Demo Buyer & Admin), Auth Accounts, and Addresses
-    console.log('👤 Seeding demo users, accounts, and addresses...');
-    const [buyerUser] = await db
-      .insert(schema.usersTable)
-      .values({
-        id: 'user_buyer_demo_1',
-        name: 'Bunda Sarah Clarissa',
-        email: 'sarah.clarissa@example.com',
-        phone: '0812-3456-7890',
-        role: 'buyer',
-        image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&auto=format&fit=crop&q=60',
-      })
-      .returning({ id: schema.usersTable.id, email: schema.usersTable.email });
-
-    const buyerHashedPassword = await hashPassword('password123');
-    await db.insert(schema.accountsTable).values({
-      id: 'account_buyer_demo_1',
-      userId: buyerUser.id,
-      accountId: buyerUser.id,
-      providerId: 'credential',
-      issuer: createLocalAccountIssuer('credential'),
-      password: buyerHashedPassword,
-    });
+    // 4. Seed Default Admin User
+    console.log('👤 Seeding default admin user...');
+    const adminPasswordHash = await hashPassword('admin123');
 
     const [adminUser] = await db
       .insert(schema.usersTable)
       .values({
         id: 'user_admin_demo_1',
         name: 'Admin Toko NBusiness',
-        email: 'admin@babykids.id',
-        phone: '0811-0000-0000',
+        email: 'admin@nbusiness.id',
+        emailVerified: true,
+        phone: '0812-0000-9999',
         role: 'admin',
-        image: null,
       })
-      .returning({ id: schema.usersTable.id, email: schema.usersTable.email });
+      .returning({ id: schema.usersTable.id });
 
-    const adminHashedPassword = await hashPassword('admin123');
     await db.insert(schema.accountsTable).values({
-      id: 'account_admin_demo_1',
+      id: 'acc_admin_demo_1',
       userId: adminUser.id,
-      accountId: adminUser.id,
+      accountId: 'admin@nbusiness.id',
       providerId: 'credential',
+      password: adminPasswordHash,
       issuer: createLocalAccountIssuer('credential'),
-      password: adminHashedPassword,
     });
+    console.log('✅ Admin user created: admin@nbusiness.id / admin123');
 
-    console.log(`✅ Users & accounts created: Buyer (${buyerUser.email}), Admin (${adminUser.email}).`);
-
-    // Seed Saved Addresses for demo buyer
-    for (const addr of MOCK_SAVED_ADDRESSES) {
-      await db.insert(schema.addressesTable).values({
-        userId: buyerUser.id,
-        recipient_name: addr.namaPenerima,
-        phone: addr.telepon,
-        label: addr.labelAlamat,
-        full_address: addr.alamatLengkap,
-        district: addr.kecamatan,
-        city: addr.kotaKabupaten,
-        province: addr.provinsi,
-        postal_code: addr.kodePos,
-        is_primary: addr.isUtama,
+    // 5. Seed Default Store Settings if not present
+    console.log('⚙️ Initializing default store settings...');
+    const existingSettings = await db.query.storeSettingsTable.findFirst();
+    if (!existingSettings) {
+      await db.insert(schema.storeSettingsTable).values({
+        id: 'default',
+        store_name: 'NBusiness',
+        store_tagline: 'Marketplace & Toko Kebutuhan Anak Terpercaya',
+        store_email: 'halo@nbusiness.id',
+        store_phone: '0812-3456-7890',
+        store_address: 'Jl. Senopati Raya No. 45, RT.05/RW.02, Kel. Selong, Kebayoran Baru',
+        store_city: 'Jakarta Selatan',
+        store_postal_code: '12160',
+        active_payment_gateway: 'midtrans',
+        enabled_payment_methods: ['pay-qris', 'pay-bca-va', 'pay-mandiri-va', 'pay-bri-va', 'pay-gopay'],
+        enabled_couriers: ['sicepat', 'jne', 'jnt', 'anteraja', 'cargo'],
       });
-    }
-    console.log(`✅ Addresses seeded (${MOCK_SAVED_ADDRESSES.length} addresses for buyer).`);
-
-    // 5. Seed Initial Cart for Demo Buyer (Clean Empty Cart)
-    const [buyerCart] = await db
-      .insert(schema.cartsTable)
-      .values({
-        user_id: buyerUser.id,
-      })
-      .returning({ id: schema.cartsTable.id });
-    console.log(`✅ Cart initialized for buyer (empty cart ID: ${buyerCart.id}).`);
-
-    // 6. Seed Orders, Order Items, and Tracking History
-    console.log(`📦 Seeding ${MOCK_ORDERS.length} demo orders with timeline...`);
-    let totalOrderItems = 0;
-    let totalTrackingEvents = 0;
-
-    for (const order of MOCK_ORDERS) {
-      const orderCreatedAt = parseIndonesianDate(order.tanggalPesanan);
-      const [insertedOrder] = await db
-        .insert(schema.ordersTable)
-        .values({
-          invoice_number: order.nomorInvoice,
-          user_id: buyerUser.id,
-          status: order.status,
-          recipient_name: order.namaPenerima,
-          recipient_phone: order.teleponPenerima,
-          shipping_address: order.alamatLengkap,
-          courier_code: determineCourierCode(order.kurir),
-          courier_service: order.layananKurir,
-          tracking_number: order.nomorResi || null,
-          payment_method: order.metodePembayaran,
-          subtotal: order.subtotal,
-          shipping_cost: order.ongkir,
-          discount_amount: order.diskon,
-          service_fee: order.biayaLayanan,
-          total_amount: order.totalBayar,
-          notes: order.catatan || null,
-          created_at: orderCreatedAt,
-          updated_at: orderCreatedAt,
-        })
-        .returning({ id: schema.ordersTable.id });
-
-      // Insert items for this order
-      for (const item of order.items) {
-        const productInfo = productMap.get(item.slug);
-        const productId = productInfo?.id ?? null;
-        let variantId: string | null = null;
-        if (productInfo && item.warna && item.ukuran) {
-          const vKey = `${item.warna.toLowerCase().trim()}|${item.ukuran.toLowerCase().trim()}`;
-          variantId = productInfo.variants.get(vKey) ?? null;
-        }
-
-        await db.insert(schema.orderItemsTable).values({
-          order_id: insertedOrder.id,
-          product_id: productId,
-          variant_id: variantId,
-          product_name: item.nama,
-          variant_color: item.warna || null,
-          variant_size: item.ukuran || null,
-          price: item.harga,
-          quantity: item.jumlah,
-          image_url: item.gambar,
-        });
-        totalOrderItems++;
-      }
-
-      // Insert tracking history for this order
-      if (order.trackingTimeline && order.trackingTimeline.length > 0) {
-        for (const step of order.trackingTimeline) {
-          const stepTime = parseIndonesianDate(step.waktu);
-          await db.insert(schema.trackingHistoryTable).values({
-            order_id: insertedOrder.id,
-            status_title: step.status,
-            description: step.keterangan || null,
-            location: step.lokasi || null,
-            occurred_at: stepTime,
-          });
-          totalTrackingEvents++;
-        }
-      }
+      console.log('✅ Default store settings initialized.');
     }
 
-    console.log(
-      `✅ Orders seeded: ${MOCK_ORDERS.length} orders, ${totalOrderItems} items, ${totalTrackingEvents} tracking events.`
-    );
-    console.log('✨ All seed data populated successfully!');
+    console.log('✨ Seed completed cleanly! Zero mock orders or dummy transactions.');
   } catch (error) {
     console.error('❌ Error during database seed:', error);
     throw error;
   } finally {
-    console.log('🔒 Closing database connection...');
     await client.end();
-    console.log('👋 Database connection closed.');
   }
 }
 
-seed()
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });
+seed().catch((err) => {
+  console.error('Fatal error during seed:', err);
+  process.exit(1);
+});

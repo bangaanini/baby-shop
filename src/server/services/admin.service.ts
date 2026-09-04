@@ -46,6 +46,38 @@ export interface DashboardStats {
   recentOrders: DetailedOrder[];
 }
 
+export interface DailySalesPoint {
+  date: string;
+  label: string;
+  fullDate: string;
+  revenue: number;
+  orders: number;
+  percentage: number;
+}
+
+export interface CategorySalesBreakdown {
+  id: string;
+  name: string;
+  slug: string;
+  revenue: number;
+  ordersCount: number;
+  percentage: number;
+  productCount: number;
+  color: string;
+  badgeBg: string;
+}
+
+export interface SalesAnalyticsResult {
+  dailySales: DailySalesPoint[];
+  categorySales: CategorySalesBreakdown[];
+  totalPeriodRevenue: number;
+  totalPeriodOrders: number;
+  completedPeriodOrders: number;
+  cancelledPeriodOrders: number;
+  aov: number;
+  completionRate: number;
+}
+
 export interface AdminOrdersResult {
   items: DetailedOrder[];
   total: number;
@@ -165,6 +197,150 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     averageRating,
     completedTodayCount,
     recentOrders,
+  };
+}
+
+/**
+ * Get real sales analytics data for /admin/statistik derived from database orders.
+ */
+export async function getSalesAnalytics(days: number = 7): Promise<SalesAnalyticsResult> {
+  const now = new Date();
+  const startDate = new Date();
+  startDate.setDate(now.getDate() - (days - 1));
+  startDate.setHours(0, 0, 0, 0);
+
+  // 1. Fetch non-cancelled orders within the period
+  const orders = await db.query.ordersTable.findMany({
+    where: gte(ordersTable.created_at, startDate),
+    with: {
+      items: {
+        with: {
+          product: {
+            with: {
+              category: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: [asc(ordersTable.created_at)],
+  });
+
+  const validOrders = orders.filter((o) => o.status !== 'dibatalkan');
+  const completedOrders = orders.filter((o) => o.status === 'selesai');
+  const cancelledOrders = orders.filter((o) => o.status === 'dibatalkan');
+
+  const totalPeriodRevenue = validOrders.reduce((sum, o) => sum + (o.total_amount || 0), 0);
+  const totalPeriodOrders = validOrders.length;
+  const aov = totalPeriodOrders > 0 ? Math.round(totalPeriodRevenue / totalPeriodOrders) : 0;
+  const completionRate =
+    orders.length > 0
+      ? Math.round(((orders.length - cancelledOrders.length) / orders.length) * 100)
+      : 100;
+
+  // 2. Generate daily buckets for the period
+  const dayBuckets = new Map<string, { label: string; fullDate: string; revenue: number; orders: number }>();
+
+  for (let i = 0; i < days; i++) {
+    const d = new Date(startDate);
+    d.setDate(d.getDate() + i);
+    const dateKey = d.toISOString().split('T')[0];
+    const label = d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short' });
+    const fullDate = d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+
+    dayBuckets.set(dateKey, {
+      label,
+      fullDate,
+      revenue: 0,
+      orders: 0,
+    });
+  }
+
+  // Populate buckets with real orders
+  for (const ord of validOrders) {
+    if (ord.created_at) {
+      const ordKey = new Date(ord.created_at).toISOString().split('T')[0];
+      const bucket = dayBuckets.get(ordKey);
+      if (bucket) {
+        bucket.revenue += ord.total_amount || 0;
+        bucket.orders += 1;
+      }
+    }
+  }
+
+  const dailySales: DailySalesPoint[] = Array.from(dayBuckets.entries()).map(([dateKey, b]) => {
+    const percentage = totalPeriodRevenue > 0 ? Math.round((b.revenue / totalPeriodRevenue) * 100) : 0;
+    return {
+      date: dateKey,
+      label: b.label,
+      fullDate: b.fullDate,
+      revenue: b.revenue,
+      orders: b.orders,
+      percentage,
+    };
+  });
+
+  // 3. Compute real category breakdown from database
+  const categoryMap = new Map<string, { id: string; name: string; slug: string; revenue: number; ordersCount: number; productCount: number }>();
+
+  const allCategories = await db.query.categoriesTable.findMany({
+    with: {
+      products: true,
+    },
+  });
+
+  for (const cat of allCategories) {
+    categoryMap.set(cat.id, {
+      id: cat.id,
+      name: cat.name,
+      slug: cat.slug,
+      revenue: 0,
+      ordersCount: 0,
+      productCount: cat.products?.length || 0,
+    });
+  }
+
+  // Accumulate from real order items
+  for (const ord of validOrders) {
+    for (const it of ord.items || []) {
+      const catId = it.product?.category_id;
+      if (catId && categoryMap.has(catId)) {
+        const catObj = categoryMap.get(catId)!;
+        catObj.revenue += it.price * it.quantity;
+        catObj.ordersCount += it.quantity;
+      }
+    }
+  }
+
+  const colorPalette = [
+    { color: 'bg-rose-500', badgeBg: 'bg-rose-50 text-rose-700 border-rose-200' },
+    { color: 'bg-amber-500', badgeBg: 'bg-amber-50 text-amber-700 border-amber-200' },
+    { color: 'bg-sky-500', badgeBg: 'bg-sky-50 text-sky-700 border-sky-200' },
+    { color: 'bg-purple-500', badgeBg: 'bg-purple-50 text-purple-700 border-purple-200' },
+  ];
+
+  let colorIdx = 0;
+  const categorySales: CategorySalesBreakdown[] = Array.from(categoryMap.values()).map((c) => {
+    const pal = colorPalette[colorIdx % colorPalette.length];
+    colorIdx++;
+    const percentage = totalPeriodRevenue > 0 ? Math.round((c.revenue / totalPeriodRevenue) * 100) : 0;
+    return {
+      ...c,
+      percentage,
+      color: pal.color,
+      badgeBg: pal.badgeBg,
+    };
+  });
+
+  return {
+    dailySales,
+    categorySales,
+    totalPeriodRevenue,
+    totalPeriodOrders,
+    completedPeriodOrders: completedOrders.length,
+    cancelledPeriodOrders: cancelledOrders.length,
+    aov,
+    completionRate,
   };
 }
 
@@ -772,6 +948,7 @@ export async function deleteProduct(id: string) {
 
 export const adminService = {
   getDashboardStats,
+  getSalesAnalytics,
   getAllOrders,
   updateOrderStatus,
   createProduct,

@@ -1,12 +1,24 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { adminService } from '@/server/services/admin.service';
 
-export async function GET() {
+export const dynamic = 'force-dynamic';
+
+export async function GET(request: NextRequest) {
   try {
-    const stats = await adminService.getDashboardStats();
+    const daysParam = request.nextUrl.searchParams.get('days');
+    const days = daysParam ? parseInt(daysParam, 10) : 7;
+
+    const [stats, analytics] = await Promise.all([
+      adminService.getDashboardStats(),
+      adminService.getSalesAnalytics(isNaN(days) ? 7 : days),
+    ]);
+
     return NextResponse.json({
       success: true,
-      data: stats,
+      data: {
+        ...stats,
+        analytics,
+      },
     });
   } catch (error: any) {
     console.error('Error in GET /api/admin/stats:', error);

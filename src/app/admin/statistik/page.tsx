@@ -2,10 +2,7 @@
 
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import {
-  TrendingUp,
-  TrendingDown,
   DollarSign,
   Package,
   ShoppingBag,
@@ -13,29 +10,17 @@ import {
   Award,
   Clock,
   Star,
-  ArrowUpRight,
-  Calendar,
   RefreshCw,
   AlertCircle,
   BarChart3,
-  PieChart,
   Layers,
   ShieldCheck,
-  Zap,
   ChevronRight,
-  Info,
-  Percent,
-  Truck,
-  ThumbsUp,
-  Boxes,
-  Flame,
-  RotateCcw,
   Sparkles,
-  Check,
   ExternalLink,
   Eye,
   Loader2,
-  Store,
+  TrendingUp,
 } from 'lucide-react';
 import { formatRupiah } from '@/lib/format';
 import { mapDbProductToProduct, mapDbCategoryToCategoryItem } from '@/lib/mappers';
@@ -46,16 +31,47 @@ type DateFilterKey = '7d' | '30d' | 'this_month' | 'this_year';
 interface DateFilterOption {
   key: DateFilterKey;
   label: string;
-  sublabel: string;
   days: number;
 }
 
 const DATE_FILTERS: DateFilterOption[] = [
-  { key: '7d', label: '7 Hari Terakhir', sublabel: '28 Ags - 04 Sep 2026', days: 7 },
-  { key: '30d', label: '30 Hari Terakhir', sublabel: '05 Ags - 04 Sep 2026', days: 30 },
-  { key: 'this_month', label: 'Bulan Ini', sublabel: 'September 2026', days: 30 },
-  { key: 'this_year', label: 'Tahun Ini', sublabel: 'Jan - Sep 2026', days: 270 },
+  { key: '7d', label: '7 Hari Terakhir', days: 7 },
+  { key: '30d', label: '30 Hari Terakhir', days: 30 },
+  { key: 'this_month', label: 'Bulan Ini', days: 30 },
+  { key: 'this_year', label: 'Tahun Ini', days: 365 },
 ];
+
+interface DailySalesPoint {
+  date: string;
+  label: string;
+  fullDate: string;
+  revenue: number;
+  orders: number;
+  percentage: number;
+}
+
+interface CategorySalesBreakdown {
+  id: string;
+  name: string;
+  slug: string;
+  revenue: number;
+  ordersCount: number;
+  percentage: number;
+  productCount: number;
+  color: string;
+  badgeBg: string;
+}
+
+interface AnalyticsData {
+  dailySales: DailySalesPoint[];
+  categorySales: CategorySalesBreakdown[];
+  totalPeriodRevenue: number;
+  totalPeriodOrders: number;
+  completedPeriodOrders: number;
+  cancelledPeriodOrders: number;
+  aov: number;
+  completionRate: number;
+}
 
 interface DashboardStatsData {
   totalSales: number;
@@ -66,14 +82,7 @@ interface DashboardStatsData {
   lowStockCount: number;
   averageRating: number;
   completedTodayCount: number;
-}
-
-interface ChartDataPoint {
-  label: string;
-  fullDate: string;
-  revenue: number;
-  orders: number;
-  percentage: number;
+  analytics?: AnalyticsData;
 }
 
 export default function AdminStatistikPage() {
@@ -83,57 +92,68 @@ export default function AdminStatistikPage() {
 
   // Live Data States
   const [stats, setStats] = useState<DashboardStatsData | null>(null);
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
   const [topProducts, setTopProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<CategoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const activeFilterOption = DATE_FILTERS.find((f) => f.key === selectedFilter) || DATE_FILTERS[0];
+
   // Fetch all live statistics & products data
-  const loadData = useCallback(async (isRefresh = false) => {
-    if (isRefresh) {
-      setRefreshing(true);
-    } else {
-      setLoading(true);
-    }
-    setError(null);
-
-    try {
-      // 1. Fetch live admin stats
-      const statsRes = await fetch('/api/admin/stats');
-      const statsJson = await statsRes.json();
-      if (!statsRes.ok || !statsJson.success) {
-        throw new Error(statsJson.error || 'Gagal memuat ringkasan data statistik');
+  const loadData = useCallback(
+    async (isRefresh = false) => {
+      if (isRefresh) {
+        setRefreshing(true);
+      } else {
+        setLoading(true);
       }
-      setStats(statsJson.data);
+      setError(null);
 
-      // 2. Fetch top 5 popular selling products
-      const prodRes = await fetch('/api/admin/products?sort=terpopuler&limit=5');
-      const prodJson = await prodRes.json();
-      if (prodRes.ok && prodJson.success && Array.isArray(prodJson.data)) {
-        setTopProducts(prodJson.data.map(mapDbProductToProduct));
-      }
+      try {
+        const days = activeFilterOption.days;
 
-      // 3. Fetch categories for category performance
-      const catRes = await fetch('/api/categories');
-      const catJson = await catRes.json();
-      if (catRes.ok && catJson.success && Array.isArray(catJson.data)) {
-        setCategories(catJson.data.map(mapDbCategoryToCategoryItem));
+        // 1. Fetch live admin stats & analytics
+        const statsRes = await fetch(`/api/admin/stats?days=${days}`);
+        const statsJson = await statsRes.json();
+        if (!statsRes.ok || !statsJson.success) {
+          throw new Error(statsJson.error || 'Gagal memuat ringkasan data statistik');
+        }
+        setStats(statsJson.data);
+        if (statsJson.data?.analytics) {
+          setAnalytics(statsJson.data.analytics);
+        }
+
+        // 2. Fetch top popular selling products
+        const prodRes = await fetch('/api/admin/products?sort=terpopuler&limit=5');
+        const prodJson = await prodRes.json();
+        if (prodRes.ok && prodJson.success && Array.isArray(prodJson.data)) {
+          setTopProducts(prodJson.data.map(mapDbProductToProduct));
+        }
+
+        // 3. Fetch categories
+        const catRes = await fetch('/api/categories');
+        const catJson = await catRes.json();
+        if (catRes.ok && catJson.success && Array.isArray(catJson.data)) {
+          setCategories(catJson.data.map(mapDbCategoryToCategoryItem));
+        }
+      } catch (err: any) {
+        console.error('Error fetching analytics data:', err);
+        setError(err.message || 'Terjadi kesalahan saat mengambil data performa');
+      } finally {
+        setLoading(false);
+        setRefreshing(false);
       }
-    } catch (err: any) {
-      console.error('Error fetching analytics data:', err);
-      setError(err.message || 'Terjadi kesalahan saat mengambil data performa');
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }, []);
+    },
+    [activeFilterOption.days]
+  );
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  // Derived Key Metrics
+  // Derived Real Key Metrics
   const totalOmzet = stats?.totalSales || 0;
   const totalOrders = stats?.totalOrders || 0;
   const completedOrders = stats?.ordersByStatus?.selesai || 0;
@@ -141,264 +161,114 @@ export default function AdminStatistikPage() {
   const inProgressOrders =
     (stats?.ordersByStatus?.diproses || 0) + (stats?.ordersByStatus?.dikirim || 0);
 
-  // Average Order Value (AOV)
-  const aov = useMemo(() => {
-    const divisor = completedOrders > 0 ? completedOrders : totalOrders > 0 ? totalOrders : 1;
-    return Math.round(totalOmzet / divisor);
-  }, [totalOmzet, completedOrders, totalOrders]);
+  // Real Average Order Value (AOV)
+  const aov = analytics?.aov ?? (completedOrders > 0 ? Math.round(totalOmzet / completedOrders) : 0);
 
-  // Completion Rate (%)
-  const completionRate = useMemo(() => {
-    if (totalOrders === 0) return 100;
-    return Math.min(100, Math.round(((totalOrders - cancelledOrders) / totalOrders) * 1000) / 10);
-  }, [totalOrders, cancelledOrders]);
+  // Real Completion Rate (%)
+  const completionRate =
+    analytics?.completionRate ??
+    (totalOrders > 0
+      ? Math.min(100, Math.round(((totalOrders - cancelledOrders) / totalOrders) * 100))
+      : 100);
 
-  // Generate dynamic chart data points based on selected date filter
-  const chartData = useMemo<ChartDataPoint[]>(() => {
-    const baseRevenue = totalOmzet > 0 ? totalOmzet : 18500000;
-    const baseOrders = totalOrders > 0 ? totalOrders : 36;
-
-    if (selectedFilter === '7d') {
-      const days = [
-        { label: '29 Ags', fullDate: 'Jumat, 29 Agustus 2026', weight: 0.11 },
-        { label: '30 Ags', fullDate: 'Sabtu, 30 Agustus 2026', weight: 0.16 },
-        { label: '31 Ags', fullDate: 'Minggu, 31 Agustus 2026', weight: 0.19 },
-        { label: '01 Sep', fullDate: 'Senin, 01 September 2026', weight: 0.13 },
-        { label: '02 Sep', fullDate: 'Selasa, 02 September 2026', weight: 0.12 },
-        { label: '03 Sep', fullDate: 'Rabu, 03 September 2026', weight: 0.14 },
-        { label: '04 Sep', fullDate: 'Hari Ini (04 Sep 2026)', weight: 0.15 },
-      ];
-
-      return days.map((d) => {
-        const rev = Math.round(baseRevenue * d.weight);
-        const ord = Math.max(1, Math.round(baseOrders * d.weight));
-        return {
-          label: d.label,
-          fullDate: d.fullDate,
-          revenue: rev,
-          orders: ord,
-          percentage: Math.round(d.weight * 100),
-        };
-      });
-    }
-
-    if (selectedFilter === '30d') {
-      const intervals = [
-        { label: '05-08 Ags', fullDate: '05 - 08 Agustus 2026', weight: 0.1 },
-        { label: '09-12 Ags', fullDate: '09 - 12 Agustus 2026', weight: 0.12 },
-        { label: '13-16 Ags', fullDate: '13 - 16 Agustus 2026', weight: 0.14 },
-        { label: '17-20 Ags', fullDate: '17 - 20 Agustus 2026', weight: 0.11 },
-        { label: '21-24 Ags', fullDate: '21 - 24 Agustus 2026', weight: 0.15 },
-        { label: '25-28 Ags', fullDate: '25 - 28 Agustus 2026', weight: 0.13 },
-        { label: '29-01 Sep', fullDate: '29 Ags - 01 Sep 2026', weight: 0.12 },
-        { label: '02-04 Sep', fullDate: '02 - 04 September 2026', weight: 0.13 },
-      ];
-
-      return intervals.map((d) => ({
-        label: d.label,
-        fullDate: d.fullDate,
-        revenue: Math.round(baseRevenue * d.weight),
-        orders: Math.max(1, Math.round(baseOrders * d.weight)),
-        percentage: Math.round(d.weight * 100),
-      }));
-    }
-
-    if (selectedFilter === 'this_month') {
-      const weeks = [
-        { label: 'Minggu 1', fullDate: '01 - 07 September 2026', weight: 0.35 },
-        { label: 'Minggu 2', fullDate: '08 - 14 September 2026 (Est.)', weight: 0.22 },
-        { label: 'Minggu 3', fullDate: '15 - 21 September 2026 (Est.)', weight: 0.21 },
-        { label: 'Minggu 4', fullDate: '22 - 30 September 2026 (Est.)', weight: 0.22 },
-      ];
-
-      return weeks.map((w) => ({
-        label: w.label,
-        fullDate: w.fullDate,
-        revenue: Math.round(baseRevenue * w.weight),
-        orders: Math.max(1, Math.round(baseOrders * w.weight)),
-        percentage: Math.round(w.weight * 100),
-      }));
-    }
-
-    // this_year
-    const months = [
-      { label: 'Jan', fullDate: 'Januari 2026', weight: 0.08 },
-      { label: 'Feb', fullDate: 'Februari 2026', weight: 0.09 },
-      { label: 'Mar', fullDate: 'Maret 2026', weight: 0.11 },
-      { label: 'Apr', fullDate: 'April 2026', weight: 0.12 },
-      { label: 'Mei', fullDate: 'Mei 2026', weight: 0.13 },
-      { label: 'Jun', fullDate: 'Juni 2026', weight: 0.11 },
-      { label: 'Jul', fullDate: 'Juli 2026', weight: 0.14 },
-      { label: 'Ags', fullDate: 'Agustus 2026', weight: 0.15 },
-      { label: 'Sep', fullDate: 'September 2026 (Berjalan)', weight: 0.07 },
-    ];
-
-    return months.map((m) => ({
-      label: m.label,
-      fullDate: m.fullDate,
-      revenue: Math.round(baseRevenue * (m.weight * 1.5)),
-      orders: Math.max(2, Math.round(baseOrders * (m.weight * 1.5))),
-      percentage: Math.round(m.weight * 100),
-    }));
-  }, [selectedFilter, totalOmzet, totalOrders]);
+  // Real Chart Data from Database
+  const chartData = useMemo<DailySalesPoint[]>(() => {
+    return analytics?.dailySales || [];
+  }, [analytics?.dailySales]);
 
   // Chart Max Scaling
   const maxChartValue = useMemo(() => {
     if (metricView === 'revenue') {
-      const maxRev = Math.max(...chartData.map((d) => d.revenue), 100000);
-      return Math.ceil(maxRev * 1.15);
+      const maxRev = Math.max(...chartData.map((d) => d.revenue), 0);
+      return maxRev > 0 ? Math.ceil(maxRev * 1.2) : 1000000;
     } else {
-      const maxOrd = Math.max(...chartData.map((d) => d.orders), 5);
-      return Math.ceil(maxOrd * 1.25);
+      const maxOrd = Math.max(...chartData.map((d) => d.orders), 0);
+      return maxOrd > 0 ? Math.ceil(maxOrd * 1.25) : 5;
     }
   }, [chartData, metricView]);
 
-  // Category Revenue Distribution Breakdown
-  const categoryPerformance = useMemo(() => {
-    const predefinedWeights: Record<string, { weight: number; color: string; badgeBg: string }> = {
-      perlengkapan: {
-        weight: 0.48,
-        color: 'bg-rose-500',
-        badgeBg: 'bg-rose-50 text-rose-700 border-rose-200',
-      },
-      pakaian: {
-        weight: 0.32,
-        color: 'bg-amber-500',
-        badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
-      },
-      mainan: {
-        weight: 0.2,
-        color: 'bg-sky-500',
-        badgeBg: 'bg-sky-50 text-sky-700 border-sky-200',
-      },
-    };
-
-    if (categories.length === 0) {
-      return [
-        {
-          id: 'cat-1',
-          name: 'Perlengkapan Bayi & Anak',
-          slug: 'perlengkapan',
-          percentage: 48,
-          revenue: Math.round(totalOmzet * 0.48),
-          productCount: 24,
-          color: 'bg-rose-500',
-          badgeBg: 'bg-rose-50 text-rose-700 border-rose-200',
-        },
-        {
-          id: 'cat-2',
-          name: 'Pakaian & Fashion Anak',
-          slug: 'pakaian',
-          percentage: 32,
-          revenue: Math.round(totalOmzet * 0.32),
-          productCount: 38,
-          color: 'bg-amber-500',
-          badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
-        },
-        {
-          id: 'cat-3',
-          name: 'Mainan & Edukasi',
-          slug: 'mainan',
-          percentage: 20,
-          revenue: Math.round(totalOmzet * 0.2),
-          productCount: 30,
-          color: 'bg-sky-500',
-          badgeBg: 'bg-sky-50 text-sky-700 border-sky-200',
-        },
-      ];
+  // Real Category Performance Breakdown
+  const categoryPerformance = useMemo<CategorySalesBreakdown[]>(() => {
+    if (analytics?.categorySales && analytics.categorySales.length > 0) {
+      return analytics.categorySales;
     }
 
-    const totalCategoryProducts = categories.reduce(
-      (sum, cat) => sum + (cat.jumlahProduk || 1),
-      0
-    );
+    // Fallback based on real catalog categories if analytics is loading
+    return categories.map((cat, idx) => ({
+      id: cat.id,
+      name: cat.nama,
+      slug: cat.slug,
+      revenue: 0,
+      ordersCount: 0,
+      percentage: Math.round(100 / Math.max(1, categories.length)),
+      productCount: cat.jumlahProduk || 0,
+      color: idx === 0 ? 'bg-rose-500' : idx === 1 ? 'bg-amber-500' : 'bg-sky-500',
+      badgeBg:
+        idx === 0
+          ? 'bg-rose-50 text-rose-700 border-rose-200'
+          : idx === 1
+          ? 'bg-amber-50 text-amber-700 border-amber-200'
+          : 'bg-sky-50 text-sky-700 border-sky-200',
+    }));
+  }, [analytics?.categorySales, categories]);
 
-    return categories.map((cat, idx) => {
-      const conf = predefinedWeights[cat.slug] || {
-        weight: (cat.jumlahProduk || 1) / Math.max(1, totalCategoryProducts),
-        color: idx === 0 ? 'bg-rose-500' : idx === 1 ? 'bg-amber-500' : 'bg-sky-500',
-        badgeBg:
-          idx === 0
-            ? 'bg-rose-50 text-rose-700 border-rose-200'
-            : idx === 1
-            ? 'bg-amber-50 text-amber-700 border-amber-200'
-            : 'bg-sky-50 text-sky-700 border-sky-200',
-      };
-
-      const percent = Math.round(conf.weight * 100);
-      const rev = Math.round(totalOmzet * conf.weight);
-
-      return {
-        id: cat.id,
-        name: cat.nama,
-        slug: cat.slug,
-        percentage: percent,
-        revenue: rev,
-        productCount: cat.jumlahProduk || 0,
-        color: conf.color,
-        badgeBg: conf.badgeBg,
-      };
-    });
-  }, [categories, totalOmzet]);
+  const hasSalesInPeriod = (analytics?.totalPeriodRevenue || 0) > 0;
 
   return (
-    <div className="space-y-6 sm:space-y-8 pb-12">
-      {/* 1. Page Header & Date Range Filter */}
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs">
-        <div>
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-rose-600 text-white flex items-center justify-center shadow-md shadow-rose-500/20">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                Statistik & Performa Toko 📈
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                Pantau tren omzet penjualan, metrik konversi pesanan, dan efisiensi operasional toko.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Date Filter Segmented Controls & Refresh */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="inline-flex p-1 bg-slate-100 rounded-xl border border-slate-200/70 text-xs font-semibold text-slate-600">
-            {DATE_FILTERS.map((filter) => {
-              const isActive = selectedFilter === filter.key;
-              return (
-                <button
-                  key={filter.key}
-                  type="button"
-                  onClick={() => setSelectedFilter(filter.key)}
-                  className={`px-3 py-1.5 rounded-lg transition-all ${
-                    isActive
-                      ? 'bg-white text-slate-900 font-bold shadow-xs'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {filter.label}
-                </button>
-              );
-            })}
+    <div className="space-y-6 pb-12">
+      {/* 1. Top Header Banner */}
+      <div className="bg-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-md relative overflow-hidden">
+        <div className="absolute right-0 top-0 w-96 h-96 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span className="text-xs font-bold uppercase tracking-wider text-rose-400 bg-rose-500/20 px-2.5 py-1 rounded-full inline-block mb-2">
+              Laporan & Analitik Toko
+            </span>
+            <h1 className="text-2xl sm:text-3xl font-black tracking-tight mb-1">
+              Statistik & Performa Toko 📈
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
+              Pantau tren pendapatan penjualan, rata-rata transaksi belanja, dan performa kategori produk secara real-time dari database.
+            </p>
           </div>
 
-          <button
-            type="button"
-            onClick={() => loadData(true)}
-            disabled={loading || refreshing}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl shadow-xs transition-colors disabled:opacity-60"
-            title="Muat ulang data statistik"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin text-rose-600' : ''}`} />
-            <span>{refreshing ? 'Memperbarui...' : 'Sinkron'}</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2.5 self-start sm:self-center">
+            {/* Date Filter Pills */}
+            <div className="flex items-center gap-1 bg-slate-800/80 p-1 rounded-2xl border border-slate-700">
+              {DATE_FILTERS.map((f) => {
+                const isSelected = selectedFilter === f.key;
+                return (
+                  <button
+                    key={f.key}
+                    type="button"
+                    onClick={() => setSelectedFilter(f.key)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      isSelected
+                        ? 'bg-rose-500 text-white shadow-xs'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-700/50'
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                );
+              })}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => loadData(true)}
+              disabled={refreshing || loading}
+              title="Perbarui Data"
+              className="p-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl border border-slate-700 transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center shadow-xs"
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-rose-400' : ''}`} />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Error Alert if any */}
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl flex items-start gap-3 text-rose-800 text-xs sm:text-sm">
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-start gap-3 text-rose-800 text-xs sm:text-sm">
           <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="font-semibold">Gagal memuat data statistik lengkap</p>
@@ -415,9 +285,8 @@ export default function AdminStatistikPage() {
 
       {/* 2. Key Metrics Bar (4 Core Stat Tiles) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-        {/* Metric 1: Total Omzet / Pendapatan Bersih */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-rose-50 rounded-full blur-2xl -mr-6 -mt-6 group-hover:bg-rose-100/70 transition-colors pointer-events-none" />
+        {/* Metric 1: Total Omzet */}
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between mb-3 relative z-10">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Total Omzet Penjualan
@@ -434,17 +303,15 @@ export default function AdminStatistikPage() {
                 formatRupiah(totalOmzet)
               )}
             </div>
-            <div className="flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-600">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-              <span>+15.4%</span>
-              <span className="text-slate-400 font-normal">vs periode sebelumnya</span>
+            <div className="flex items-center gap-1.5 mt-2 text-xs font-medium text-slate-500">
+              <TrendingUp className="w-3.5 h-3.5 text-emerald-600" />
+              <span>Akumulasi dari pesanan sukses</span>
             </div>
           </div>
         </div>
 
         {/* Metric 2: Total Pesanan Selesai */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-full blur-2xl -mr-6 -mt-6 group-hover:bg-blue-100/70 transition-colors pointer-events-none" />
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between mb-3 relative z-10">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Pesanan Selesai
@@ -472,8 +339,7 @@ export default function AdminStatistikPage() {
         </div>
 
         {/* Metric 3: Average Order Value (AOV) */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-amber-50 rounded-full blur-2xl -mr-6 -mt-6 group-hover:bg-amber-100/70 transition-colors pointer-events-none" />
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between mb-3 relative z-10">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Rata-rata Keranjang (AOV)
@@ -492,14 +358,13 @@ export default function AdminStatistikPage() {
             </div>
             <div className="flex items-center gap-1.5 mt-2 text-xs font-medium text-slate-500">
               <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-              <span>Nilai belanja rata-rata per transaksi</span>
+              <span>Nilai belanja rata-rata per pesanan</span>
             </div>
           </div>
         </div>
 
         {/* Metric 4: Tingkat Penyelesaian Pesanan */}
-        <div className="bg-white p-5 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-50 rounded-full blur-2xl -mr-6 -mt-6 group-hover:bg-emerald-100/70 transition-colors pointer-events-none" />
+        <div className="bg-white p-5 rounded-3xl border border-slate-200/80 shadow-xs hover:shadow-md transition-shadow relative overflow-hidden group">
           <div className="flex items-center justify-between mb-3 relative z-10">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               Tingkat Penyelesaian
@@ -516,7 +381,7 @@ export default function AdminStatistikPage() {
                 <>
                   <span>{completionRate}%</span>
                   <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
-                    Optimal
+                    {completionRate >= 90 ? 'Optimal' : 'Normal'}
                   </span>
                 </>
               )}
@@ -524,7 +389,7 @@ export default function AdminStatistikPage() {
             <div className="flex items-center gap-1.5 mt-2 text-xs text-slate-500 font-medium">
               <span>{cancelledOrders === 0 ? '0 Pembatalan' : `${cancelledOrders} pesanan batal`}</span>
               <span className="text-slate-300">•</span>
-              <span className="text-emerald-600 font-semibold">Toko Sangat Sehat</span>
+              <span className="text-emerald-600 font-semibold">Toko Sehat</span>
             </div>
           </div>
         </div>
@@ -533,7 +398,7 @@ export default function AdminStatistikPage() {
       {/* 3. Visual Interactive Bar Chart & Operational Performance Summary */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Main Chart Section (2 cols) */}
-        <div className="lg:col-span-2 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+        <div className="lg:col-span-2 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
           <div>
             {/* Chart Header & Toggle */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 pb-5 border-b border-slate-100">
@@ -545,10 +410,8 @@ export default function AdminStatistikPage() {
                   </h2>
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Distribusi omzet harian pada periode{' '}
-                  <span className="font-semibold text-slate-700">
-                    {DATE_FILTERS.find((f) => f.key === selectedFilter)?.label}
-                  </span>
+                  Distribusi omzet aktual pada periode{' '}
+                  <span className="font-semibold text-slate-700">{activeFilterOption.label}</span>
                 </p>
               </div>
 
@@ -557,7 +420,7 @@ export default function AdminStatistikPage() {
                 <button
                   type="button"
                   onClick={() => setMetricView('revenue')}
-                  className={`px-3 py-1 rounded-lg transition-all ${
+                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                     metricView === 'revenue'
                       ? 'bg-white text-rose-600 font-bold shadow-xs'
                       : 'text-slate-600 hover:text-slate-900'
@@ -568,7 +431,7 @@ export default function AdminStatistikPage() {
                 <button
                   type="button"
                   onClick={() => setMetricView('orders')}
-                  className={`px-3 py-1 rounded-lg transition-all ${
+                  className={`px-3 py-1 rounded-lg transition-all cursor-pointer ${
                     metricView === 'orders'
                       ? 'bg-white text-rose-600 font-bold shadow-xs'
                       : 'text-slate-600 hover:text-slate-900'
@@ -605,39 +468,29 @@ export default function AdminStatistikPage() {
                         : `${Math.round(maxChartValue * 0.33)} Pesanan`}
                     </span>
                   </div>
-                  <div className="border-b border-slate-200 w-full flex justify-between pr-2">
-                    <span>0</span>
+                  <div className="border-b border-slate-300 w-full flex justify-between pr-2">
+                    <span>{metricView === 'revenue' ? 'Rp 0' : '0'}</span>
                   </div>
                 </div>
 
                 {/* Bars Container */}
-                <div className="relative z-10 flex items-end justify-between gap-2 sm:gap-4 h-52 px-2 sm:px-6 pt-4">
+                <div className="relative z-10 h-52 sm:h-56 flex items-end justify-between gap-1 sm:gap-2 px-1 pt-4">
                   {chartData.map((d, index) => {
                     const value = metricView === 'revenue' ? d.revenue : d.orders;
-                    const heightPercent = Math.max(8, Math.min(100, (value / maxChartValue) * 100));
+                    const heightPercent =
+                      maxChartValue > 0 ? Math.min(100, Math.max(0, (value / maxChartValue) * 100)) : 0;
                     const isHovered = hoveredBarIndex === index;
                     const isMax =
-                      value ===
-                      Math.max(
-                        ...chartData.map((item) =>
-                          metricView === 'revenue' ? item.revenue : item.orders
-                        )
-                      );
+                      value > 0 &&
+                      value === Math.max(...chartData.map((cd) => (metricView === 'revenue' ? cd.revenue : cd.orders)));
 
                     return (
                       <div
-                        key={d.label}
-                        className="flex-1 flex flex-col items-center h-full justify-end group cursor-pointer relative"
+                        key={d.date || index}
                         onMouseEnter={() => setHoveredBarIndex(index)}
                         onMouseLeave={() => setHoveredBarIndex(null)}
+                        className="flex-1 flex flex-col items-center h-full justify-end relative group cursor-pointer"
                       >
-                        {/* Peak indicator badge */}
-                        {isMax && (
-                          <div className="absolute -top-7 text-[10px] font-extrabold text-rose-600 bg-rose-50 border border-rose-200 px-1.5 py-0.5 rounded-md whitespace-nowrap shadow-xs animate-bounce">
-                            Tertinggi
-                          </div>
-                        )}
-
                         {/* Interactive Tooltip Card on Hover */}
                         {isHovered && (
                           <div className="absolute bottom-full mb-2 z-30 bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs w-44 pointer-events-none transform -translate-x-1/2 left-1/2">
@@ -657,10 +510,6 @@ export default function AdminStatistikPage() {
                                   {d.orders} transaksi
                                 </span>
                               </div>
-                              <div className="flex justify-between items-center pt-1 border-t border-slate-800 text-[10px] text-slate-400">
-                                <span>Kontribusi:</span>
-                                <span>{d.percentage}% periode</span>
-                              </div>
                             </div>
                           </div>
                         )}
@@ -674,14 +523,16 @@ export default function AdminStatistikPage() {
                                 ? 'bg-rose-600 shadow-md shadow-rose-500/30'
                                 : isMax
                                 ? 'bg-rose-500'
-                                : 'bg-rose-400/85 hover:bg-rose-500'
+                                : value > 0
+                                ? 'bg-rose-400/85 hover:bg-rose-500'
+                                : 'bg-slate-200'
                             }`}
                           />
                         </div>
 
                         {/* X-Axis Label */}
                         <span
-                          className={`mt-2.5 text-[11px] font-semibold truncate text-center ${
+                          className={`mt-2.5 text-[10px] sm:text-[11px] font-semibold truncate text-center ${
                             isHovered
                               ? 'text-rose-600 font-bold'
                               : isMax
@@ -702,24 +553,30 @@ export default function AdminStatistikPage() {
           {/* Chart Footer Statistics */}
           <div className="mt-4 pt-4 border-t border-slate-100 grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
             <div className="bg-slate-50 p-2.5 rounded-xl">
-              <span className="text-slate-500 block text-[11px]">Total Omzet Terakumulasi</span>
-              <span className="font-bold text-slate-900 text-sm">{formatRupiah(totalOmzet)}</span>
+              <span className="text-slate-500 block text-[11px]">Omzet Periode Ini</span>
+              <span className="font-bold text-slate-900 text-sm">
+                {formatRupiah(analytics?.totalPeriodRevenue || 0)}
+              </span>
             </div>
             <div className="bg-slate-50 p-2.5 rounded-xl">
-              <span className="text-slate-500 block text-[11px]">Rata-rata Penjualan / Hari</span>
+              <span className="text-slate-500 block text-[11px]">Rata-rata / Hari</span>
               <span className="font-bold text-slate-900 text-sm">
-                {formatRupiah(Math.round(totalOmzet / (chartData.length || 7)))}
+                {formatRupiah(
+                  Math.round((analytics?.totalPeriodRevenue || 0) / Math.max(1, chartData.length || 7))
+                )}
               </span>
             </div>
             <div className="bg-slate-50 p-2.5 rounded-xl col-span-2 sm:col-span-1">
-              <span className="text-slate-500 block text-[11px]">Volume Transaksi Periode</span>
-              <span className="font-bold text-slate-900 text-sm">{totalOrders} Pesanan</span>
+              <span className="text-slate-500 block text-[11px]">Volume Transaksi</span>
+              <span className="font-bold text-slate-900 text-sm">
+                {analytics?.totalPeriodOrders || 0} Pesanan
+              </span>
             </div>
           </div>
         </div>
 
         {/* Operational Health Score Card (1 col) */}
-        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
+        <div className="bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-4 border-b border-slate-100">
               <div className="flex items-center gap-2">
@@ -732,7 +589,7 @@ export default function AdminStatistikPage() {
             </div>
 
             {/* Overall Score Badge */}
-            <div className="mt-5 p-4 rounded-xl bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
+            <div className="mt-5 p-4 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 text-white relative overflow-hidden">
               <div className="absolute right-0 bottom-0 opacity-10 transform translate-x-3 translate-y-3">
                 <Award className="w-28 h-28" />
               </div>
@@ -741,302 +598,168 @@ export default function AdminStatistikPage() {
                   Store Performance Score
                 </span>
                 <div className="text-3xl font-extrabold mt-1 flex items-baseline gap-1 text-white">
-                  <span>98.5</span>
+                  <span>{completionRate >= 90 ? '100' : `${completionRate}`}</span>
                   <span className="text-xs text-slate-300 font-normal">/ 100</span>
                 </div>
                 <p className="text-xs text-slate-300 mt-1">
-                  Status: <strong className="text-emerald-400">Super Star Seller</strong>. Memenuhi
-                  seluruh target kecepatan dan kepuasan pembeli.
+                  Status: <strong className="text-emerald-400">Toko Siap Beroperasi</strong>. Memenuhi standar pelayanan pembeli.
                 </p>
               </div>
             </div>
 
             {/* Operational Health Indicators */}
-            <div className="mt-5 space-y-4">
+            <div className="mt-5 space-y-3">
               {/* 1. Kecepatan Proses Pesanan */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center">
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-xs font-bold text-slate-800">Kecepatan Proses</div>
-                    <div className="text-[11px] text-slate-500">Rata-rata konfirmasi resi</div>
+                    <div className="text-xs font-bold text-slate-800">Status Toko</div>
+                    <div className="text-[11px] text-slate-500">Konfirmasi resi otomatis</div>
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-xs font-extrabold text-slate-900">&lt; 3.8 Jam</div>
-                  <div className="text-[10px] font-bold text-emerald-600">Sangat Cepat</div>
+                  <div className="text-xs font-extrabold text-slate-900">Aktif</div>
+                  <div className="text-[10px] font-bold text-emerald-600">SLA 24 Jam</div>
                 </div>
               </div>
 
               {/* 2. Kepuasan Pelanggan (Rating Toko) */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
+              <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-50 border border-slate-100">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center">
                     <Star className="w-4 h-4 fill-rose-600 text-rose-600" />
                   </div>
                   <div>
                     <div className="text-xs font-bold text-slate-800">Rating Toko</div>
-                    <div className="text-[11px] text-slate-500">Ulasan terverifikasi pembeli</div>
+                    <div className="text-[11px] text-slate-500">Kualitas produk terdaftar</div>
                   </div>
                 </div>
                 <div className="text-right">
                   <div className="text-xs font-extrabold text-slate-900 flex items-center justify-end gap-1">
-                    <span>{stats?.averageRating ? stats.averageRating.toFixed(1) : '4.9'}</span>
+                    <span>{stats?.averageRating ? stats.averageRating.toFixed(1) : '5.0'}</span>
                     <span className="text-amber-500">★</span>
                   </div>
                   <div className="text-[10px] font-bold text-emerald-600">Pelayanan Prima</div>
                 </div>
               </div>
-
-              {/* 3. Rasio Pembatalan & Retur */}
-              <div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center">
-                    <RotateCcw className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-slate-800">Tingkat Retur & Batal</div>
-                    <div className="text-[11px] text-slate-500">Bebas komplain operasional</div>
-                  </div>
-                </div>
-                <div className="text-right">
-                  <div className="text-xs font-extrabold text-slate-900">
-                    {cancelledOrders === 0
-                      ? '0.0%'
-                      : `${((cancelledOrders / (totalOrders || 1)) * 100).toFixed(1)}%`}
-                  </div>
-                  <div className="text-[10px] font-bold text-emerald-600">Sesuai Target (&lt;1%)</div>
-                </div>
-              </div>
             </div>
           </div>
 
-          <div className="mt-5 pt-4 border-t border-slate-100 text-[11px] text-slate-500 flex items-center gap-1.5">
-            <Info className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-            <span>Kalkulasi kesehatan toko diperbarui otomatis setiap 24 jam.</span>
+          <div className="mt-5 pt-3 border-t border-slate-100">
+            <Link
+              href="/admin/setting"
+              className="w-full py-2.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-2 transition-colors"
+            >
+              <span>Atur Lokasi & Logistik Toko</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* 4. Top Selling Products (5 SKU Terlaris) & Category Distribution */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Top 5 SKU Terlaris (2 cols) */}
-        <div className="lg:col-span-2 bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+      {/* 4. Category Performance & Top Selling SKU */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        {/* Category Performance Breakdown (5 cols) */}
+        <div className="lg:col-span-5 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <Flame className="w-5 h-5 text-rose-600" />
-              <div>
-                <h2 className="text-base font-bold text-slate-900">
-                  5 Produk Terlaris (Top Selling SKU)
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Produk dengan volume penjualan dan omzet tertinggi di toko Anda
-                </p>
-              </div>
+              <Layers className="w-4 h-4 text-purple-600" />
+              <h2 className="text-base font-bold text-slate-900">Distribusi Kategori</h2>
             </div>
-
-            <Link
-              href="/admin/produk"
-              className="inline-flex items-center gap-1 text-xs font-bold text-rose-600 hover:text-rose-700 bg-rose-50 hover:bg-rose-100 px-3 py-1.5 rounded-lg transition-colors"
-            >
-              <span>Semua Produk</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Link>
+            <span className="text-xs text-slate-500">{categoryPerformance.length} Kategori</span>
           </div>
 
-          {/* Table / List */}
-          <div className="mt-4 overflow-x-auto">
-            {loading ? (
-              <div className="p-8 text-center text-slate-400 flex flex-col items-center justify-center gap-2">
-                <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
-                <span className="text-xs font-semibold">Memuat ranking produk terlaris...</span>
+          {/* Stacked Visual Bar */}
+          <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex">
+            {categoryPerformance.map((cat) => (
+              <div
+                key={cat.id}
+                style={{ width: `${Math.max(5, cat.percentage)}%` }}
+                className={`h-full ${cat.color} transition-all`}
+                title={`${cat.name}: ${cat.percentage}%`}
+              />
+            ))}
+          </div>
+
+          {/* Category List Cards */}
+          <div className="space-y-2.5 pt-1">
+            {categoryPerformance.map((cat) => (
+              <div
+                key={cat.id}
+                className="p-3 bg-slate-50 rounded-2xl border border-slate-100 flex items-center justify-between gap-3 text-xs"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className={`w-3 h-3 rounded-full ${cat.color} shrink-0`} />
+                  <div>
+                    <strong className="text-slate-800 block text-xs">{cat.name}</strong>
+                    <span className="text-[11px] text-slate-400">{cat.productCount} SKU Produk</span>
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <span className="font-bold text-slate-900 block">{formatRupiah(cat.revenue)}</span>
+                  <span className="text-[11px] text-slate-500 font-semibold">{cat.percentage}%</span>
+                </div>
               </div>
-            ) : topProducts.length === 0 ? (
-              <div className="p-8 text-center text-slate-400 text-xs">
-                Belum ada produk yang terjual pada periode ini.
-              </div>
-            ) : (
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider text-[10px]">
-                    <th className="py-2.5 px-3 w-12 text-center">Rank</th>
-                    <th className="py-2.5 px-3">Produk</th>
-                    <th className="py-2.5 px-3 text-center">Kategori</th>
-                    <th className="py-2.5 px-3 text-center">Terjual</th>
-                    <th className="py-2.5 px-3 text-right">Total Omzet</th>
-                    <th className="py-2.5 px-3 text-center">Stok</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {topProducts.map((prod, index) => {
-                    const totalProductRevenue = (prod.terjual || 0) * prod.harga;
-                    const isRank1 = index === 0;
-                    const isRank2 = index === 1;
-                    const isRank3 = index === 2;
-
-                    return (
-                      <tr key={prod.id} className="hover:bg-slate-50/80 transition-colors group">
-                        {/* Rank Badge */}
-                        <td className="py-3 px-3 text-center">
-                          <span
-                            className={`inline-flex items-center justify-center w-6 h-6 rounded-full font-extrabold text-xs shadow-xs ${
-                              isRank1
-                                ? 'bg-amber-400 text-amber-950 ring-2 ring-amber-200'
-                                : isRank2
-                                ? 'bg-slate-300 text-slate-800'
-                                : isRank3
-                                ? 'bg-amber-700 text-amber-100'
-                                : 'bg-slate-100 text-slate-600'
-                            }`}
-                          >
-                            {index + 1}
-                          </span>
-                        </td>
-
-                        {/* Product Info */}
-                        <td className="py-3 px-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-11 h-11 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden shrink-0 relative">
-                              {prod.gambar ? (
-                                <Image
-                                  src={prod.gambar}
-                                  alt={prod.nama}
-                                  fill
-                                  sizes="44px"
-                                  className="object-cover"
-                                />
-                              ) : (
-                                <div className="w-full h-full flex items-center justify-center text-slate-400">
-                                  <Package className="w-4 h-4" />
-                                </div>
-                              )}
-                            </div>
-                            <div className="max-w-[200px] sm:max-w-[280px]">
-                              <Link
-                                href={`/admin/produk`}
-                                className="font-bold text-slate-900 hover:text-rose-600 transition-colors line-clamp-1 text-xs"
-                                title={prod.nama}
-                              >
-                                {prod.nama}
-                              </Link>
-                              <div className="flex items-center gap-2 mt-0.5 text-[11px] text-slate-500">
-                                <span>{formatRupiah(prod.harga)}</span>
-                                <span className="text-slate-300">•</span>
-                                <span className="flex items-center text-amber-500 font-semibold">
-                                  ★ {prod.rating.toFixed(1)}
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-
-                        {/* Category Badge */}
-                        <td className="py-3 px-3 text-center">
-                          <span className="inline-block px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/60">
-                            {prod.kategoriLabel || prod.kategori}
-                          </span>
-                        </td>
-
-                        {/* Sold Count */}
-                        <td className="py-3 px-3 text-center">
-                          <span className="font-extrabold text-slate-900 bg-rose-50 text-rose-700 px-2.5 py-1 rounded-md text-xs border border-rose-100">
-                            {prod.terjual || 0} pcs
-                          </span>
-                        </td>
-
-                        {/* Generated Revenue */}
-                        <td className="py-3 px-3 text-right">
-                          <span className="font-bold text-slate-900 text-xs">
-                            {formatRupiah(totalProductRevenue)}
-                          </span>
-                        </td>
-
-                        {/* Stock Remaining */}
-                        <td className="py-3 px-3 text-center">
-                          <span
-                            className={`font-semibold text-[11px] px-2 py-0.5 rounded-full ${
-                              prod.stok <= 5
-                                ? 'bg-rose-100 text-rose-700'
-                                : 'bg-emerald-50 text-emerald-700'
-                            }`}
-                          >
-                            {prod.stok} unit
-                          </span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            )}
+            ))}
           </div>
         </div>
 
-        {/* Category Contribution Breakdown (1 col) */}
-        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
-              <div className="flex items-center gap-2">
-                <PieChart className="w-5 h-5 text-rose-600" />
-                <h2 className="text-base font-bold text-slate-900">Performa Kategori</h2>
-              </div>
-              <span className="text-xs font-semibold text-slate-400">Kontribusi Omzet</span>
+        {/* Top 5 Selling SKU (7 cols) */}
+        <div className="lg:col-span-7 bg-white p-5 sm:p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-4">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-rose-600" />
+              <h2 className="text-base font-bold text-slate-900">Top Produk Terlaris</h2>
             </div>
+            <Link
+              href="/admin/produk"
+              className="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1"
+            >
+              <span>Lihat Semua SKU</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </Link>
+          </div>
 
-            {/* Visual Stacked Progress Bar */}
-            <div className="mt-5">
-              <div className="h-4 w-full rounded-full bg-slate-100 flex overflow-hidden p-0.5 border border-slate-200/70">
-                {categoryPerformance.map((cat) => (
-                  <div
-                    key={cat.id}
-                    style={{ width: `${cat.percentage}%` }}
-                    className={`${cat.color} h-full transition-all duration-500 first:rounded-l-full last:rounded-r-full`}
-                    title={`${cat.name}: ${cat.percentage}%`}
-                  />
-                ))}
-              </div>
-            </div>
-
-            {/* Category Details List */}
-            <div className="mt-6 space-y-3.5">
-              {categoryPerformance.map((cat) => (
-                <div
-                  key={cat.id}
-                  className="p-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-slate-200 transition-colors"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-3 h-3 rounded-full ${cat.color}`} />
-                      <span className="text-xs font-bold text-slate-800">{cat.name}</span>
+          {topProducts.length > 0 ? (
+            <div className="divide-y divide-slate-100">
+              {topProducts.map((p, idx) => (
+                <div key={p.id} className="py-3 flex items-center justify-between gap-3 text-xs">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <span className="font-black text-slate-400 text-sm w-4 text-center">{idx + 1}</span>
+                    <img
+                      src={p.gambar}
+                      alt={p.nama}
+                      className="w-12 h-12 rounded-xl object-cover bg-slate-100 shrink-0 border border-slate-100"
+                    />
+                    <div className="min-w-0">
+                      <h4 className="font-bold text-slate-900 truncate" title={p.nama}>
+                        {p.nama}
+                      </h4>
+                      <div className="flex items-center gap-2 text-[11px] text-slate-500 mt-0.5">
+                        <span className="text-rose-600 font-semibold">{p.kategoriLabel}</span>
+                        <span>•</span>
+                        <span>Stok: {p.stok} pcs</span>
+                      </div>
                     </div>
-                    <span className="text-xs font-extrabold text-slate-900">
-                      {cat.percentage}%
-                    </span>
                   </div>
 
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-slate-200/60 text-[11px] text-slate-500">
-                    <span>{cat.productCount} SKU aktif</span>
-                    <span className="font-semibold text-slate-700">
-                      Est. {formatRupiah(cat.revenue)}
-                    </span>
+                  <div className="text-right shrink-0">
+                    <strong className="text-slate-900 block font-bold">{formatRupiah(p.harga)}</strong>
+                    <span className="text-[11px] text-slate-400 font-medium">Terjual {p.terjual}</span>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
-
-          {/* Quick Category Action */}
-          <div className="mt-5 pt-4 border-t border-slate-100">
-            <Link
-              href="/admin/produk/tambah"
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
-            >
-              <Boxes className="w-3.5 h-3.5" />
-              <span>Tambah Produk di Kategori Terlaris</span>
-            </Link>
-          </div>
+          ) : (
+            <div className="py-12 text-center text-slate-400 text-xs">
+              <ShoppingBag className="w-8 h-8 mx-auto mb-2 opacity-50" />
+              <p>Belum ada produk terdaftar</p>
+            </div>
+          )}
         </div>
       </div>
     </div>
