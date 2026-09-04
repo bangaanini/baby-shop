@@ -408,15 +408,24 @@ function AdminDashboardContent() {
                   5 pesanan transaksi terakhir yang masuk ke dalam sistem
                 </p>
               </div>
-              <button
-                type="button"
-                onClick={fetchStats}
-                disabled={loadingStats}
-                className="p-2 text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-                title="Segarkan data ringkasan"
-              >
-                <RefreshCw className={`w-4 h-4 ${loadingStats ? 'animate-spin' : ''}`} />
-              </button>
+              <div className="flex items-center gap-2">
+                <Link
+                  href="/admin/pesanan"
+                  className="text-xs font-bold text-rose-500 hover:text-rose-600 flex items-center gap-1 px-3 py-1.5 rounded-xl hover:bg-rose-50 transition-colors"
+                >
+                  <span>Kelola Pesanan</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </Link>
+                <button
+                  type="button"
+                  onClick={fetchStats}
+                  disabled={loadingStats}
+                  className="p-2 text-slate-400 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                  title="Segarkan data ringkasan"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loadingStats ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
             </div>
 
             {loadingStats ? (

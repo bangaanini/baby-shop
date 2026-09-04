@@ -144,7 +144,19 @@ export async function getAllOrders(filters: Partial<AdminOrderFilterInput> = {})
   const conditions: SQL[] = [];
 
   if (filters.status && filters.status !== 'semua') {
-    conditions.push(eq(ordersTable.status, filters.status));
+    if (filters.status === 'perlu_diproses') {
+      conditions.push(
+        or(
+          eq(ordersTable.status, 'menunggu_pembayaran'),
+          eq(ordersTable.status, 'diproses')
+        )!
+      );
+    } else if (filters.status.includes(',')) {
+      const statuses = filters.status.split(',').map((s) => s.trim());
+      conditions.push(inArray(ordersTable.status, statuses));
+    } else {
+      conditions.push(eq(ordersTable.status, filters.status));
+    }
   }
 
   if (filters.userId) {
