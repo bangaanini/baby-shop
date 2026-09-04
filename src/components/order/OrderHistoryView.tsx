@@ -16,6 +16,9 @@ import {
   Search,
   ExternalLink,
   Loader2,
+  Zap,
+  X,
+  ShieldCheck,
 } from 'lucide-react';
 import { useSession } from '@/lib/auth-client';
 import { MOCK_ORDERS } from '@/data/mock-orders';
@@ -35,13 +38,45 @@ export function OrderHistoryView() {
   const [debouncedSearch, setDebouncedSearch] = useState<string>('');
 
   const [selectedOrderForTracking, setSelectedOrderForTracking] = useState<Order | null>(null);
+  const [selectedOrderForPayment, setSelectedOrderForPayment] = useState<Order | null>(null);
   const [loadingTracking, setLoadingTracking] = useState<boolean>(false);
   const [confirmingOrderId, setConfirmingOrderId] = useState<string | null>(null);
+  const [isSettlingPayment, setIsSettlingPayment] = useState<boolean>(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3500);
+  };
+
+  // Handle Simulate Instant Settlement
+  const handleSimulatePayment = async (orderId: string) => {
+    setIsSettlingPayment(true);
+    try {
+      const res = await fetch('/api/admin/orders', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId,
+          status: 'diproses',
+          notes: 'Pembayaran telah diverifikasi lunas melalui simulasi gateway pembeli.',
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || 'Gagal menyelesaikan pembayaran');
+      }
+
+      showToast('🎉 Pembayaran pesanan berhasil diselesaikan! Status pesanan berubah menjadi Diproses.');
+      setSelectedOrderForPayment(null);
+      await fetchOrders();
+    } catch (err: any) {
+      console.error('Error settling payment:', err);
+      showToast(err.message || 'Terjadi kesalahan sistem saat memproses pembayaran');
+    } finally {
+      setIsSettlingPayment(false);
+    }
   };
 
   // Debounce search query
@@ -344,6 +379,18 @@ export function OrderHistoryView() {
                 </div>
 
                 <div className="flex items-center gap-2 flex-wrap">
+                  {/* Bayar Sekarang / Selesaikan Pembayaran if menunggu_pembayaran */}
+                  {order.status === 'menunggu_pembayaran' && (
+                    <button
+                      type="button"
+                      onClick={() => setSelectedOrderForPayment(order)}
+                      className="px-4 py-2 rounded-xl bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+                    >
+                      <CreditCard className="w-3.5 h-3.5" />
+                      <span>Bayar Sekarang / Selesaikan Pembayaran</span>
+                    </button>
+                  )}
+
                   {/* Lacak Paket Button */}
                   <button
                     type="button"
@@ -480,6 +527,91 @@ export function OrderHistoryView() {
                 className="px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-xl transition-colors cursor-pointer"
               >
                 Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PAYMENT SIMULATION MODAL */}
+      {selectedOrderForPayment && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 border border-slate-100 shadow-2xl space-y-5 animate-in fade-in zoom-in-95">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-slate-800">Selesaikan Pembayaran</h3>
+                  <p className="text-[11px] text-slate-400 font-mono">
+                    {selectedOrderForPayment.nomorInvoice}
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedOrderForPayment(null)}
+                className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Order & Payment Summary */}
+            <div className="space-y-2.5 bg-slate-50 p-4 rounded-2xl border border-slate-100 text-xs">
+              <div className="flex justify-between items-center text-slate-600">
+                <span>Metode Pembayaran</span>
+                <span className="font-bold text-slate-800">{selectedOrderForPayment.metodePembayaran}</span>
+              </div>
+              <div className="flex justify-between items-center text-slate-600">
+                <span>Waktu Pesanan</span>
+                <span className="font-medium text-slate-700">{selectedOrderForPayment.tanggalPesanan}</span>
+              </div>
+              <div className="flex justify-between items-center text-slate-600">
+                <span>Total Tagihan</span>
+                <span className="text-base font-black text-rose-600">
+                  {formatRupiah(selectedOrderForPayment.totalBayar)}
+                </span>
+              </div>
+            </div>
+
+            {/* Simulation Gateway Guide */}
+            <div className="p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl flex items-start gap-3">
+              <div className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                <Zap className="w-4 h-4 fill-white" />
+              </div>
+              <div className="text-xs">
+                <p className="font-bold text-slate-800">Simulasi Payment Gateway</p>
+                <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
+                  Gunakan tombol di bawah untuk mensimulasikan notifikasi pelunasan (*settlement*) otomatis dari payment gateway (Midtrans / Xendit).
+                </p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedOrderForPayment(null)}
+                disabled={isSettlingPayment}
+                className="w-full sm:w-auto px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 font-bold text-xs transition-colors cursor-pointer"
+              >
+                Tutup
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSimulatePayment(selectedOrderForPayment.id)}
+                disabled={isSettlingPayment}
+                className="w-full sm:flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-bold text-xs rounded-xl shadow-xs flex items-center justify-center gap-1.5 transition-all cursor-pointer disabled:opacity-50"
+              >
+                {isSettlingPayment ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  <Zap className="w-4 h-4 fill-white" />
+                )}
+                <span>⚡ Bayar Sekarang (Instant Settle)</span>
               </button>
             </div>
           </div>

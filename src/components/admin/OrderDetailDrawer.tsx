@@ -26,6 +26,7 @@ import {
   RotateCcw,
   CheckCheck,
   Building2,
+  Zap,
 } from 'lucide-react';
 import { Order, OrderStatus, TrackingStep } from '@/types/order';
 import { formatRupiah } from '@/lib/format';
@@ -158,6 +159,43 @@ export function OrderDetailDrawer({
   };
 
   // Quick action shortcuts
+  const handleInstantSettle = async () => {
+    if (!currentOrder) return;
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch('/api/admin/orders', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          orderId: currentOrder.id,
+          status: 'diproses',
+          notes: 'Pembayaran telah diverifikasi lunas melalui simulasi gateway.',
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || 'Gagal mensimulasikan pelunasan pembayaran');
+      }
+
+      const updated = json.data as Order;
+      setCurrentOrder(updated);
+      setTrackingNumberInput(updated.nomorResi || '');
+      setStatusInput(updated.status);
+      showToast('🎉 Pembayaran pesanan berhasil disimulasikan lunas! Status pesanan berubah menjadi Diproses.');
+
+      if (onOrderUpdated) {
+        onOrderUpdated(updated);
+      }
+    } catch (err: any) {
+      console.error('Instant settle error:', err);
+      showToast(err.message || 'Terjadi kesalahan sistem saat mensimulasikan pembayaran', 'error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const handleProcessOrder = () => handleUpdateStatus('diproses');
   const handleShipOrder = () => {
     if (!trackingNumberInput.trim()) {
@@ -379,15 +417,30 @@ export function OrderDetailDrawer({
                 </span>
 
                 {currentOrder.status === 'menunggu_pembayaran' && (
-                  <button
-                    type="button"
-                    onClick={handleProcessOrder}
-                    disabled={isSubmitting}
-                    className="px-3 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <Package className="w-3.5 h-3.5" />
-                    <span>Tandai Diproses</span>
-                  </button>
+                  <>
+                    <button
+                      type="button"
+                      onClick={handleInstantSettle}
+                      disabled={isSubmitting}
+                      className="px-3 py-1.5 bg-gradient-to-r from-amber-500 to-yellow-400 hover:from-amber-600 hover:to-yellow-500 text-slate-950 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs cursor-pointer disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Zap className="w-3.5 h-3.5 fill-slate-950" />
+                      )}
+                      <span>⚡ Simulasi Pembayaran Lunas (Instant Settle)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleProcessOrder}
+                      disabled={isSubmitting}
+                      className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-200 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                    >
+                      <Package className="w-3.5 h-3.5" />
+                      <span>Tandai Diproses</span>
+                    </button>
+                  </>
                 )}
 
                 {currentOrder.status === 'diproses' && (
@@ -596,6 +649,37 @@ export function OrderDetailDrawer({
                   <span className="text-rose-600 text-base">{formatRupiah(currentOrder.totalBayar)}</span>
                 </div>
               </div>
+
+              {currentOrder.status === 'menunggu_pembayaran' && (
+                <div className="pt-3 border-t border-slate-100">
+                  <div className="p-3 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="flex items-start gap-2.5">
+                      <div className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
+                        <Zap className="w-4 h-4 fill-white" />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold text-slate-800">Menunggu Pembayaran / Verifikasi</p>
+                        <p className="text-[11px] text-slate-500 leading-tight">
+                          Gunakan tombol simulasi untuk menguji respon gateway otomatis tanpa mutasi bank sungguhan.
+                        </p>
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleInstantSettle}
+                      disabled={isSubmitting}
+                      className="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-xs shrink-0 cursor-pointer disabled:opacity-50"
+                    >
+                      {isSubmitting ? (
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      ) : (
+                        <Zap className="w-3.5 h-3.5 fill-white" />
+                      )}
+                      <span>⚡ Simulasi Pembayaran Lunas (Instant Settle)</span>
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Live Tracking Timeline */}
