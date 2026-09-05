@@ -63,6 +63,6 @@ jobs:
 
             # 7. Restart PM2 agar perubahan langsung aktif
             echo "♻️ Me-restart proses PM2 nbusiness..."
-            pm2 restart nbusiness || pm2 restart all || pm2 start npm --name "nbusiness" -- start
+            pm2 restart nbusiness || pm2 start npm --name "nbusiness" -- start
 
             echo "✅ Deployment selesai! Website NBusiness telah aktif dengan versi terbaru."
