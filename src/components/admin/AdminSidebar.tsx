@@ -18,6 +18,7 @@ import {
   ShieldCheck,
   ChevronDown,
   Loader2,
+  Zap,
 } from 'lucide-react';
 import { useSession, signOut } from '@/lib/auth-client';
 
@@ -76,6 +77,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const isDaftarProdukActive =
     pathname === '/admin/produk' || (pathname.startsWith('/admin/produk/') && !isTambahProdukActive);
   const isPesananActive = pathname.startsWith('/admin/pesanan');
+  const isFlashSaleActive = pathname.startsWith('/admin/flash-sale');
   const isStatistikActive = pathname.startsWith('/admin/statistik');
   const isSettingActive = pathname.startsWith('/admin/setting');
 
@@ -222,7 +224,30 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           </div>
         </Link>
 
-        {/* 4. Statistik */}
+        {/* 4. Flash Sale */}
+        <Link
+          href="/admin/flash-sale"
+          onClick={onClose}
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-heading font-bold transition-all group ${
+            isFlashSaleActive
+              ? 'clay-btn-orange text-white shadow-md font-black'
+              : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <Zap
+              className={`w-4 h-4 transition-colors ${
+                isFlashSaleActive ? 'text-white' : 'text-slate-400 group-hover:text-[#FF9F43]'
+              }`}
+            />
+            <span>Flash Sale</span>
+          </div>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30">
+            PROMO
+          </span>
+        </Link>
+
+        {/* 5. Statistik */}
         <Link
           href="/admin/statistik"
           onClick={onClose}
