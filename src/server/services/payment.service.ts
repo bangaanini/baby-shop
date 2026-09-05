@@ -162,6 +162,10 @@ export async function getStoreSettings(): Promise<StoreSettings> {
       flash_sale_is_active: true,
       flash_sale_title: 'Promo Hemat Rutin',
       flash_sale_end_time: null,
+      header_announcement_enabled: true,
+      header_announcement_text:
+        '🎉 Gratis Ongkir s/d Rp 20.000 ke Seluruh Indonesia Belanja Min. Rp 100.000!',
+      header_announcement_link: null,
       updated_at: new Date(),
     };
 
@@ -219,6 +223,10 @@ export async function getStoreSettings(): Promise<StoreSettings> {
       flash_sale_is_active: true,
       flash_sale_title: 'Promo Hemat Rutin',
       flash_sale_end_time: null,
+      header_announcement_enabled: true,
+      header_announcement_text:
+        '🎉 Gratis Ongkir s/d Rp 20.000 ke Seluruh Indonesia Belanja Min. Rp 100.000!',
+      header_announcement_link: null,
       updated_at: new Date(),
     };
   }

@@ -29,6 +29,9 @@ export const storeSettingsTable = pgTable('store_settings', {
   flash_sale_is_active: boolean('flash_sale_is_active').default(true).notNull(),
   flash_sale_title: varchar('flash_sale_title', { length: 150 }).default('Promo Hemat Rutin'),
   flash_sale_end_time: timestamp('flash_sale_end_time'),
+  header_announcement_enabled: boolean('header_announcement_enabled').default(true).notNull(),
+  header_announcement_text: varchar('header_announcement_text', { length: 255 }).default('🎉 Gratis Ongkir s/d Rp 20.000 ke Seluruh Indonesia Belanja Min. Rp 100.000!'),
+  header_announcement_link: varchar('header_announcement_link', { length: 255 }),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
 });
 
