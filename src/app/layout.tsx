@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
 import { paymentService } from '@/server/services/payment.service';
+import { FloatingWhatsApp } from '@/components/layout/FloatingWhatsApp';
 import './globals.css';
 
 const nunitoHeading = localFont({
@@ -106,8 +107,10 @@ export default function RootLayout({
       lang="id"
       className={`${nunitoHeading.variable} ${quicksandBody.variable} h-full antialiased scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E]">{children}</body>
+      <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E]">
+        {children}
+        <FloatingWhatsApp />
+      </body>
     </html>
   );
 }
-

@@ -642,7 +642,7 @@ export function OrdersTab({
                       {/* Dibatalkan info or re-order */}
                       {order.status === 'dibatalkan' && (
                         <Link
-                          href="/kategori"
+                          href="/katalog"
                           className="px-4 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-colors"
                         >
                           Lihat Produk Lain
@@ -672,8 +672,8 @@ export function OrdersTab({
                 </p>
               </div>
               <Link
-                href="/produk"
-                className="mt-2 px-6 py-2.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold shadow-md shadow-rose-200 transition-all flex items-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0"
+                href="/katalog"
+                className="mt-2 px-6 py-2.5 rounded-2xl clay-btn-orange text-white text-xs font-bold shadow-md transition-all flex items-center gap-2 transform hover:-translate-y-0.5 active:translate-y-0"
               >
                 <span>Mulai Belanja</span>
                 <ArrowRight className="w-4 h-4" />
