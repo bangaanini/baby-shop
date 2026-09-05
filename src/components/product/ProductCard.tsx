@@ -11,13 +11,21 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const isFlashSaleActive = Boolean(product.isFlashSale && product.hargaFlashSale);
+  const displayPrice = isFlashSaleActive ? product.hargaFlashSale! : product.harga;
+  const strikePrice = isFlashSaleActive ? product.harga : product.hargaCoret;
+  const discountPercent = isFlashSaleActive
+    ? Math.max(1, Math.round(((product.harga - product.hargaFlashSale!) / product.harga) * 100))
+    : product.diskonPersen;
+  const topBadge = product.tag || (isFlashSaleActive ? '⚡ Flash Sale' : null);
+
   return (
     <div className="group bg-white rounded-3xl border-2 border-[#FFE8D6] hover:border-[#FF9F43] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),0_4px_8px_-2px_rgba(0,0,0,0.03),inset_0_2px_4px_0_rgba(255,255,255,0.95),inset_0_-3px_6px_0_rgba(255,159,67,0.1)] hover:shadow-[0_18px_36px_-4px_rgba(255,159,67,0.24)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col overflow-hidden relative">
       {/* Top Left Badge Tag - Clay Pill */}
-      {product.tag && (
+      {topBadge && (
         <div className="absolute top-3 left-3 z-10">
           <span className="clay-badge-solid-orange text-[10px] sm:text-[11px] font-heading font-black px-2.5 py-0.5 shadow-sm">
-            {product.tag}
+            {topBadge}
           </span>
         </div>
       )}
@@ -33,9 +41,9 @@ export function ProductCard({ product }: ProductCardProps) {
         />
 
         {/* Discount Badge */}
-        {product.diskonPersen && (
+        {discountPercent && discountPercent > 0 && (
           <div className="absolute top-3 right-3 bg-[#FF9F43] text-white text-[11px] font-heading font-black px-2.5 py-0.5 rounded-full border border-[#F38C26] shadow-[0_4px_8px_rgba(255,159,67,0.4)]">
-            -{product.diskonPersen}%
+            -{discountPercent}%
           </div>
         )}
       </div>
@@ -72,11 +80,11 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="mb-2.5">
             <div className="flex items-baseline gap-2 flex-wrap">
               <span className="text-base sm:text-lg font-heading font-black text-[#D96B00]">
-                {formatRupiah(product.harga)}
+                {formatRupiah(displayPrice)}
               </span>
-              {product.hargaCoret && (
+              {strikePrice && strikePrice > displayPrice && (
                 <span className="text-xs font-body font-medium text-slate-400 line-through">
-                  {formatRupiah(product.hargaCoret)}
+                  {formatRupiah(strikePrice)}
                 </span>
               )}
             </div>

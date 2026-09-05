@@ -157,11 +157,17 @@ export async function getCartItems(userIdOrSession?: string): Promise<CartRespon
     .map((item) => {
       const product = item.product;
       const variant = item.variant;
-      const unitPrice = product.price + (variant?.additional_price ?? 0);
+      const isFlashSale = Boolean(product.is_flash_sale && product.flash_sale_price);
+      const basePrice = isFlashSale ? Number(product.flash_sale_price) : product.price;
+      const unitPrice = basePrice + (variant?.additional_price ?? 0);
       const availableStock = variant ? variant.stock : product.stock;
       const weightGram = estimateWeightGram(product.name, product.category?.slug);
       const itemSubtotal = unitPrice * item.quantity;
       const itemTotalWeightGram = weightGram * item.quantity;
+      const hargaCoret = isFlashSale ? product.price : (product.original_price ?? undefined);
+      const diskonPersen = isFlashSale
+        ? Math.round(((product.price - Number(product.flash_sale_price)) / product.price) * 100)
+        : (product.discount_percent ?? undefined);
 
       return {
         id: item.id,
@@ -175,8 +181,8 @@ export async function getCartItems(userIdOrSession?: string): Promise<CartRespon
         warna: variant?.color ?? '',
         ukuran: variant?.size ?? '',
         harga: unitPrice,
-        hargaCoret: product.original_price ?? undefined,
-        diskonPersen: product.discount_percent ?? undefined,
+        hargaCoret,
+        diskonPersen,
         jumlah: item.quantity,
         stok: availableStock,
         beratGram: weightGram,

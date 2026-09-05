@@ -540,7 +540,11 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
         throw new Error(`Produk dengan ID "${item.productId}" tidak ditemukan`);
       }
 
-      let unitPrice = product.price;
+      const baseProductPrice =
+        product.is_flash_sale && product.flash_sale_price
+          ? Number(product.flash_sale_price)
+          : product.price;
+      let unitPrice = baseProductPrice;
       let variantColor: string | null = null;
       let variantSize: string | null = null;
 
@@ -578,7 +582,7 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
 
         variantColor = variant.color;
         variantSize = variant.size;
-        unitPrice = product.price + (variant.additional_price || 0);
+        unitPrice = baseProductPrice + (variant.additional_price || 0);
       }
 
       if (product.stock < item.quantity) {

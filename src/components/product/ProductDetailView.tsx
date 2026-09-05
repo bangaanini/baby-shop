@@ -19,6 +19,7 @@ import {
   ChevronRight,
   Loader2,
   AlertCircle,
+  Zap,
 } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/product';
 import { formatRupiah } from '@/lib/format';
@@ -73,8 +74,15 @@ export function ProductDetailView({
       (!selectedSize || v.ukuran === selectedSize)
   );
 
-  // Determine active price and active stock
-  const currentPrice = product.harga + (selectedVariant?.hargaTambahan || 0);
+  // Flash Sale derivation & active price / stock calculation
+  const isFlashSaleActive = Boolean(product.isFlashSale && product.hargaFlashSale);
+  const basePrice = isFlashSaleActive ? product.hargaFlashSale! : product.harga;
+  const currentPrice = basePrice + (selectedVariant?.hargaTambahan || 0);
+  const strikethroughPrice = isFlashSaleActive ? product.harga : product.hargaCoret;
+  const discountPercent = isFlashSaleActive
+    ? Math.max(1, Math.round(((product.harga - product.hargaFlashSale!) / product.harga) * 100))
+    : product.diskonPersen;
+
   const currentStock = hasVariants
     ? selectedVariant?.stok ?? 0
     : product.stok;
@@ -272,9 +280,10 @@ export function ProductDetailView({
               alt={product.nama}
               className="w-full h-full object-cover"
             />
-            {product.diskonPersen && (
-              <div className="absolute top-4 left-4 bg-[#FF9F43] text-white text-xs font-heading font-black px-3 py-1 rounded-full border border-[#F38C26] shadow-sm">
-                Hemat {product.diskonPersen}%
+            {discountPercent && discountPercent > 0 && (
+              <div className={`absolute top-4 left-4 ${isFlashSaleActive ? 'bg-gradient-to-r from-amber-500 to-rose-500 border-rose-400' : 'bg-[#FF9F43] border-[#F38C26]'} text-white text-xs font-heading font-black px-3 py-1 rounded-full border shadow-sm flex items-center gap-1`}>
+                {isFlashSaleActive && <Zap className="w-3.5 h-3.5 fill-current" />}
+                Hemat {discountPercent}%
               </div>
             )}
             <button
@@ -339,6 +348,12 @@ export function ProductDetailView({
               <span className="clay-badge-sky text-xs px-3 py-0.5">
                 {product.kategoriLabel}
               </span>
+              {isFlashSaleActive && (
+                <span className="clay-badge-solid-orange text-xs px-3 py-0.5 animate-pulse flex items-center gap-1 font-heading font-black">
+                  <Zap className="w-3.5 h-3.5 fill-current" />
+                  ⚡ FLASH SALE
+                </span>
+              )}
               {product.usiaCocok && (
                 <span className="clay-badge-orange text-xs px-3 py-0.5">
                   👶 {product.usiaCocok}
@@ -373,18 +388,24 @@ export function ProductDetailView({
 
             {/* Price Box - Clay Highlight Container */}
             <div className="p-4.5 rounded-2xl bg-[#FFF8F0] border-2 border-[#FFE8D6] mb-6">
+              {isFlashSaleActive && (
+                <div className="flex items-center gap-1.5 text-xs font-heading font-black text-[#D96B00] mb-2 uppercase tracking-wide">
+                  <Zap className="w-4 h-4 fill-amber-500 text-amber-500 animate-bounce" />
+                  <span>Harga Spesial Flash Sale</span>
+                </div>
+              )}
               <div className="flex items-baseline gap-3 flex-wrap">
                 <span className="text-3xl sm:text-4xl font-heading font-black text-[#D96B00]">
                   {formatRupiah(currentPrice)}
                 </span>
-                {product.hargaCoret && (
+                {strikethroughPrice && strikethroughPrice > currentPrice && (
                   <span className="text-sm font-body font-medium text-slate-400 line-through">
-                    {formatRupiah(product.hargaCoret)}
+                    {formatRupiah(strikethroughPrice)}
                   </span>
                 )}
-                {product.diskonPersen && (
+                {discountPercent && discountPercent > 0 && (
                   <span className="text-xs font-heading font-black bg-[#FF9F43] text-white px-2.5 py-0.5 rounded-full shadow-xs">
-                    HEMAT {product.diskonPersen}%
+                    HEMAT {discountPercent}%
                   </span>
                 )}
               </div>
