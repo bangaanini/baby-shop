@@ -123,11 +123,15 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
       if (res.ok) {
         const json = await res.json();
         if (json.success && json.data) {
-          const fetchedItems: Product[] = Array.isArray(json.data.items)
-            ? json.data.items.map(mapDbProductToProduct)
+          const rawItems: any[] = Array.isArray(json.data)
+            ? json.data
+            : Array.isArray(json.data?.items)
+            ? json.data.items
             : [];
+          const fetchedItems: Product[] = rawItems.map(mapDbProductToProduct);
           setProducts(fetchedItems);
-          setTotalCount(json.data.pagination?.total || fetchedItems.length);
+          const total = json.pagination?.total || json.data?.pagination?.total || fetchedItems.length;
+          setTotalCount(total);
           return;
         }
       }
