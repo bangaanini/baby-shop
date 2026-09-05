@@ -290,8 +290,16 @@ Saat akun dengan email tersebut mendaftar atau login melalui Google OAuth, datab
 ### Metode 2: Menggunakan Script CLI Server
 Jalankan script injeksi admin via terminal:
 ```bash
-npx tsx src/scripts/set-admin.ts email-anda@gmail.com
+npm run set-admin email-anda@gmail.com
 ```
+
+### Cara Mencabut Hak Akses Admin (Demote ke User/Buyer Biasa):
+1. Hapus email dari baris `ADMIN_EMAILS` di file `.env`.
+2. Jalankan perintah pencabutan role di terminal:
+```bash
+npm run remove-admin email-yang-dicabut@gmail.com
+```
+Role akun di database PostgreSQL akan otomatis diubah kembali menjadi `buyer`.
 
 ---
 
