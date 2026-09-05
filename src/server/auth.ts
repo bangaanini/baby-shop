@@ -13,6 +13,9 @@ const adminEmails = (process.env.ADMIN_EMAILS || 'admin@nbusiness.id,admin@babyk
   .map((e) => e.trim().toLowerCase())
   .filter(Boolean);
 
+const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const isHttps = appUrl.startsWith('https://');
+
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
@@ -91,5 +94,15 @@ export const auth = betterAuth({
     },
   },
   secret: process.env.BETTER_AUTH_SECRET,
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+  baseURL: appUrl,
+  trustedOrigins: [
+    appUrl,
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    ...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(',').map((o) => o.trim()) : []),
+  ],
+  advanced: {
+    // Only use __Secure- cookie prefix if running on HTTPS, avoiding cookie drop on HTTP VPS
+    useSecureCookies: isHttps,
+  },
 });
