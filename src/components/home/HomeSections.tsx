@@ -269,7 +269,7 @@ export function PromoSection({ products, flashSaleSettings }: PromoSectionProps)
 
           {/* Tombol Lihat Semua */}
           <Link
-            href="/katalog?filter=rekomendasi"
+            href="/flash-sale"
             className="text-xs sm:text-sm font-heading font-bold text-[#D96B00] hover:text-[#FF9F43] flex items-center gap-1 group whitespace-nowrap bg-white px-3 py-1.5 rounded-xl border border-[#FFD4B2] shadow-xs hover:shadow-sm transition-all shrink-0"
           >
             <span>Lihat Semua</span>

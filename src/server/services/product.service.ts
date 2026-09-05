@@ -123,6 +123,10 @@ export async function getProducts(filters: Partial<ProductFilterInput> = {}): Pr
     conditions.push(eq(productsTable.is_promo, filters.isPromo));
   }
 
+  if (filters.isFlashSale !== undefined) {
+    conditions.push(eq(productsTable.is_flash_sale, filters.isFlashSale));
+  }
+
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
   // Order By condition

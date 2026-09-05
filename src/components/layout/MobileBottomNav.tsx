@@ -38,9 +38,9 @@ function MobileBottomNavContent() {
     },
     {
       label: 'Promo',
-      href: '/katalog?filter=rekomendasi',
+      href: '/flash-sale',
       icon: Zap,
-      isActive: isPromo,
+      isActive: isPromo || pathname.startsWith('/flash-sale'),
       badge: 'HOT',
     },
     {

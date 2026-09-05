@@ -498,7 +498,7 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/katalog?sort=rekomendasi" className="hover:text-[#87CEEB] transition-colors">
+                <Link href="/flash-sale" className="hover:text-[#87CEEB] transition-colors">
                   ⚡ Promo & Flash Sale Hemat
                 </Link>
               </li>

@@ -176,7 +176,7 @@ export default async function RootLayout({
   return (
     <html
       lang="id"
-      className={`${nunitoHeading.variable} ${quicksandBody.variable} h-full antialiased scroll-smooth overflow-x-hidden`}
+      className={`${nunitoHeading.variable} ${quicksandBody.variable} h-full antialiased scroll-smooth`}
     >
       <head>
         <script
@@ -184,7 +184,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E] overflow-x-hidden max-w-full pb-16 md:pb-0">
+      <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E] max-w-full pb-16 md:pb-0">
         {children}
         <FloatingWhatsApp />
         <MobileBottomNav />
