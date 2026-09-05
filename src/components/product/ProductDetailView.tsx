@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -27,6 +27,7 @@ import {
 import { Product, ProductVariant } from '@/types/product';
 import { formatRupiah } from '@/lib/format';
 import { ProductCard } from '@/components/product/ProductCard';
+import { isProductInWishlist, toggleProductWishlist } from '@/lib/wishlist';
 
 interface ProductDetailViewProps {
   product: Product;
@@ -98,6 +99,11 @@ export function ProductDetailView({
     product.gambar,
     ...(product.galeri?.map((g) => g.url) || []),
   ].filter(Boolean);
+
+  // Sync wishlist status from localStorage on mount
+  useEffect(() => {
+    setIsWishlist(isProductInWishlist(product.id));
+  }, [product.id]);
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToastMessage(msg);
@@ -366,10 +372,10 @@ export function ProductDetailView({
               <button
                 type="button"
                 onClick={() => {
-                  const nextState = !isWishlist;
-                  setIsWishlist(nextState);
+                  const added = toggleProductWishlist(product);
+                  setIsWishlist(added);
                   showToast(
-                    nextState
+                    added
                       ? 'Produk ditambahkan ke Favorit ❤️'
                       : 'Produk dihapus dari Favorit',
                     'success'

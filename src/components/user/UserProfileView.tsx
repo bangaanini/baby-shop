@@ -9,6 +9,7 @@ import { UserSidebar, UserAccountTab } from '@/components/user/UserSidebar';
 import { BiodataTab } from '@/components/user/tabs/BiodataTab';
 import { AddressesTab } from '@/components/user/tabs/AddressesTab';
 import { OrdersTab } from '@/components/user/tabs/OrdersTab';
+import { FavoritesTab } from '@/components/user/tabs/FavoritesTab';
 import { SecurityTab } from '@/components/user/tabs/SecurityTab';
 
 export interface UserProfileViewProps {
@@ -18,11 +19,12 @@ export interface UserProfileViewProps {
 const TAB_TITLES: Record<UserAccountTab, string> = {
   biodata: 'Biodata Diri',
   alamat: 'Daftar Alamat',
+  favorit: 'Produk Favorit',
   transaksi: 'Daftar Transaksi',
   keamanan: 'Keamanan Akun',
 };
 
-const VALID_TABS: UserAccountTab[] = ['biodata', 'alamat', 'transaksi', 'keamanan'];
+const VALID_TABS: UserAccountTab[] = ['biodata', 'alamat', 'favorit', 'transaksi', 'keamanan'];
 
 export function UserProfileView({ initialTab }: UserProfileViewProps) {
   const router = useRouter();
@@ -215,6 +217,10 @@ export function UserProfileView({ initialTab }: UserProfileViewProps) {
 
           {activeTab === 'alamat' && (
             <AddressesTab userId={user?.id} />
+          )}
+
+          {activeTab === 'favorit' && (
+            <FavoritesTab />
           )}
 
           {activeTab === 'transaksi' && (

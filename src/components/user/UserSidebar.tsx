@@ -6,6 +6,7 @@ import {
   User,
   MapPin,
   ShoppingBag,
+  Heart,
   ShieldCheck,
   LogOut,
   Store,
@@ -14,7 +15,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 
-export type UserAccountTab = 'biodata' | 'alamat' | 'transaksi' | 'keamanan';
+export type UserAccountTab = 'biodata' | 'alamat' | 'transaksi' | 'favorit' | 'keamanan';
 
 export interface UserSidebarProps {
   activeTab: UserAccountTab;
@@ -64,6 +65,12 @@ export function UserSidebar({
       label: 'Daftar Alamat',
       description: 'Alamat pengiriman & penerima',
       icon: MapPin,
+    },
+    {
+      id: 'favorit',
+      label: 'Produk Favorit',
+      description: 'Daftar produk yang Anda sukai',
+      icon: Heart,
     },
     {
       id: 'transaksi',
