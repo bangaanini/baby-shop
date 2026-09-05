@@ -53,6 +53,39 @@ export function OrderDetailDrawer({
   const [copiedResi, setCopiedResi] = useState<boolean>(false);
   const [toast, setToast] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
   const [isPrintModalOpen, setIsPrintModalOpen] = useState<boolean>(false);
+  const [liveTrackingData, setLiveTrackingData] = useState<any | null>(null);
+  const [isLoadingLiveTracking, setIsLoadingLiveTracking] = useState<boolean>(false);
+
+  // Fetch Live Biteship Tracking when drawer opens and tracking number exists
+  useEffect(() => {
+    if (!isOpen || !order?.nomorResi) {
+      setLiveTrackingData(null);
+      return;
+    }
+
+    let isSubscribed = true;
+    async function loadLiveTracking() {
+      setIsLoadingLiveTracking(true);
+      try {
+        const res = await fetch(
+          `/api/shipping/tracking?orderId=${encodeURIComponent(order!.id)}&waybill=${encodeURIComponent(order!.nomorResi || '')}&courier=${encodeURIComponent(order!.kurir || '')}`
+        );
+        const json = await res.json();
+        if (isSubscribed && json.success && json.data) {
+          setLiveTrackingData(json.data);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch live tracking in admin drawer:', err);
+      } finally {
+        if (isSubscribed) setIsLoadingLiveTracking(false);
+      }
+    }
+
+    loadLiveTracking();
+    return () => {
+      isSubscribed = false;
+    };
+  }, [isOpen, order?.id, order?.nomorResi, order?.kurir]);
 
   // Sync state when order prop changes
   useEffect(() => {
@@ -690,8 +723,16 @@ export function OrderDetailDrawer({
                     <Clock className="w-4 h-4" />
                   </div>
                   <div>
-                    <h3 className="text-xs font-bold text-slate-800">Riwayat Perjalanan Paket</h3>
-                    <p className="text-[11px] text-slate-400">Status logistik dan tracking kurir</p>
+                    <h3 className="text-xs font-bold text-slate-800 flex items-center gap-1.5">
+                      <span>Riwayat Perjalanan Paket</span>
+                      {liveTrackingData?.isLive && (
+                        <span className="bg-emerald-100 text-emerald-800 text-[9px] font-bold px-1.5 py-0.2 rounded-md">
+                          Live Biteship
+                        </span>
+                      )}
+                      {isLoadingLiveTracking && <Loader2 className="w-3 h-3 animate-spin text-amber-500" />}
+                    </h3>
+                    <p className="text-[11px] text-slate-400">Status logistik dan tracking kurir real-time</p>
                   </div>
                 </div>
                 <span className="text-[11px] text-slate-400 font-mono">
@@ -699,13 +740,13 @@ export function OrderDetailDrawer({
                 </span>
               </div>
 
-              {(!currentOrder.trackingTimeline || currentOrder.trackingTimeline.length === 0) ? (
+              {((liveTrackingData?.history?.length || 0) === 0 && (!currentOrder.trackingTimeline || currentOrder.trackingTimeline.length === 0)) ? (
                 <div className="py-6 text-center text-xs text-slate-400 italic">
                   Belum ada log riwayat pelacakan untuk pesanan ini.
                 </div>
               ) : (
                 <div className="relative pl-6 space-y-5 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-                  {currentOrder.trackingTimeline.map((step, idx) => {
+                  {(liveTrackingData?.history && liveTrackingData.history.length > 0 ? liveTrackingData.history : currentOrder.trackingTimeline).map((step: any, idx: number) => {
                     const isLatest = idx === 0;
                     return (
                       <div key={step.id || idx} className="relative group">

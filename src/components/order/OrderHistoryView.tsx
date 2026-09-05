@@ -182,19 +182,38 @@ export function OrderHistoryView() {
     }
   };
 
-  // Handle Open Tracking Modal & Fetch Fresh Tracking Info
+  // Handle Open Tracking Modal & Fetch Live Biteship Tracking Info
   const handleOpenTracking = async (order: Order) => {
     setSelectedOrderForTracking(order);
     setLoadingTracking(true);
     try {
       const targetId = order.id || order.nomorInvoice;
-      const res = await fetch(`/api/orders/${targetId}`);
+      const resiParam = order.nomorResi ? `&waybill=${encodeURIComponent(order.nomorResi)}` : '';
+      const courierParam = order.kurir ? `&courier=${encodeURIComponent(order.kurir)}` : '';
+
+      const res = await fetch(`/api/shipping/tracking?orderId=${encodeURIComponent(targetId)}${resiParam}${courierParam}`);
       const data = await res.json();
+
       if (res.ok && data.success && data.data) {
-        setSelectedOrderForTracking(data.data);
+        const live = data.data;
+        setSelectedOrderForTracking({
+          ...order,
+          nomorResi: live.waybillId || order.nomorResi,
+          kurir: live.courierName || order.kurir,
+          trackingTimeline: (live.history && live.history.length > 0)
+            ? live.history
+            : order.trackingTimeline,
+        });
+      } else {
+        // Fallback to order detail endpoint
+        const ordRes = await fetch(`/api/orders/${targetId}`);
+        const ordData = await ordRes.json();
+        if (ordRes.ok && ordData.success && ordData.data) {
+          setSelectedOrderForTracking(ordData.data);
+        }
       }
     } catch (err) {
-      console.error('Failed to fetch tracking details:', err);
+      console.error('Failed to fetch live tracking details:', err);
     } finally {
       setLoadingTracking(false);
     }

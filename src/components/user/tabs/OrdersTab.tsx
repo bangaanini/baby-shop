@@ -147,16 +147,34 @@ export function OrdersTab({
     showToast(`Teks "${text}" disalin ke papan klip!`);
   };
 
-  // Open Tracking Modal & fetch latest tracking steps if available
+  // Open Live Biteship Tracking Modal & fetch real-time tracking steps
   const handleOpenTracking = async (order: Order) => {
     setSelectedOrderForTracking(order);
     setLoadingTracking(true);
     try {
       const targetId = order.id || order.nomorInvoice;
-      const res = await fetch(`/api/orders/${targetId}`);
+      const resiParam = order.nomorResi ? `&waybill=${encodeURIComponent(order.nomorResi)}` : '';
+      const courierParam = order.kurir ? `&courier=${encodeURIComponent(order.kurir)}` : '';
+
+      const res = await fetch(`/api/shipping/tracking?orderId=${encodeURIComponent(targetId)}${resiParam}${courierParam}`);
       const data = await res.json();
+
       if (res.ok && data.success && data.data) {
-        setSelectedOrderForTracking(data.data);
+        const live = data.data;
+        setSelectedOrderForTracking({
+          ...order,
+          nomorResi: live.waybillId || order.nomorResi,
+          kurir: live.courierName || order.kurir,
+          trackingTimeline: (live.history && live.history.length > 0)
+            ? live.history
+            : order.trackingTimeline,
+        });
+      } else {
+        const ordRes = await fetch(`/api/orders/${targetId}`);
+        const ordData = await ordRes.json();
+        if (ordRes.ok && ordData.success && ordData.data) {
+          setSelectedOrderForTracking(ordData.data);
+        }
       }
     } catch (err) {
       console.error('Failed to fetch latest tracking details:', err);
