@@ -143,6 +143,8 @@ export function CheckoutStepper() {
   // Voucher state
   const [voucherApplied, setVoucherApplied] = useState(false);
   const [voucherCode, setVoucherCode] = useState('');
+  const [isValidatingVoucher, setIsValidatingVoucher] = useState(false);
+  const [voucherMessage, setVoucherMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   // Calculation & submission states
   const [isCalculating, setIsCalculating] = useState(false);
@@ -483,7 +485,7 @@ export function CheckoutStepper() {
             destinationCity: selectedAddress.kotaKabupaten,
             destinationProvince: selectedAddress.provinsi,
             destinationDistrict: selectedAddress.kecamatan,
-            voucherCode: voucherApplied ? (voucherCode || 'ANAKHEMAT') : undefined,
+            voucherCode: voucherApplied ? voucherCode : undefined,
           }),
         });
 
@@ -570,6 +572,38 @@ export function CheckoutStepper() {
     shippingWeights.chargeableWeightKg,
   ]);
 
+  const handleApplyVoucher = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!voucherCode.trim()) return;
+    const normalized = voucherCode.trim().toUpperCase();
+    setIsValidatingVoucher(true);
+    try {
+      const subtotal = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
+      const shippingCost = calcSummary.ongkir ?? selectedCourier.price ?? selectedCourier.cost ?? 0;
+      const res = await fetch(`/api/vouchers/validate?code=${encodeURIComponent(normalized)}&subtotal=${subtotal}&shippingCost=${shippingCost}`);
+      const json = await res.json();
+      if (json.success && json.data?.isValid) {
+        setVoucherApplied(true);
+        setVoucherCode(normalized);
+        setVoucherMessage({ type: 'success', text: json.data.message || `Voucher berhasil! Hemat ${formatRupiah(json.data.discountAmount)}` });
+      } else {
+        setVoucherApplied(false);
+        setVoucherMessage({ type: 'error', text: json.data?.message || json.error || 'Kode voucher tidak valid atau sudah tidak berlaku' });
+      }
+    } catch {
+      setVoucherApplied(false);
+      setVoucherMessage({ type: 'error', text: 'Gagal memvalidasi voucher. Coba lagi.' });
+    } finally {
+      setIsValidatingVoucher(false);
+    }
+  };
+
+  const handleRemoveVoucher = () => {
+    setVoucherApplied(false);
+    setVoucherCode('');
+    setVoucherMessage(null);
+  };
+
   const handleAddNewAddress = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newAddressForm.namaPenerima || !newAddressForm.alamatLengkap) return;
@@ -612,7 +646,7 @@ export function CheckoutStepper() {
       destinationDistrict: selectedAddress.kecamatan,
       paymentMethod: selectedPayment.nama,
       notes: buyerNotes || undefined,
-      voucherCode: voucherApplied ? (voucherCode || 'ANAKHEMAT') : undefined,
+      voucherCode: voucherApplied ? voucherCode : undefined,
       cartId: cartId || undefined,
       items: items.map((i) => ({
         productId: i.productId,
@@ -1506,6 +1540,41 @@ export function CheckoutStepper() {
               Ringkasan Pesanan 🧾
             </h3>
 
+            {/* Voucher input — validates via GET /api/vouchers/validate for instant feedback */}
+            <form onSubmit={handleApplyVoucher} className="flex gap-2 mb-4">
+              <input
+                type="text"
+                placeholder="Kode voucher"
+                value={voucherCode}
+                onChange={(e) => setVoucherCode(e.target.value)}
+                disabled={isValidatingVoucher}
+                className="flex-1 px-3 py-2.5 text-xs font-heading font-bold rounded-xl border-2 border-[#FFE8D6] focus:outline-none focus:border-[#FF9F43] uppercase bg-[#FFF8F0] disabled:opacity-60"
+              />
+              {voucherApplied ? (
+                <button
+                  type="button"
+                  onClick={handleRemoveVoucher}
+                  className="px-4 py-2 text-xs font-heading font-bold rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  Hapus
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={isValidatingVoucher || !voucherCode.trim()}
+                  className="clay-btn-orange px-4 py-2 text-xs text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5 min-w-[72px]"
+                >
+                  {isValidatingVoucher ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                  {isValidatingVoucher ? 'Memeriksa...' : 'Pakai'}
+                </button>
+              )}
+            </form>
+            {voucherMessage && (
+              <p className={`text-xs mb-4 font-heading font-bold ${voucherMessage.type === 'success' ? 'text-emerald-600' : 'text-rose-600'}`}>
+                {voucherMessage.text}
+              </p>
+            )}
+
             <div className="space-y-2.5 text-xs font-body font-semibold text-slate-600 mb-5">
               <div className="flex justify-between">
                 <span>Total Harga Barang</span>
@@ -1515,10 +1584,12 @@ export function CheckoutStepper() {
                 <span>Ongkos Kirim ({calcSummary.totalBeratKg} kg)</span>
                 <span className="font-heading font-bold text-[#0E678E]">{formatRupiah(calcSummary.ongkir)}</span>
               </div>
-              <div className="flex justify-between text-emerald-600 font-heading font-bold">
-                <span>Diskon Promo Hemat</span>
-                <span>-{formatRupiah(calcSummary.diskonVoucher)}</span>
-              </div>
+              {calcSummary.diskonVoucher > 0 && (
+                <div className="flex justify-between text-emerald-600 font-heading font-bold">
+                  <span>Diskon Promo Hemat</span>
+                  <span>-{formatRupiah(calcSummary.diskonVoucher)}</span>
+                </div>
+              )}
               <div className="flex justify-between">
                 <span>Biaya Layanan</span>
                 <span className="text-slate-800">{formatRupiah(calcSummary.biayaLayanan)}</span>

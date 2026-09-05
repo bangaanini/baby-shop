@@ -13,6 +13,7 @@ export function CartView() {
   const [voucherCode, setVoucherCode] = useState('');
   const [discountApplied, setDiscountApplied] = useState(0);
   const [voucherMessage, setVoucherMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isValidatingVoucher, setIsValidatingVoucher] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -139,18 +140,34 @@ export function CartView() {
     }
   };
 
-  const handleApplyVoucher = (e: React.FormEvent) => {
+  const handleApplyVoucher = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!voucherCode.trim()) return;
-
     const normalized = voucherCode.trim().toUpperCase();
-    if (['ANAKHEMAT', 'BABY20', 'HEMAT20', 'PROMO20', 'DISKON20', 'NEWBORN'].includes(normalized)) {
-      setDiscountApplied(20000);
-      setVoucherMessage({ type: 'success', text: 'Voucher berhasil digunakan! Hemat Rp 20.000' });
-    } else {
+    setIsValidatingVoucher(true);
+    try {
+      const subtotal = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
+      const res = await fetch(`/api/vouchers/validate?code=${encodeURIComponent(normalized)}&subtotal=${subtotal}`);
+      const json = await res.json();
+      if (json.success && json.data?.isValid) {
+        setDiscountApplied(json.data.discountAmount);
+        setVoucherMessage({ type: 'success', text: json.data.message || `Voucher berhasil! Hemat ${formatRupiah(json.data.discountAmount)}` });
+      } else {
+        setDiscountApplied(0);
+        setVoucherMessage({ type: 'error', text: json.data?.message || json.error || 'Kode voucher tidak valid atau sudah tidak berlaku' });
+      }
+    } catch {
       setDiscountApplied(0);
-      setVoucherMessage({ type: 'error', text: 'Kode voucher tidak valid (Coba: ANAKHEMAT)' });
+      setVoucherMessage({ type: 'error', text: 'Gagal memvalidasi voucher. Coba lagi.' });
+    } finally {
+      setIsValidatingVoucher(false);
     }
+  };
+
+  const handleRemoveVoucher = () => {
+    setDiscountApplied(0);
+    setVoucherCode('');
+    setVoucherMessage(null);
   };
 
   const subtotal = items.reduce((sum, item) => sum + item.harga * item.jumlah, 0);
@@ -308,17 +325,30 @@ export function CartView() {
             <form onSubmit={handleApplyVoucher} className="flex gap-2">
               <input
                 type="text"
-                placeholder="Ketik voucher (misal: ANAKHEMAT)"
+                placeholder="Kode voucher"
                 value={voucherCode}
                 onChange={(e) => setVoucherCode(e.target.value)}
-                className="flex-1 px-3.5 py-2.5 text-xs font-heading font-bold rounded-xl border-2 border-[#FFE8D6] focus:outline-none focus:border-[#FF9F43] uppercase bg-[#FFF8F0]"
+                disabled={isValidatingVoucher}
+                className="flex-1 px-3.5 py-2.5 text-xs font-heading font-bold rounded-xl border-2 border-[#FFE8D6] focus:outline-none focus:border-[#FF9F43] uppercase bg-[#FFF8F0] disabled:opacity-60"
               />
-              <button
-                type="submit"
-                className="clay-btn-orange px-4 py-2 text-xs text-white cursor-pointer"
-              >
-                Pakai
-              </button>
+              {discountApplied > 0 ? (
+                <button
+                  type="button"
+                  onClick={handleRemoveVoucher}
+                  className="px-4 py-2 text-xs font-heading font-bold rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 cursor-pointer"
+                >
+                  Hapus
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  disabled={isValidatingVoucher || !voucherCode.trim()}
+                  className="clay-btn-orange px-4 py-2 text-xs text-white cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center gap-1.5 min-w-[72px]"
+                >
+                  {isValidatingVoucher ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : null}
+                  {isValidatingVoucher ? 'Memeriksa...' : 'Pakai'}
+                </button>
+              )}
             </form>
             {voucherMessage && (
               <p className={`text-xs mt-2 font-heading font-bold ${voucherMessage.type === 'success' ? 'text-emerald-600' : 'text-rose-600'}`}>
