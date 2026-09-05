@@ -87,8 +87,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 2. User route protection: /user/:path*
-  if (pathname.startsWith('/user')) {
+  // 2. User route protection: /user/:path* and /checkout
+  if (pathname.startsWith('/user') || pathname === '/checkout' || pathname.startsWith('/checkout/')) {
     const sessionCookie = getSessionCookie(request);
     if (!sessionCookie) {
       const loginUrl = new URL(
@@ -151,5 +151,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/user/:path*', '/auth/login', '/auth/register'],
+  matcher: ['/admin/:path*', '/user/:path*', '/checkout', '/checkout/:path*', '/auth/login', '/auth/register'],
 };
