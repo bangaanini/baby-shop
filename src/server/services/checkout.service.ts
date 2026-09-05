@@ -21,6 +21,7 @@ import {
   paymentService,
   PaymentTransactionResult,
 } from '@/server/services/payment.service';
+import { voucherService } from '@/server/services/voucher.service';
 
 function isValidUUID(str: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -67,31 +68,12 @@ export function getCourierRate(courierCode: string, courierService?: string | nu
   return 22000;
 }
 
-export function calculateVoucherDiscount(
+export async function calculateVoucherDiscount(
   voucherCode?: string | null,
-  subtotal: number = 0
-): { discountAmount: number; isValid: boolean; message?: string } {
-  if (!voucherCode || !voucherCode.trim()) {
-    return { discountAmount: 0, isValid: false };
-  }
-
-  const code = voucherCode.trim().toUpperCase();
-  const validVouchers = ['ANAKHEMAT', 'BABY20', 'HEMAT20', 'PROMO20', 'DISKON20', 'NEWBORN'];
-
-  if (validVouchers.includes(code)) {
-    const discount = Math.min(20000, subtotal);
-    return {
-      discountAmount: discount,
-      isValid: true,
-      message: 'Voucher diskon Rp 20.000 berhasil diterapkan',
-    };
-  }
-
-  return {
-    discountAmount: 0,
-    isValid: false,
-    message: 'Kode voucher tidak valid atau sudah tidak berlaku',
-  };
+  subtotal: number = 0,
+  shippingCost: number = 20000
+) {
+  return await voucherService.validateVoucher(voucherCode, subtotal, shippingCost);
 }
 
 function extractAddressDetails(
@@ -422,7 +404,7 @@ export async function calculateOrder(
     ongkir = courierRatePerKg * totalBeratKg;
   }
 
-  const voucherResult = calculateVoucherDiscount(voucherCode, subtotal);
+  const voucherResult = await voucherService.validateVoucher(voucherCode, subtotal, ongkir);
   const biayaLayanan = 1000;
   const totalBayar = Math.max(0, subtotal + ongkir + biayaLayanan - voucherResult.discountAmount);
 
@@ -651,7 +633,7 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
       shippingCost = courierRatePerKg * totalBeratKg;
     }
 
-    const voucherResult = calculateVoucherDiscount(voucherCode, subtotal);
+    const voucherResult = await voucherService.validateVoucher(voucherCode, subtotal, shippingCost);
     const discountAmount = voucherResult.discountAmount;
     const serviceFee = 1000;
     const totalAmount = Math.max(0, subtotal + shippingCost + serviceFee - discountAmount);
@@ -731,6 +713,15 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
       itemSnapshots,
     };
   });
+
+  // Increment voucher usage count if valid voucher was used
+  if (voucherCode) {
+    try {
+      await voucherService.incrementVoucherUsage(voucherCode);
+    } catch (err) {
+      console.warn('[checkoutService] Failed to increment voucher usage:', err);
+    }
+  }
 
   // After the transaction completes, generate payment transaction
   let customerEmail = 'pembeli@example.com';

@@ -11,11 +11,11 @@ export const vouchersTable = pgTable('vouchers', {
   min_order_amount: integer('min_order_amount').default(0).notNull(),
   usage_limit: integer('usage_limit'),
   used_count: integer('used_count').default(0).notNull(),
-  start_date: timestamp('start_date').defaultNow().notNull(),
-  end_date: timestamp('end_date'),
+  start_date: timestamp('start_date', { withTimezone: true }).defaultNow().notNull(),
+  end_date: timestamp('end_date', { withTimezone: true }),
   is_active: boolean('is_active').default(true).notNull(),
-  created_at: timestamp('created_at').defaultNow().notNull(),
-  updated_at: timestamp('updated_at').defaultNow().notNull(),
+  created_at: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  updated_at: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 });
 
 export type Voucher = typeof vouchersTable.$inferSelect;

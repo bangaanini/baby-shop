@@ -26,6 +26,7 @@ async function seed() {
     await db.delete(schema.productVariantsTable);
     await db.delete(schema.productsTable);
     await db.delete(schema.categoriesTable);
+    await db.delete(schema.vouchersTable);
     await db.delete(schema.usersTable);
 
     // 2. Seed Categories
@@ -169,6 +170,67 @@ async function seed() {
       });
       console.log('✅ Default store settings initialized.');
     }
+
+    // 6. Seed Promotional Vouchers
+    console.log('🎟️ Initializing promotional vouchers...');
+    const DEFAULT_VOUCHERS: schema.NewVoucher[] = [
+      {
+        code: 'ANAKHEMAT',
+        name: 'Voucher Promo Anak Hemat',
+        description: 'Potongan langsung Rp 20.000 untuk kebutuhan si kecil dengan minimal belanja Rp 100.000.',
+        discount_type: 'fixed',
+        discount_value: 20000,
+        max_discount_amount: null,
+        min_order_amount: 100000,
+        usage_limit: 500,
+        used_count: 0,
+        is_active: true,
+      },
+      {
+        code: 'NEWBORN',
+        name: 'Spesial Perlengkapan Bayi Baru Lahir',
+        description: 'Potongan langsung Rp 15.000 untuk perlengkapan newborn dengan minimal belanja Rp 75.000.',
+        discount_type: 'fixed',
+        discount_value: 15000,
+        max_discount_amount: null,
+        min_order_amount: 75000,
+        usage_limit: 300,
+        used_count: 0,
+        is_active: true,
+      },
+      {
+        code: 'DISKON10',
+        name: 'Diskon 10% Spesial',
+        description: 'Diskon 10% hingga Rp 25.000 untuk semua produk anak dengan minimal belanja Rp 50.000.',
+        discount_type: 'percentage',
+        discount_value: 10,
+        max_discount_amount: 25000,
+        min_order_amount: 50000,
+        usage_limit: 1000,
+        used_count: 0,
+        is_active: true,
+      },
+      {
+        code: 'GRATISONGKIR',
+        name: 'Gratis Ongkir Se-Indonesia',
+        description: 'Potongan ongkos kirim hingga Rp 20.000 dengan minimal belanja Rp 100.000.',
+        discount_type: 'shipping',
+        discount_value: 20000,
+        max_discount_amount: 20000,
+        min_order_amount: 100000,
+        usage_limit: 1000,
+        used_count: 0,
+        is_active: true,
+      },
+    ];
+
+    for (const voucher of DEFAULT_VOUCHERS) {
+      await db
+        .insert(schema.vouchersTable)
+        .values(voucher)
+        .onConflictDoNothing();
+    }
+    console.log(`✅ ${DEFAULT_VOUCHERS.length} promotional vouchers initialized.`);
 
     console.log('✨ Seed completed cleanly! Zero mock orders or dummy transactions.');
   } catch (error) {
