@@ -365,7 +365,16 @@ export function ProductDetailView({
               </button>
               <button
                 type="button"
-                onClick={() => setIsWishlist(!isWishlist)}
+                onClick={() => {
+                  const nextState = !isWishlist;
+                  setIsWishlist(nextState);
+                  showToast(
+                    nextState
+                      ? 'Produk ditambahkan ke Favorit ❤️'
+                      : 'Produk dihapus dari Favorit',
+                    'success'
+                  );
+                }}
                 className={`p-2.5 rounded-2xl backdrop-blur-md border border-white/60 shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95 ${
                   isWishlist
                     ? 'bg-[#FF9F43] text-white border-[#F38C26]'
