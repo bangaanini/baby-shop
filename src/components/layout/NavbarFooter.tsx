@@ -409,6 +409,29 @@ export function Navbar() {
 }
 
 export function Footer() {
+  const [storeCity, setStoreCity] = useState<string>('Jakarta Selatan');
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadStoreInfo() {
+      try {
+        const res = await fetch('/api/settings/public');
+        if (res.ok) {
+          const json = await res.json();
+          if (isMounted && json.success && json.data?.store?.city) {
+            setStoreCity(json.data.store.city);
+          }
+        }
+      } catch {
+        // Fallback default
+      }
+    }
+    loadStoreInfo();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   return (
     <footer className="bg-[#2D3748] text-slate-300 pt-14 pb-8 border-t-4 border-[#FF9F43] mt-auto">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -426,7 +449,7 @@ export function Footer() {
               Pusat belanja online terpercaya untuk perlengkapan bayi, pakaian modis anak, dan mainan edukasi terstandar aman SNI dengan pengiriman ke seluruh Nusantara.
             </p>
             <div className="text-xs font-body text-slate-400 space-y-1.5">
-              <p className="flex items-center gap-1.5">📍 <span>Gudang Utama: Jakarta & Surabaya</span></p>
+              <p className="flex items-center gap-1.5">📍 <span>Gudang Utama: {storeCity}</span></p>
               <p className="flex items-center gap-1.5">📦 <span>Menjangkau 514 Kota/Kabupaten</span></p>
             </div>
           </div>
@@ -508,8 +531,6 @@ export function Footer() {
             <Link href="/kebijakan-privasi" className="hover:text-white transition-colors">Kebijakan Privasi</Link>
             <span>•</span>
             <Link href="/kebijakan-pengembalian" className="hover:text-white transition-colors">Kebijakan Pengembalian</Link>
-            <span>•</span>
-            <Link href="/admin" className="hover:text-[#FF9F43] transition-colors">Seller Center</Link>
           </div>
         </div>
       </div>
