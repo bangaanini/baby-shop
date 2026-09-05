@@ -208,220 +208,202 @@ export function Navbar() {
 
       {/* Main Sticky Header: Logo, Search, Cart, Account */}
       <header className="sticky top-0 z-50 bg-[#FFF8F0]/95 backdrop-blur-md border-b-2 border-[#FFE8D6] shadow-[0_4px_20px_rgba(255,159,67,0.08)]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-6 min-w-0">
-          {/* Brand Logo - Playful Claymorphic Block */}
-          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0 group">
-            {storeInfo.logoUrl ? (
-              <div
-                className={`${
-                  storeInfo.headerLogoDisplay === 'logo_only'
-                    ? 'h-10 sm:h-14 w-auto'
-                    : 'w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white border-2 border-[#FFE8D6] shadow-[0_4px_12px_rgba(255,159,67,0.12)] p-1'
-                } flex items-center justify-center overflow-hidden group-hover:scale-105 transition-all shrink-0`}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={storeInfo.logoUrl}
-                  alt={storeInfo.name}
-                  className="max-h-full max-w-full object-contain"
-                />
-              </div>
-            ) : (
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#FF9F43] to-[#EE8A2B] text-white flex items-center justify-center font-heading font-black text-xl sm:text-2xl border-2 border-[#F38C26] shadow-[0_6px_14px_rgba(255,159,67,0.35),inset_0_2px_4px_rgba(255,255,255,0.6)] group-hover:scale-105 group-hover:rotate-2 transition-all duration-200 shrink-0">
-                <Store className="w-5 h-5 sm:w-6 sm:h-6 drop-shadow-xs" />
-              </div>
-            )}
-            {storeInfo.headerLogoDisplay !== 'logo_only' && (
-              <div className="min-w-0">
-                <span className="text-xl sm:text-2xl md:text-3xl font-heading font-black text-[#D96B00] tracking-tight group-hover:text-[#FF9F43] transition-colors drop-shadow-xs truncate block max-w-[130px] xs:max-w-[190px] sm:max-w-none">
-                  {storeInfo.name}
-                </span>
-                <span className="text-[10px] sm:text-[11px] block font-body font-semibold text-slate-500 -mt-1 hidden xs:block truncate max-w-[150px] sm:max-w-none">
-                  {storeInfo.tagline}
-                </span>
-              </div>
-            )}
-          </Link>
-
-          {/* Search Bar ala Marketplace - Clay Rounded Pill */}
-          <form onSubmit={handleSearchSubmit} className="flex-1 max-w-2xl mx-2 hidden md:block">
-            <div className="relative">
-              <input
-                type="text"
-                value={navSearch}
-                onChange={(e) => setNavSearch(e.target.value)}
-                placeholder="Cari stroller, baju bayi lucu, balok edukasi..."
-                className="w-full pl-5 pr-12 py-3 rounded-2xl border-2 border-[#FFE8D6] bg-white text-sm font-body font-medium focus:outline-none focus:border-[#FF9F43] focus:ring-4 focus:ring-[#FF9F43]/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.03)] transition-all text-slate-800 placeholder-slate-400"
-              />
-              <button
-                type="submit"
-                aria-label="Cari Produk"
-                className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-xl bg-[#FF9F43] hover:bg-[#EE8A2B] text-white flex items-center justify-center border border-[#F38C26] shadow-[0_4px_10px_rgba(255,159,67,0.4),inset_0_1px_2px_rgba(255,255,255,0.5)] active:scale-95 transition-all cursor-pointer"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-            </div>
-          </form>
-
-          {/* User & Cart Action Buttons */}
-          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
-            {/* Cart Button - Claymorphic Puffy Pill */}
-            <Link
-              href="/keranjang"
-              className="relative p-2 sm:px-4 sm:py-2.5 rounded-2xl bg-white border-2 border-[#FFE8D6] hover:border-[#FF9F43] text-slate-700 hover:text-[#D96B00] flex items-center gap-1.5 sm:gap-2 shadow-[0_4px_12px_rgba(255,159,67,0.1),inset_0_2px_3px_rgba(255,255,255,0.9)] active:translate-y-0.5 transition-all group shrink-0"
-              title="Keranjang Belanja"
-            >
-              <ShoppingBag className="w-5 h-5 text-[#FF9F43] group-hover:scale-110 transition-transform" />
-              <span className="hidden sm:inline text-xs font-heading font-bold">Keranjang</span>
-              {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 sm:-top-1.5 sm:-right-1.5 bg-[#FF9F43] text-white text-[11px] font-heading font-black w-5 h-5 rounded-full flex items-center justify-center border-2 border-white shadow-[0_2px_6px_rgba(255,159,67,0.5)] animate-pulse">
-                  {cartCount > 99 ? '99+' : cartCount}
-                </span>
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-14 sm:h-16 md:h-20 gap-2 sm:gap-4 md:gap-6 min-w-0">
+            {/* Brand Logo - Playful Claymorphic Block */}
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0 group" aria-label="Beranda">
+              {storeInfo.logoUrl ? (
+                <div
+                  className={`${
+                    storeInfo.headerLogoDisplay === 'logo_only'
+                      ? 'h-9 sm:h-11 md:h-14 w-auto'
+                      : 'w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-white border-2 border-[#FFE8D6] shadow-[0_4px_12px_rgba(255,159,67,0.12)] p-1'
+                  } flex items-center justify-center overflow-hidden group-hover:scale-105 transition-all shrink-0`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={storeInfo.logoUrl}
+                    alt={storeInfo.name}
+                    className="max-h-full max-w-full object-contain"
+                  />
+                </div>
+              ) : (
+                <div className="w-9 h-9 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-xl md:rounded-2xl bg-gradient-to-br from-[#FF9F43] to-[#EE8A2B] text-white flex items-center justify-center font-heading font-black text-lg md:text-2xl border-2 border-[#F38C26] shadow-[0_4px_12px_rgba(255,159,67,0.35),inset_0_2px_4px_rgba(255,255,255,0.6)] group-hover:scale-105 group-hover:rotate-2 transition-all duration-200 shrink-0">
+                  <Store className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 drop-shadow-xs" />
+                </div>
+              )}
+              {storeInfo.headerLogoDisplay !== 'logo_only' && (
+                <div className="min-w-0 hidden md:block">
+                  <span className="text-xl sm:text-2xl md:text-3xl font-heading font-black text-[#D96B00] tracking-tight group-hover:text-[#FF9F43] transition-colors drop-shadow-xs truncate block">
+                    {storeInfo.name}
+                  </span>
+                  <span className="text-[10px] sm:text-[11px] block font-body font-semibold text-slate-500 -mt-1 truncate">
+                    {storeInfo.tagline}
+                  </span>
+                </div>
               )}
             </Link>
 
-            {/* User Auth Section */}
-            {user ? (
-              <div className="relative shrink-0" ref={userMenuRef}>
+            {/* Search Bar ala Marketplace - Clay Rounded Pill */}
+            <form onSubmit={handleSearchSubmit} className="flex-1 max-w-2xl mx-1.5 sm:mx-3 md:mx-4 min-w-0">
+              <div className="relative flex items-center">
+                <input
+                  type="text"
+                  value={navSearch}
+                  onChange={(e) => setNavSearch(e.target.value)}
+                  placeholder="Cari kebutuhan si kecil..."
+                  className="w-full pl-3.5 pr-9 py-1.5 sm:py-2 md:pl-5 md:pr-12 md:py-2.5 rounded-xl md:rounded-2xl border-2 border-[#FFE8D6] bg-white text-xs md:text-sm font-body font-medium focus:outline-none focus:border-[#FF9F43] focus:ring-2 md:focus:ring-4 focus:ring-[#FF9F43]/20 shadow-[inset_0_2px_4px_rgba(0,0,0,0.03)] transition-all text-slate-800 placeholder-slate-400"
+                />
                 <button
-                  type="button"
-                  onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:px-3 sm:py-2 rounded-2xl bg-white border-2 border-[#FFE8D6] hover:border-[#FF9F43] text-slate-700 text-xs font-heading font-bold shadow-[0_4px_12px_rgba(255,159,67,0.1)] transition-all cursor-pointer"
+                  type="submit"
+                  aria-label="Cari Produk"
+                  className="absolute right-1 md:right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-lg md:rounded-xl bg-[#FF9F43] hover:bg-[#EE8A2B] text-white flex items-center justify-center border border-[#F38C26] shadow-[0_2px_6px_rgba(255,159,67,0.4),inset_0_1px_2px_rgba(255,255,255,0.5)] active:scale-95 transition-all cursor-pointer shrink-0"
                 >
-                  <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-[#87CEEB] to-[#FF9F43] text-white flex items-center justify-center font-heading font-bold text-xs border border-white shadow-xs">
-                    {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
-                  </div>
-                  <span className="hidden sm:inline max-w-[100px] truncate text-slate-800">
-                    {user.name?.split(' ')[0] || 'Akun'}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                  <Search className="w-3.5 h-3.5 md:w-4 md:h-4" />
                 </button>
+              </div>
+            </form>
 
-                {/* Dropdown Menu - Clay Card */}
-                {userMenuOpen && (
-                  <div className="absolute right-0 mt-2 w-60 rounded-3xl bg-white border-2 border-[#FFE8D6] shadow-[0_16px_36px_rgba(255,159,67,0.16)] py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
-                    <div className="px-4 py-3 border-b border-[#FFE8D6] bg-[#FFF8F0]/60 rounded-t-2xl">
-                      <div className="flex items-center gap-2.5">
-                        <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#87CEEB] to-[#FF9F43] text-white flex items-center justify-center font-heading font-bold text-sm shadow-xs">
-                          {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+            {/* Actions: Cart (always) & User Auth (desktop only) */}
+            <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+              {/* Cart Button - Claymorphic Puffy Pill */}
+              <Link
+                href="/keranjang"
+                className="relative p-2 sm:px-3 sm:py-2 md:px-4 md:py-2.5 rounded-xl md:rounded-2xl bg-white border-2 border-[#FFE8D6] hover:border-[#FF9F43] text-slate-700 hover:text-[#D96B00] flex items-center gap-1.5 md:gap-2 shadow-[0_4px_12px_rgba(255,159,67,0.1),inset_0_2px_3px_rgba(255,255,255,0.9)] active:translate-y-0.5 transition-all group shrink-0"
+                title="Keranjang Belanja"
+                aria-label="Keranjang Belanja"
+              >
+                <ShoppingBag className="w-5 h-5 text-[#FF9F43] group-hover:scale-110 transition-transform" />
+                <span className="hidden md:inline text-xs font-heading font-bold">Keranjang</span>
+                {cartCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 md:-top-1.5 md:-right-1.5 bg-[#FF9F43] text-white text-[10px] md:text-[11px] font-heading font-black min-w-[18px] md:min-w-[20px] h-[18px] md:h-[20px] px-1 rounded-full flex items-center justify-center border-2 border-white shadow-[0_2px_6px_rgba(255,159,67,0.5)] animate-pulse">
+                    {cartCount > 99 ? '99+' : cartCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* User Auth Section (Desktop only - mobile accesses account via bottom navigation) */}
+              <div className="hidden md:flex items-center gap-3">
+                {user ? (
+                  <div className="relative shrink-0" ref={userMenuRef}>
+                    <button
+                      type="button"
+                      onClick={() => setUserMenuOpen(!userMenuOpen)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-2xl bg-white border-2 border-[#FFE8D6] hover:border-[#FF9F43] text-slate-700 text-xs font-heading font-bold shadow-[0_4px_12px_rgba(255,159,67,0.1)] transition-all cursor-pointer"
+                    >
+                      <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-[#87CEEB] to-[#FF9F43] text-white flex items-center justify-center font-heading font-bold text-xs border border-white shadow-xs">
+                        {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                      </div>
+                      <span className="max-w-[100px] truncate text-slate-800">
+                        {user.name?.split(' ')[0] || 'Akun'}
+                      </span>
+                      <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                    </button>
+
+                    {/* Dropdown Menu - Clay Card */}
+                    {userMenuOpen && (
+                      <div className="absolute right-0 mt-2 w-60 rounded-3xl bg-white border-2 border-[#FFE8D6] shadow-[0_16px_36px_rgba(255,159,67,0.16)] py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+                        <div className="px-4 py-3 border-b border-[#FFE8D6] bg-[#FFF8F0]/60 rounded-t-2xl">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#87CEEB] to-[#FF9F43] text-white flex items-center justify-center font-heading font-bold text-sm shadow-xs">
+                              {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
+                            </div>
+                            <div className="overflow-hidden">
+                              <p className="text-xs font-heading font-bold text-slate-900 truncate">
+                                {user.name || 'Pengguna'}
+                              </p>
+                              <p className="text-[11px] font-body text-slate-500 truncate">
+                                {user.email}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 mt-2.5">
+                            <span
+                              className={`text-[10px] font-heading font-bold px-2.5 py-0.5 rounded-full ${
+                                isAdmin
+                                  ? 'bg-purple-100 text-purple-700 border border-purple-200'
+                                  : 'clay-badge-orange'
+                              }`}
+                            >
+                              {isAdmin ? '🛡️ Administrator' : '👶 Pembeli Terdaftar'}
+                            </span>
+                          </div>
                         </div>
-                        <div className="overflow-hidden">
-                          <p className="text-xs font-heading font-bold text-slate-900 truncate">
-                            {user.name || 'Pengguna'}
-                          </p>
-                          <p className="text-[11px] font-body text-slate-500 truncate">
-                            {user.email}
-                          </p>
+
+                        <div className="py-1.5 px-2">
+                          <Link
+                            href="/user/profil"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-heading font-bold text-slate-700 hover:bg-[#FFF2E5] hover:text-[#D96B00] rounded-xl transition-colors"
+                          >
+                            <User className="w-4 h-4 text-[#FF9F43]" />
+                            <span>Profil Saya</span>
+                          </Link>
+
+                          <Link
+                            href="/user/pesanan"
+                            onClick={() => setUserMenuOpen(false)}
+                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-heading font-bold text-slate-700 hover:bg-[#FFF2E5] hover:text-[#D96B00] rounded-xl transition-colors"
+                          >
+                            <Package className="w-4 h-4 text-[#FF9F43]" />
+                            <span>Riwayat Pesanan</span>
+                          </Link>
+
+                          {isAdmin && (
+                            <Link
+                              href="/admin"
+                              onClick={() => setUserMenuOpen(false)}
+                              className="flex items-center gap-2.5 px-3 py-2 text-xs font-heading font-bold text-purple-700 hover:bg-purple-50 rounded-xl transition-colors"
+                            >
+                              <ShieldCheck className="w-4 h-4 text-purple-600" />
+                              <span>Panel Admin Toko</span>
+                            </Link>
+                          )}
+                        </div>
+
+                        <div className="border-t border-[#FFE8D6] pt-1 px-2">
+                          <button
+                            type="button"
+                            disabled={isLoggingOut}
+                            onClick={handleLogout}
+                            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-heading font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left disabled:opacity-50 cursor-pointer"
+                          >
+                            {isLoggingOut ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-rose-600" />
+                            ) : (
+                              <LogOut className="w-4 h-4 text-rose-600" />
+                            )}
+                            <span>{isLoggingOut ? 'Sedang Keluar...' : 'Keluar (Logout)'}</span>
+                          </button>
                         </div>
                       </div>
-                      <div className="flex items-center gap-1.5 mt-2.5">
-                        <span
-                          className={`text-[10px] font-heading font-bold px-2.5 py-0.5 rounded-full ${
-                            isAdmin
-                              ? 'bg-purple-100 text-purple-700 border border-purple-200'
-                              : 'clay-badge-orange'
-                          }`}
-                        >
-                          {isAdmin ? '🛡️ Administrator' : '👶 Pembeli Terdaftar'}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="py-1.5 px-2">
-                      <Link
-                        href="/user/profil"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 text-xs font-heading font-bold text-slate-700 hover:bg-[#FFF2E5] hover:text-[#D96B00] rounded-xl transition-colors"
-                      >
-                        <User className="w-4 h-4 text-[#FF9F43]" />
-                        <span>Profil Saya</span>
-                      </Link>
-
-                      <Link
-                        href="/user/pesanan"
-                        onClick={() => setUserMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 text-xs font-heading font-bold text-slate-700 hover:bg-[#FFF2E5] hover:text-[#D96B00] rounded-xl transition-colors"
-                      >
-                        <Package className="w-4 h-4 text-[#FF9F43]" />
-                        <span>Riwayat Pesanan</span>
-                      </Link>
-
-                      {isAdmin && (
-                        <Link
-                          href="/admin"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 text-xs font-heading font-bold text-purple-700 hover:bg-purple-50 rounded-xl transition-colors"
-                        >
-                          <ShieldCheck className="w-4 h-4 text-purple-600" />
-                          <span>Panel Admin Toko</span>
-                        </Link>
-                      )}
-                    </div>
-
-                    <div className="border-t border-[#FFE8D6] pt-1 px-2">
-                      <button
-                        type="button"
-                        disabled={isLoggingOut}
-                        onClick={handleLogout}
-                        className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-heading font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors text-left disabled:opacity-50 cursor-pointer"
-                      >
-                        {isLoggingOut ? (
-                          <Loader2 className="w-4 h-4 animate-spin text-rose-600" />
-                        ) : (
-                          <LogOut className="w-4 h-4 text-rose-600" />
-                        )}
-                        <span>{isLoggingOut ? 'Sedang Keluar...' : 'Keluar (Logout)'}</span>
-                      </button>
-                    </div>
+                    )}
                   </div>
+                ) : (
+                  <Link
+                    href="/auth/login"
+                    className="clay-btn-orange px-4 py-2 text-xs text-white shrink-0"
+                  >
+                    <LogIn className="w-3.5 h-3.5 mr-1.5" />
+                    <span>Masuk / Daftar</span>
+                  </Link>
+                )}
+
+                {/* Quick Admin shortcut if logged in as Admin */}
+                {user && isAdmin && (
+                  <Link
+                    href="/admin"
+                    className="text-xs font-heading font-bold px-3 py-2 rounded-2xl bg-purple-100 text-purple-800 hover:bg-purple-200 border-2 border-purple-300 transition-all inline-flex items-center gap-1.5 shadow-xs"
+                  >
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                    <span>Admin Panel</span>
+                  </Link>
                 )}
               </div>
-            ) : (
-              <Link
-                href="/auth/login"
-                className="clay-btn-orange px-2.5 sm:px-4 py-2 text-xs text-white shrink-0"
-              >
-                <LogIn className="w-3.5 h-3.5 sm:mr-1.5" />
-                <span className="hidden xs:inline">Masuk / Daftar</span>
-                <span className="xs:hidden ml-1">Masuk</span>
-              </Link>
-            )}
-
-            {/* Quick Admin shortcut if logged in as Admin */}
-            {user && isAdmin && (
-              <Link
-                href="/admin"
-                className="text-xs font-heading font-bold px-3 py-2 rounded-2xl bg-purple-100 text-purple-800 hover:bg-purple-200 border-2 border-purple-300 transition-all hidden md:inline-flex items-center gap-1.5 shadow-xs"
-              >
-                <ShieldCheck className="w-3.5 h-3.5" />
-                <span>Admin Panel</span>
-              </Link>
-            )}
+            </div>
           </div>
         </div>
-
-        {/* Mobile Search Bar */}
-        <form onSubmit={handleSearchSubmit} className="pb-3 md:hidden">
-          <div className="relative">
-            <input
-              type="text"
-              value={navSearch}
-              onChange={(e) => setNavSearch(e.target.value)}
-              placeholder="Cari kebutuhan si kecil..."
-              className="w-full pl-4 pr-11 py-2.5 rounded-2xl border-2 border-[#FFE8D6] bg-white text-sm font-body focus:outline-none focus:border-[#FF9F43] text-slate-800 shadow-inner"
-            />
-            <button
-              type="submit"
-              aria-label="Cari Produk Mobile"
-              className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl bg-[#FF9F43] text-white flex items-center justify-center shadow-xs"
-            >
-              <Search className="w-4 h-4" />
-            </button>
-          </div>
-        </form>
-      </div>
-    </header>
+      </header>
 
     {/* Category Quick Links Strip (Scrolls naturally with page) */}
     <nav aria-label="Kategori Cepat" className="bg-[#FFF2E5]/80 border-b border-[#FFE8D6]">
