@@ -20,6 +20,7 @@ import {
   Loader2,
   Zap,
   Ticket,
+  Users,
 } from 'lucide-react';
 import { useSession, signOut } from '@/lib/auth-client';
 
@@ -90,6 +91,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
   const isDaftarProdukActive =
     pathname === '/admin/produk' || (pathname.startsWith('/admin/produk/') && !isTambahProdukActive);
   const isPesananActive = pathname.startsWith('/admin/pesanan');
+  const isPelangganActive = pathname.startsWith('/admin/pelanggan');
   const isFlashSaleActive = pathname.startsWith('/admin/flash-sale');
   const isVoucherActive = pathname.startsWith('/admin/voucher');
   const isStatistikActive = pathname.startsWith('/admin/statistik');
@@ -235,6 +237,26 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               }`}
             />
             <span>Pesanan</span>
+          </div>
+        </Link>
+
+        {/* Pesanan helpers: Pelanggan anchor */}
+        <Link
+          href="/admin/pelanggan"
+          onClick={onClose}
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-heading font-bold transition-all group ${
+            isPelangganActive
+              ? 'clay-btn-orange text-white shadow-md font-black'
+              : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <Users
+              className={`w-4 h-4 transition-colors ${
+                isPelangganActive ? 'text-white' : 'text-slate-400 group-hover:text-[#FF9F43]'
+              }`}
+            />
+            <span>👥 Pelanggan</span>
           </div>
         </Link>
 
