@@ -40,6 +40,17 @@ export async function GET() {
           phone: storeSettings.store_phone,
           address: storeSettings.store_address,
           city: storeSettings.store_city,
+          announcement: {
+            enabled: storeSettings.header_announcement_enabled,
+            text: storeSettings.header_announcement_text,
+            link: storeSettings.header_announcement_link,
+          },
+          headerAnnouncementEnabled: storeSettings.header_announcement_enabled,
+          header_announcement_enabled: storeSettings.header_announcement_enabled,
+          headerAnnouncementText: storeSettings.header_announcement_text,
+          header_announcement_text: storeSettings.header_announcement_text,
+          headerAnnouncementLink: storeSettings.header_announcement_link,
+          header_announcement_link: storeSettings.header_announcement_link,
           postalCode: storeSettings.store_postal_code,
         },
         seo: {
@@ -164,6 +175,19 @@ export async function POST(request: NextRequest) {
         .map(([key]) => key);
     }
 
+    // Announcement bar (supports nested object or direct keys)
+    if (body.announcement && typeof body.announcement === 'object') {
+      if (body.announcement.enabled !== undefined) updatePayload.header_announcement_enabled = Boolean(body.announcement.enabled);
+      if (body.announcement.text !== undefined) updatePayload.header_announcement_text = String(body.announcement.text).slice(0, 255);
+      if (body.announcement.link !== undefined) updatePayload.header_announcement_link = body.announcement.link ? String(body.announcement.link).slice(0, 255) : null as any;
+    }
+    if (body.header_announcement_enabled !== undefined) updatePayload.header_announcement_enabled = Boolean(body.header_announcement_enabled);
+    if (body.headerAnnouncementEnabled !== undefined) updatePayload.header_announcement_enabled = Boolean(body.headerAnnouncementEnabled);
+    if (body.header_announcement_text !== undefined) updatePayload.header_announcement_text = String(body.header_announcement_text).slice(0, 255);
+    if (body.headerAnnouncementText !== undefined) updatePayload.header_announcement_text = String(body.headerAnnouncementText).slice(0, 255);
+    if (body.header_announcement_link !== undefined) updatePayload.header_announcement_link = body.header_announcement_link ? String(body.header_announcement_link).slice(0, 255) : null as any;
+    if (body.headerAnnouncementLink !== undefined) updatePayload.header_announcement_link = body.headerAnnouncementLink ? String(body.headerAnnouncementLink).slice(0, 255) : null as any;
+
     if (body.payments && typeof body.payments === 'object' && !Array.isArray(body.payments)) {
       const methodMap: Record<string, string> = {
         qris: 'pay-qris',
@@ -202,6 +226,9 @@ export async function POST(request: NextRequest) {
       'xendit_is_production',
       'enabled_payment_methods',
       'enabled_couriers',
+      'header_announcement_enabled',
+      'header_announcement_text',
+      'header_announcement_link',
     ];
 
     for (const key of directKeys) {

@@ -25,6 +25,11 @@ export function Navbar() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [cartCount, setCartCount] = useState<number>(0);
+  const [announcement, setAnnouncement] = useState<{
+    enabled: boolean;
+    text: string;
+    link: string | null;
+  } | null>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -68,6 +73,32 @@ export function Navbar() {
       window.removeEventListener('cart-updated', handleCartUpdated);
     };
   }, [fetchCartCount]);
+
+  // Fetch announcement bar from public endpoint (no auth required)
+  useEffect(() => {
+    let cancelled = false;
+    async function loadAnnouncement() {
+      try {
+        const res = await fetch('/api/settings/public');
+        if (res.ok) {
+          const json = await res.json();
+          if (!cancelled && json.success && json.data?.announcement) {
+            setAnnouncement({
+              enabled: json.data.announcement.enabled ?? true,
+              text: json.data.announcement.text ?? '',
+              link: json.data.announcement.link ?? null,
+            });
+          }
+        }
+      } catch {
+        // Keep banner hidden on network failure; fallback to default text
+      }
+    }
+    loadAnnouncement();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   // Handle click outside to close dropdown
   useEffect(() => {
@@ -126,14 +157,33 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 bg-[#FFF8F0]/95 backdrop-blur-md border-b-2 border-[#FFE8D6] shadow-[0_4px_20px_rgba(255,159,67,0.08)]">
-      {/* Top Banner Info - Vibrant Playful Warm Tone */}
-      <div className="bg-gradient-to-r from-[#FF9F43] via-[#FFAF60] to-[#87CEEB] text-white text-xs py-2 px-4 text-center font-heading font-bold tracking-wide shadow-inner">
-        <span className="inline-flex items-center gap-1.5 drop-shadow-xs">
-          <Sparkles className="w-3.5 h-3.5 text-yellow-200 animate-pulse" />
-          <span>🎉 Gratis Ongkir s/d Rp 20.000 ke Seluruh Indonesia Belanja Min. Rp 100.000!</span>
-          <Truck className="w-3.5 h-3.5 text-sky-100" />
-        </span>
-      </div>
+      {/* Top Banner Info - Vibrant Playful Warm Tone (dynamic from /api/settings/public) */}
+      {announcement?.enabled !== false && (
+        <>
+          {announcement?.link ? (
+            <a
+              href={announcement.link}
+              target={announcement.link.startsWith('http') ? '_blank' : undefined}
+              rel={announcement.link.startsWith('http') ? 'noopener noreferrer' : undefined}
+              className="block bg-gradient-to-r from-[#FF9F43] via-[#FFAF60] to-[#87CEEB] text-white text-xs py-2 px-4 text-center font-heading font-bold tracking-wide shadow-inner hover:opacity-90 transition-opacity cursor-pointer"
+            >
+              <span className="inline-flex items-center gap-1.5 drop-shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-yellow-200 animate-pulse" />
+                <span>{announcement?.text || '🎉 Gratis Ongkir s/d Rp 20.000 ke Seluruh Indonesia Belanja Min. Rp 100.000!'}</span>
+                <Truck className="w-3.5 h-3.5 text-sky-100" />
+              </span>
+            </a>
+          ) : (
+            <div className="bg-gradient-to-r from-[#FF9F43] via-[#FFAF60] to-[#87CEEB] text-white text-xs py-2 px-4 text-center font-heading font-bold tracking-wide shadow-inner">
+              <span className="inline-flex items-center gap-1.5 drop-shadow-xs">
+                <Sparkles className="w-3.5 h-3.5 text-yellow-200 animate-pulse" />
+                <span>{announcement?.text || '🎉 Gratis Ongkir s/d Rp 20.000 ke Seluruh Indonesia Belanja Min. Rp 100.000!'}</span>
+                <Truck className="w-3.5 h-3.5 text-sky-100" />
+              </span>
+            </div>
+          )}
+        </>
+      )}
 
       {/* Main Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

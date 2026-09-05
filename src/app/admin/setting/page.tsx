@@ -19,7 +19,7 @@ import {
   Globe,
   Loader2,
 } from 'lucide-react';
-import { ProfileSettingsTab, StoreProfileData } from '@/components/admin/settings/ProfileSettingsTab';
+import { ProfileSettingsTab, StoreProfileData, AnnouncementData } from '@/components/admin/settings/ProfileSettingsTab';
 import { WarehouseSettingsTab, OriginWarehouseData } from '@/components/admin/settings/WarehouseSettingsTab';
 import {
   CouriersSettingsTab,
@@ -67,6 +67,12 @@ const DEFAULT_PAYMENTS: PaymentSettingsData = {
   mandiriVa: true,
   briVa: true,
   gopay: true,
+};
+
+const DEFAULT_ANNOUNCEMENT: AnnouncementData = {
+  enabled: true,
+  text: '\uD83C\uDF89 Gratis Ongkir s/d Rp 20.000 ke Seluruh Indonesia Belanja Min. Rp 100.000!',
+  link: '',
 };
 
 const SAMPLE_PRODUCTS = [
@@ -145,6 +151,7 @@ function AdminSettingContent() {
 
   // State Profile, Warehouse, Couriers, Payments
   const [profile, setProfile] = useState<StoreProfileData>(DEFAULT_PROFILE);
+  const [announcement, setAnnouncement] = useState<AnnouncementData>(DEFAULT_ANNOUNCEMENT);
   const [warehouse, setWarehouse] = useState<OriginWarehouseData>(DEFAULT_WAREHOUSE);
   const [couriers, setCouriers] = useState<CourierSettingsData>(DEFAULT_COURIERS);
   const [payments, setPayments] = useState<PaymentSettingsData>(DEFAULT_PAYMENTS);
@@ -291,6 +298,23 @@ function AdminSettingContent() {
               whatsappNumber: data.store.phone || prev.whatsappNumber,
               storeDescription: data.store.description || prev.storeDescription,
             }));
+            // Announcement bar
+            if (data.store.announcement) {
+              setAnnouncement({
+                enabled: data.store.announcement.enabled ?? true,
+                text: data.store.announcement.text ?? DEFAULT_ANNOUNCEMENT.text,
+                link: data.store.announcement.link ?? '',
+              });
+            } else if (
+              typeof data.store.headerAnnouncementEnabled !== 'undefined' ||
+              typeof data.store.header_announcement_enabled !== 'undefined'
+            ) {
+              setAnnouncement({
+                enabled: data.store.headerAnnouncementEnabled ?? data.store.header_announcement_enabled ?? true,
+                text: data.store.headerAnnouncementText ?? data.store.header_announcement_text ?? DEFAULT_ANNOUNCEMENT.text,
+                link: data.store.headerAnnouncementLink ?? data.store.header_announcement_link ?? '',
+              });
+            }
             setWarehouse((prev) => ({
               ...prev,
               city: data.store.city || prev.city,
@@ -380,6 +404,7 @@ function AdminSettingContent() {
         warehouse,
         couriers,
         payments,
+        announcement,
         seo: {
           metaTitle,
           metaDescription,
@@ -398,6 +423,9 @@ function AdminSettingContent() {
         xendit_is_production: xenditIsProduction,
         enabled_payment_methods: enabledMethodsArray,
         enabled_couriers: enabledCouriersArray,
+        header_announcement_enabled: announcement.enabled,
+        header_announcement_text: announcement.text,
+        header_announcement_link: announcement.link || null,
       };
 
       const res = await fetch('/api/admin/settings', {
@@ -629,6 +657,8 @@ function AdminSettingContent() {
         <ProfileSettingsTab
           profile={profile}
           setProfile={setProfile}
+          announcement={announcement}
+          setAnnouncement={setAnnouncement}
           onChange={() => setHasUnsavedChanges(true)}
         />
       )}
