@@ -395,7 +395,7 @@ export async function calculateRates(
   // 1. Ambil data spesifikasi berat & dimensi produk dari database
   const productIds = (input.items || [])
     .map((item) => item.productId)
-    .filter((id) => isValidUUID(id));
+    .filter((id): id is string => Boolean(id) && isValidUUID(id!));
 
   let dbProducts: Array<{
     id: string;
@@ -441,7 +441,7 @@ export async function calculateRates(
   }> = [];
 
   for (const item of input.items || []) {
-    const prod = productMap.get(item.productId);
+    const prod = item.productId ? productMap.get(item.productId) : undefined;
     const qty = Math.max(1, item.quantity || 1);
     const weight =
       item.weightGram && item.weightGram > 0
@@ -511,7 +511,7 @@ export async function calculateRates(
       };
 
       if (input.destinationPostalCode) {
-        const parsedPostal = parseInt(String(input.destinationPostalCode), 10);
+        const parsedPostal = parseInt(String(input.destinationPostalCode).replace(/[^0-9]/g, ''), 10);
         if (!isNaN(parsedPostal) && parsedPostal > 0) {
           payload.destination_postal_code = parsedPostal;
         }
@@ -591,8 +591,9 @@ export async function calculateRates(
           }
         }
       } else {
+        const errText = await response.text().catch(() => '');
         console.warn(
-          `[ShippingService] Biteship API returned status ${response.status}. Using Smart Fallback.`
+          `[ShippingService] Biteship API returned status ${response.status}: ${errText}. Using Smart Fallback.`
         );
       }
     } catch (err) {
