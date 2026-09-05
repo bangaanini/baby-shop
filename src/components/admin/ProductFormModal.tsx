@@ -69,7 +69,6 @@ export function ProductFormModal({
   const [isPopular, setIsPopular] = useState<boolean>(false);
   const [isNewArrival, setIsNewArrival] = useState<boolean>(false);
   const [isRecommended, setIsRecommended] = useState<boolean>(false);
-  const [isPromo, setIsPromo] = useState<boolean>(false);
 
   // Dynamic Lists
   const [variants, setVariants] = useState<ProductVariantItem[]>([]);
@@ -173,7 +172,6 @@ export function ProductFormModal({
       setIsPopular(Boolean(initialData.is_popular ?? initialData.isPopular ?? initialData.isPopuler));
       setIsNewArrival(Boolean(initialData.is_new_arrival ?? initialData.isNewArrival ?? initialData.isTerbaru));
       setIsRecommended(Boolean(initialData.is_recommended ?? initialData.isRecommended ?? initialData.isRekomendasi));
-      setIsPromo(Boolean(initialData.is_promo ?? initialData.isPromo));
 
       // Populate variants
       const rawVariants = initialData.variants || initialData.varian || [];
@@ -226,7 +224,6 @@ export function ProductFormModal({
       setIsPopular(false);
       setIsNewArrival(true); // Default new arrival for fresh product
       setIsRecommended(false);
-      setIsPromo(false);
       setVariants([]);
       setImages([]);
     }
@@ -314,7 +311,6 @@ export function ProductFormModal({
       isPopular,
       isNewArrival,
       isRecommended,
-      isPromo,
       variants: variants
         .filter((v) => v.color?.trim() || v.size?.trim())
         .map((v) => ({
@@ -886,7 +882,7 @@ export function ProductFormModal({
               Penempatan Banner & Rekomendasi
             </h3>
 
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <label className="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors cursor-pointer select-none">
                 <input
                   type="checkbox"
@@ -926,20 +922,6 @@ export function ProductFormModal({
                 <div>
                   <span className="text-xs font-bold text-slate-800 block">Rekomendasi</span>
                   <span className="text-[10px] text-slate-500 block">Highlight Beranda</span>
-                </div>
-              </label>
-
-              <label className="flex items-center gap-2.5 p-3 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-slate-50 transition-colors cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={isPromo}
-                  onChange={(e) => setIsPromo(e.target.checked)}
-                  disabled={isSubmitting}
-                  className="w-4 h-4 text-rose-500 rounded border-slate-300 focus:ring-rose-400 cursor-pointer"
-                />
-                <div>
-                  <span className="text-xs font-bold text-slate-800 block">Flash Promo</span>
-                  <span className="text-[10px] text-slate-500 block">Tab Diskon Khusus</span>
                 </div>
               </label>
             </div>

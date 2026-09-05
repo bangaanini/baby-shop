@@ -83,7 +83,6 @@ export default function EditProdukPage({
   const [isPopular, setIsPopular] = useState<boolean>(false);
   const [isNewArrival, setIsNewArrival] = useState<boolean>(false);
   const [isRecommended, setIsRecommended] = useState<boolean>(false);
-  const [isPromo, setIsPromo] = useState<boolean>(false);
 
   // 3. Pricing & Inventory
   const [price, setPrice] = useState<number | ''>('');
@@ -186,7 +185,6 @@ export default function EditProdukPage({
         setIsPopular(Boolean(prod.is_popular ?? prod.isPopular));
         setIsNewArrival(Boolean(prod.is_new_arrival ?? prod.isNewArrival));
         setIsRecommended(Boolean(prod.is_recommended ?? prod.isRecommended));
-        setIsPromo(Boolean(prod.is_promo ?? prod.isPromo));
 
         // Shipping Dimensions
         setShipping({
@@ -312,7 +310,6 @@ export default function EditProdukPage({
       isPopular,
       isNewArrival,
       isRecommended,
-      isPromo,
       tag: tag.trim() || null,
       weightGram: shipping.weightGram,
       dimensionLength: shipping.dimensionLength,
@@ -644,7 +641,7 @@ export default function EditProdukPage({
               <Sparkles className="w-3.5 h-3.5 text-rose-500" />
               Sorotan & Visibilitas Produk:
             </label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {/* isPopular */}
               <label
                 className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${
@@ -702,26 +699,6 @@ export default function EditProdukPage({
                 <span className="text-xs font-bold flex items-center gap-1">
                   <Star className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />
                   Rekomendasi
-                </span>
-              </label>
-
-              {/* isPromo */}
-              <label
-                className={`flex items-center gap-2.5 p-3 rounded-2xl border cursor-pointer transition-all ${
-                  isPromo
-                    ? 'bg-emerald-50/80 border-emerald-300 text-emerald-900 shadow-xs'
-                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
-                }`}
-              >
-                <input
-                  type="checkbox"
-                  checked={isPromo}
-                  onChange={(e) => setIsPromo(e.target.checked)}
-                  className="rounded text-rose-500 focus:ring-rose-500 w-4 h-4 cursor-pointer"
-                />
-                <span className="text-xs font-bold flex items-center gap-1">
-                  <Percent className="w-3.5 h-3.5 text-emerald-500" />
-                  Promo Spesial
                 </span>
               </label>
             </div>
