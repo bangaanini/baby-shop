@@ -1,12 +1,12 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
 import { Home, LayoutGrid, Zap, ReceiptText, User } from 'lucide-react';
 import { useSession } from '@/lib/auth-client';
 
-export function MobileBottomNav() {
+function MobileBottomNavContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const { data: session } = useSession();
@@ -15,9 +15,9 @@ export function MobileBottomNav() {
   // Check promo condition
   const isPromo =
     pathname.startsWith('/katalog') &&
-    (searchParams.get('sort') === 'terpopuler' ||
-      searchParams.get('sort') === 'rekomendasi' ||
-      searchParams.get('filter') === 'rekomendasi');
+    (searchParams?.get('sort') === 'terpopuler' ||
+      searchParams?.get('sort') === 'rekomendasi' ||
+      searchParams?.get('filter') === 'rekomendasi');
 
   const navItems = [
     {
@@ -81,23 +81,29 @@ export function MobileBottomNav() {
               href={item.href}
               className={`relative flex flex-col items-center justify-center flex-1 py-1 transition-all duration-200 group ${
                 active
-                  ? 'text-[#FF9F43] font-bold scale-105'
-                  : 'text-gray-500 hover:text-gray-800 font-medium'
+                  ? 'text-[#D96B00] font-bold scale-105'
+                  : 'text-slate-500 hover:text-slate-800 font-medium'
               }`}
             >
               <div className="relative">
                 <Icon
                   className={`w-5 h-5 transition-transform duration-200 ${
-                    active ? 'stroke-[2.5px] scale-110' : 'stroke-[1.75px]'
+                    active ? 'stroke-[2.5px] scale-110 text-[#D96B00]' : 'stroke-[1.75px]'
                   }`}
                 />
                 {item.badge && (
-                  <span className="absolute -top-1.5 -right-3.5 bg-[#FF5E7E] text-white text-[9px] font-black px-1.5 py-0.2 rounded-full leading-none shadow-sm animate-pulse">
+                  <span className="absolute -top-1.5 -right-3.5 bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full leading-none shadow-sm animate-pulse">
                     {item.badge}
                   </span>
                 )}
               </div>
-              <span className="text-[11px] mt-1 tracking-tight leading-none">
+              <span
+                className={`text-[11px] mt-1 tracking-tight leading-none ${
+                  active
+                    ? 'font-heading font-black text-[#D96B00]'
+                    : 'font-body font-semibold text-slate-500'
+                }`}
+              >
                 {item.label}
               </span>
               {active && (
@@ -108,6 +114,14 @@ export function MobileBottomNav() {
         })}
       </div>
     </nav>
+  );
+}
+
+export function MobileBottomNav() {
+  return (
+    <Suspense fallback={null}>
+      <MobileBottomNavContent />
+    </Suspense>
   );
 }
 
