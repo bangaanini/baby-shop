@@ -97,11 +97,26 @@ export function Navbar() {
     try {
       await signOut();
       setUserMenuOpen(false);
+      // Clear cookie and reset state for cart isolation
+      if (typeof document !== 'undefined') {
+        document.cookie = 'cart_id=; path=/; max-age=0';
+      }
+      setCartCount(0);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       router.push('/auth/login');
       router.refresh();
     } catch (error) {
       console.error('Logout error:', error);
       setUserMenuOpen(false);
+      if (typeof document !== 'undefined') {
+        document.cookie = 'cart_id=; path=/; max-age=0';
+      }
+      setCartCount(0);
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       router.push('/auth/login');
       router.refresh();
     } finally {

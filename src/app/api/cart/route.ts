@@ -1,33 +1,49 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/server/auth';
 import { addToCartSchema } from '@/server/validators/cart.schema';
 import { cartService } from '@/server/services/cart.service';
 
-function getSessionOrUserId(request: NextRequest, bodyUserId?: string): string | undefined {
-  if (bodyUserId) return bodyUserId;
-  return (
-    request.nextUrl.searchParams.get('userId') ||
-    request.nextUrl.searchParams.get('cartId') ||
-    request.nextUrl.searchParams.get('sessionId') ||
-    request.headers.get('x-user-id') ||
-    request.headers.get('x-cart-id') ||
-    request.headers.get('x-session-id') ||
+export const dynamic = 'force-dynamic';
+
+async function resolveCartIdentity(request: NextRequest, bodyUserId?: string) {
+  let session = null;
+  try {
+    session = await auth.api.getSession({ headers: request.headers });
+  } catch (err) {
+    console.warn('Session resolution error in /api/cart:', err);
+  }
+
+  const sessionUserId = session?.user?.id;
+  const headerUserId = request.headers.get('x-user-id');
+  const cookieUserId = request.cookies.get('user_id')?.value;
+
+  const resolvedUserId = sessionUserId || bodyUserId || headerUserId || cookieUserId || null;
+
+  const guestCartId =
     request.cookies.get('cart_id')?.value ||
-    request.cookies.get('user_id')?.value ||
-    undefined
-  );
+    request.headers.get('x-cart-id') ||
+    request.nextUrl.searchParams.get('cartId') ||
+    null;
+
+  return {
+    userId: resolvedUserId,
+    guestCartId,
+    isAuthenticated: Boolean(sessionUserId || bodyUserId),
+  };
 }
 
 export async function GET(request: NextRequest) {
   try {
-    const userIdOrSession = getSessionOrUserId(request);
-    const cart = await cartService.getCartItems(userIdOrSession);
+    const { userId, guestCartId } = await resolveCartIdentity(request);
+    const cart = await cartService.getCartItems(userId, guestCartId);
 
     const response = NextResponse.json({
       success: true,
       data: cart,
     });
 
-    if (!request.cookies.get('cart_id')?.value && cart.cartId) {
+    // Ensure cookie matches the active cart
+    if (cart.cartId) {
       response.cookies.set('cart_id', cart.cartId, {
         path: '/',
         httpOnly: true,
@@ -65,8 +81,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const userIdOrSession = getSessionOrUserId(request, parseResult.data.userIdOrSession);
-    const cart = await cartService.addToCart(userIdOrSession, parseResult.data);
+    const { userId, guestCartId } = await resolveCartIdentity(
+      request,
+      parseResult.data.userIdOrSession
+    );
+    const cart = await cartService.addToCart(userId, guestCartId, parseResult.data);
 
     const response = NextResponse.json(
       {
@@ -77,7 +96,7 @@ export async function POST(request: NextRequest) {
       { status: 201 }
     );
 
-    if (!request.cookies.get('cart_id')?.value && cart.cartId) {
+    if (cart.cartId) {
       response.cookies.set('cart_id', cart.cartId, {
         path: '/',
         httpOnly: true,

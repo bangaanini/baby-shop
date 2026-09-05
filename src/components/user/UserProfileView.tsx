@@ -72,10 +72,22 @@ export function UserProfileView({ initialTab }: UserProfileViewProps) {
     setIsLoggingOut(true);
     try {
       await signOut();
+      if (typeof document !== 'undefined') {
+        document.cookie = 'cart_id=; path=/; max-age=0';
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       router.push('/auth/login');
       router.refresh();
     } catch (error) {
       console.error('Logout error:', error);
+      if (typeof document !== 'undefined') {
+        document.cookie = 'cart_id=; path=/; max-age=0';
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       router.push('/auth/login');
       router.refresh();
     } finally {

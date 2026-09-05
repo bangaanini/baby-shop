@@ -1,11 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/server/auth';
 import { createOrderSchema } from '@/server/validators/checkout.schema';
 import { checkoutService } from '@/server/services/checkout.service';
 
-function getSessionOrUserId(request: NextRequest, bodyUserId?: string | null): string | undefined {
+export const dynamic = 'force-dynamic';
+
+async function resolveUserSession(request: NextRequest, bodyUserId?: string | null): Promise<string | undefined> {
+  let session = null;
+  try {
+    session = await auth.api.getSession({ headers: request.headers });
+  } catch (err) {
+    console.warn('Session resolution warning in checkout/order:', err);
+  }
+
+  if (session?.user?.id) {
+    return session.user.id;
+  }
+
   if (bodyUserId) return bodyUserId;
+
   return (
-    request.nextUrl.searchParams.get('userId') ||
     request.headers.get('x-user-id') ||
     request.cookies.get('user_id')?.value ||
     undefined
@@ -26,14 +40,14 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json().catch(() => ({}));
 
-    // If userId or cartId is not in body, try to extract from headers/cookies
-    const finalUserId = getSessionOrUserId(request, body.userId);
+    // Resolve user session strictly
+    const finalUserId = await resolveUserSession(request, body.userId);
     const finalCartId = getCartId(request, body.cartId);
 
     const payloadToValidate = {
       ...body,
-      userId: body.userId || finalUserId,
-      cartId: body.cartId || finalCartId,
+      userId: finalUserId || body.userId || undefined,
+      cartId: finalCartId || body.cartId || undefined,
     };
 
     const parseResult = createOrderSchema.safeParse(payloadToValidate);

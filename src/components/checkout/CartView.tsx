@@ -57,8 +57,15 @@ export function CartView() {
     }
 
     fetchCart();
+
+    const handleCartSync = () => {
+      fetchCart();
+    };
+    window.addEventListener('cart-updated', handleCartSync);
+
     return () => {
       isMounted = false;
+      window.removeEventListener('cart-updated', handleCartSync);
     };
   }, []);
 

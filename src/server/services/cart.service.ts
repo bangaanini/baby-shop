@@ -30,19 +30,20 @@ export interface FormattedCartItem {
   id: string;
   cartId: string;
   productId: string;
-  variantId: string | null;
+  variantId?: string;
   nama: string;
   slug: string;
   gambar: string;
+  kategori: string;
   kategoriLabel: string;
-  warna: string;
-  ukuran: string;
+  warna?: string;
+  ukuran?: string;
   harga: number;
   hargaCoret?: number;
   diskonPersen?: number;
   jumlah: number;
-  stok: number;
   beratGram: number;
+  stok: number;
   subtotal: number;
   totalBeratGram: number;
 }
@@ -59,86 +60,135 @@ export interface CartResponse {
 }
 
 /**
- * Get or create an active cart for a user ID, cart ID, or guest session.
+ * Get or create an isolated active cart for an authenticated user OR guest.
+ * STRICT RULES:
+ * 1. If userId is provided, the cart MUST belong to cartsTable.user_id = userId.
+ * 2. If guest (userId is null/undefined), the cart MUST have cartsTable.user_id IS NULL.
+ * 3. Never return a random/default cart of another user!
  */
-export async function getOrCreateCart(userIdOrSession?: string) {
-  if (userIdOrSession && isValidUUID(userIdOrSession)) {
-    // 1. Try finding cart by cart ID or user ID
-    const existingCart = await db.query.cartsTable.findFirst({
-      where: (carts, { or, eq }) =>
-        or(eq(carts.id, userIdOrSession), eq(carts.user_id, userIdOrSession)),
+export async function getOrCreateCart(
+  userId?: string | null,
+  guestCartId?: string | null
+) {
+  // --- Case 1: Authenticated User ---
+  if (userId && userId.trim()) {
+    const cleanUserId = userId.trim();
+
+    // 1. Look for existing cart owned by this user
+    let userCart = await db.query.cartsTable.findFirst({
+      where: eq(cartsTable.user_id, cleanUserId),
     });
 
-    if (existingCart) {
-      return existingCart;
+    if (userCart) {
+      // If there was an anonymous guest cart in cookies with items, transfer its items to the user cart
+      if (guestCartId && isValidUUID(guestCartId) && guestCartId !== userCart.id) {
+        const guestCart = await db.query.cartsTable.findFirst({
+          where: and(eq(cartsTable.id, guestCartId), isNull(cartsTable.user_id)),
+        });
+
+        if (guestCart) {
+          const guestItems = await db.query.cartItemsTable.findMany({
+            where: eq(cartItemsTable.cart_id, guestCart.id),
+          });
+
+          for (const gItem of guestItems) {
+            const existingUserItem = await db.query.cartItemsTable.findFirst({
+              where: gItem.variant_id
+                ? and(
+                    eq(cartItemsTable.cart_id, userCart.id),
+                    eq(cartItemsTable.product_id, gItem.product_id),
+                    eq(cartItemsTable.variant_id, gItem.variant_id)
+                  )
+                : and(
+                    eq(cartItemsTable.cart_id, userCart.id),
+                    eq(cartItemsTable.product_id, gItem.product_id),
+                    isNull(cartItemsTable.variant_id)
+                  ),
+            });
+
+            if (existingUserItem) {
+              await db
+                .update(cartItemsTable)
+                .set({ quantity: existingUserItem.quantity + gItem.quantity })
+                .where(eq(cartItemsTable.id, existingUserItem.id));
+            } else {
+              await db.insert(cartItemsTable).values({
+                cart_id: userCart.id,
+                product_id: gItem.product_id,
+                variant_id: gItem.variant_id,
+                quantity: gItem.quantity,
+              });
+            }
+          }
+
+          // Delete the guest cart after transferring items
+          await db.delete(cartsTable).where(eq(cartsTable.id, guestCart.id));
+        }
+      }
+
+      return userCart;
     }
 
-    // 2. Check if userIdOrSession belongs to an existing user
-    const user = await db.query.usersTable.findFirst({
-      where: eq(usersTable.id, userIdOrSession),
-    });
+    // 2. If user has no cart yet, check if there is an anonymous guest cart to claim
+    if (guestCartId && isValidUUID(guestCartId)) {
+      const guestCart = await db.query.cartsTable.findFirst({
+        where: and(eq(cartsTable.id, guestCartId), isNull(cartsTable.user_id)),
+      });
 
-    if (user) {
-      const [newCart] = await db
-        .insert(cartsTable)
-        .values({
-          user_id: user.id,
-        })
-        .returning();
-      return newCart;
+      if (guestCart) {
+        // Claim the guest cart for this user
+        const [claimedCart] = await db
+          .update(cartsTable)
+          .set({
+            user_id: cleanUserId,
+            updated_at: new Date(),
+          })
+          .where(eq(cartsTable.id, guestCart.id))
+          .returning();
+        return claimedCart;
+      }
     }
 
-    // 3. Create guest cart with this session UUID as its ID
-    const [newGuestCart] = await db
+    // 3. Create a fresh empty cart for this user
+    const [newCart] = await db
       .insert(cartsTable)
       .values({
-        id: userIdOrSession,
-        user_id: null,
+        user_id: cleanUserId,
       })
       .returning();
-    return newGuestCart;
+    return newCart;
   }
 
-  // If userIdOrSession is an email address
-  if (userIdOrSession && userIdOrSession.includes('@')) {
-    const user = await db.query.usersTable.findFirst({
-      where: eq(usersTable.email, userIdOrSession),
+  // --- Case 2: Guest / Unauthenticated User ---
+  if (guestCartId && isValidUUID(guestCartId)) {
+    // Look ONLY for an anonymous guest cart (user_id MUST be null)
+    const existingGuestCart = await db.query.cartsTable.findFirst({
+      where: and(eq(cartsTable.id, guestCartId), isNull(cartsTable.user_id)),
     });
-    if (user) {
-      const userCart = await db.query.cartsTable.findFirst({
-        where: eq(cartsTable.user_id, user.id),
-      });
-      if (userCart) return userCart;
 
-      const [newCart] = await db
-        .insert(cartsTable)
-        .values({
-          user_id: user.id,
-        })
-        .returning();
-      return newCart;
+    if (existingGuestCart) {
+      return existingGuestCart;
     }
   }
 
-  // Look for any existing cart in the system (e.g. demo buyer cart)
-  const defaultCart = await db.query.cartsTable.findFirst({
-    orderBy: (carts, { desc }) => [desc(carts.updated_at)],
-  });
-
-  if (defaultCart) {
-    return defaultCart;
-  }
-
-  // Otherwise create a new cart
-  const [createdCart] = await db.insert(cartsTable).values({}).returning();
-  return createdCart;
+  // If no valid unowned guest cart was found, create a brand new guest cart
+  const [createdGuestCart] = await db
+    .insert(cartsTable)
+    .values({
+      user_id: null,
+    })
+    .returning();
+  return createdGuestCart;
 }
 
 /**
  * Get all cart items with product and variant details, subtotal, and total weight.
  */
-export async function getCartItems(userIdOrSession?: string): Promise<CartResponse> {
-  const cart = await getOrCreateCart(userIdOrSession);
+export async function getCartItems(
+  userId?: string | null,
+  guestCartId?: string | null
+): Promise<CartResponse> {
+  const cart = await getOrCreateCart(userId, guestCartId);
 
   const rawItems = await db.query.cartItemsTable.findMany({
     where: eq(cartItemsTable.cart_id, cart.id),
@@ -161,33 +211,35 @@ export async function getCartItems(userIdOrSession?: string): Promise<CartRespon
       const basePrice = isFlashSale ? Number(product.flash_sale_price) : product.price;
       const unitPrice = basePrice + (variant?.additional_price ?? 0);
       const availableStock = variant ? variant.stock : product.stock;
-      const weightGram = estimateWeightGram(product.name, product.category?.slug);
-      const itemSubtotal = unitPrice * item.quantity;
-      const itemTotalWeightGram = weightGram * item.quantity;
-      const hargaCoret = isFlashSale ? product.price : (product.original_price ?? undefined);
-      const diskonPersen = isFlashSale
-        ? Math.round(((product.price - Number(product.flash_sale_price)) / product.price) * 100)
-        : (product.discount_percent ?? undefined);
+
+      const weight =
+        product.weight_gram ||
+        estimateWeightGram(product.name, product.category?.slug);
+
+      const qty = item.quantity;
 
       return {
         id: item.id,
         cartId: item.cart_id,
         productId: product.id,
-        variantId: item.variant_id,
+        variantId: variant?.id,
         nama: product.name,
         slug: product.slug,
         gambar: product.image_url,
-        kategoriLabel: product.category?.name ?? 'Perlengkapan Anak',
-        warna: variant?.color ?? '',
-        ukuran: variant?.size ?? '',
+        kategori: product.category?.slug || 'perlengkapan',
+        kategoriLabel: product.category?.name || 'Perlengkapan Anak',
+        warna: variant?.color || undefined,
+        ukuran: variant?.size || undefined,
         harga: unitPrice,
-        hargaCoret,
-        diskonPersen,
-        jumlah: item.quantity,
+        hargaCoret: product.original_price || (isFlashSale ? product.price : undefined),
+        diskonPersen: isFlashSale
+          ? Math.max(1, Math.round(((product.price - product.flash_sale_price!) / product.price) * 100))
+          : product.discount_percent || undefined,
+        jumlah: qty,
+        beratGram: weight,
         stok: availableStock,
-        beratGram: weightGram,
-        subtotal: itemSubtotal,
-        totalBeratGram: itemTotalWeightGram,
+        subtotal: unitPrice * qty,
+        totalBeratGram: weight * qty,
       };
     });
 
@@ -208,41 +260,33 @@ export async function getCartItems(userIdOrSession?: string): Promise<CartRespon
 }
 
 /**
- * Add a product or variant to the cart with stock validation and upsert logic.
+ * Add a product/variant to the cart with inventory validation.
  */
 export async function addToCart(
-  userIdOrSession: string | undefined,
-  payload: AddToCartInput
+  userId: string | null | undefined,
+  guestCartId: string | null | undefined,
+  input: AddToCartInput
 ): Promise<CartResponse> {
-  const { productId, variantId, quantity } = payload;
+  const { productId, variantId, quantity } = input;
 
-  // 1. Find product by UUID or slug
-  let product = null;
-  if (isValidUUID(productId)) {
-    product = await db.query.productsTable.findFirst({
-      where: eq(productsTable.id, productId),
-    });
-  } else {
-    product = await db.query.productsTable.findFirst({
-      where: eq(productsTable.slug, productId),
-    });
-  }
+  // 1. Verify product exists
+  const product = await db.query.productsTable.findFirst({
+    where: eq(productsTable.id, productId),
+  });
 
   if (!product) {
     throw new Error('Produk tidak ditemukan');
   }
 
-  // 2. Validate variant if specified
+  // 2. If variant specified, verify variant
   let variant = null;
   if (variantId) {
-    if (isValidUUID(variantId)) {
-      variant = await db.query.productVariantsTable.findFirst({
-        where: and(
-          eq(productVariantsTable.id, variantId),
-          eq(productVariantsTable.product_id, product.id)
-        ),
-      });
-    }
+    variant = await db.query.productVariantsTable.findFirst({
+      where: and(
+        eq(productVariantsTable.id, variantId),
+        eq(productVariantsTable.product_id, productId)
+      ),
+    });
 
     if (!variant) {
       throw new Error('Varian produk tidak ditemukan atau tidak sesuai');
@@ -257,8 +301,8 @@ export async function addToCart(
     }
   }
 
-  // 3. Get or create cart
-  const cart = await getOrCreateCart(userIdOrSession);
+  // 3. Get or create cart for this user/guest
+  const cart = await getOrCreateCart(userId, guestCartId);
 
   // 4. Check if item already exists in cart
   const existingItem = await db.query.cartItemsTable.findFirst({
@@ -280,7 +324,7 @@ export async function addToCart(
   if (existingItem) {
     const newQuantity = existingItem.quantity + quantity;
     if (newQuantity > maxStock) {
-      throw new Error(`Jumlah barang di keranjang (${newQuantity}) melebihi stok yang tersedia (${maxStock})`);
+      throw new Error(`Jumlah di keranjang melebihi stok yang tersedia (maksimal: ${maxStock})`);
     }
 
     await db
@@ -291,30 +335,26 @@ export async function addToCart(
     await db.insert(cartItemsTable).values({
       cart_id: cart.id,
       product_id: product.id,
-      variant_id: variant?.id ?? null,
+      variant_id: variantId || null,
       quantity,
     });
   }
 
-  // Update cart updated_at
+  // Update cart updated_at timestamp
   await db
     .update(cartsTable)
     .set({ updated_at: new Date() })
     .where(eq(cartsTable.id, cart.id));
 
-  return getCartItems(cart.id);
+  return getCartItems(userId, cart.id);
 }
 
 /**
- * Update the quantity of a cart item with stock check.
+ * Update the quantity of a specific cart item.
  */
 export async function updateQuantity(itemId: string, quantity: number) {
   if (quantity < 1) {
-    throw new Error('Kuantitas minimal 1');
-  }
-
-  if (!isValidUUID(itemId)) {
-    throw new Error('ID item keranjang tidak valid');
+    throw new Error('Kuantitas minimal adalah 1 item');
   }
 
   const item = await db.query.cartItemsTable.findFirst({
@@ -329,7 +369,7 @@ export async function updateQuantity(itemId: string, quantity: number) {
     throw new Error('Item keranjang tidak ditemukan');
   }
 
-  const maxStock = item.variant ? item.variant.stock : item.product.stock;
+  const maxStock = item.variant ? item.variant.stock : item.product?.stock ?? 99;
 
   if (quantity > maxStock) {
     throw new Error(`Kuantitas melebihi stok yang tersedia (maksimal: ${maxStock})`);
@@ -346,20 +386,13 @@ export async function updateQuantity(itemId: string, quantity: number) {
     .set({ updated_at: new Date() })
     .where(eq(cartsTable.id, item.cart_id));
 
-  return {
-    ...updated,
-    maxStock,
-  };
+  return updated;
 }
 
 /**
  * Remove an item from the cart.
  */
 export async function removeItem(itemId: string) {
-  if (!isValidUUID(itemId)) {
-    throw new Error('ID item keranjang tidak valid');
-  }
-
   const item = await db.query.cartItemsTable.findFirst({
     where: eq(cartItemsTable.id, itemId),
   });
@@ -375,37 +408,23 @@ export async function removeItem(itemId: string) {
     .set({ updated_at: new Date() })
     .where(eq(cartsTable.id, item.cart_id));
 
-  return {
-    success: true,
-    itemId,
-    cartId: item.cart_id,
-  };
+  return { success: true, deletedId: itemId, cartId: item.cart_id };
 }
 
 /**
- * Clear all items in a cart.
+ * Clear all items in a cart (e.g. after successful checkout).
  */
 export async function clearCart(cartId: string) {
-  if (!isValidUUID(cartId)) {
-    throw new Error('ID keranjang tidak valid');
-  }
-
   await db.delete(cartItemsTable).where(eq(cartItemsTable.cart_id, cartId));
-
   await db
     .update(cartsTable)
     .set({ updated_at: new Date() })
     .where(eq(cartsTable.id, cartId));
-
-  return {
-    success: true,
-    cartId,
-  };
+  return { success: true, cartId };
 }
 
 export const cartService = {
   getOrCreateCart,
-  getCart: getCartItems,
   getCartItems,
   addToCart,
   updateQuantity,

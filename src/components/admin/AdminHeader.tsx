@@ -76,11 +76,23 @@ export function AdminHeader({ onOpenSidebar }: AdminHeaderProps) {
     try {
       await signOut();
       setUserDropdownOpen(false);
+      if (typeof document !== 'undefined') {
+        document.cookie = 'cart_id=; path=/; max-age=0';
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       router.push('/auth/login');
       router.refresh();
     } catch (error) {
       console.error('Logout error:', error);
       setUserDropdownOpen(false);
+      if (typeof document !== 'undefined') {
+        document.cookie = 'cart_id=; path=/; max-age=0';
+      }
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new Event('cart-updated'));
+      }
       router.push('/auth/login');
       router.refresh();
     } finally {
