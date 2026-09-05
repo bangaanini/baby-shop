@@ -160,6 +160,36 @@ export function UserSidebar({
             </div>
           </div>
         </div>
+
+        {/* Mobile Quick Actions: Admin Dashboard & Logout (< md) */}
+        <div className="md:hidden mt-4 pt-3.5 border-t border-[#FFE8D6] flex flex-col gap-2">
+          {isAdmin && (
+            <Link
+              href="/admin"
+              className="w-full flex items-center justify-between px-4 py-2.5 rounded-2xl bg-purple-100/90 text-purple-900 border border-purple-300 font-heading font-bold text-xs shadow-2xs transition-colors hover:bg-purple-200"
+            >
+              <div className="flex items-center gap-2">
+                <Store className="w-4 h-4 text-purple-700" />
+                <span>Buka Panel Dashboard Admin Toko</span>
+              </div>
+              <ChevronRight className="w-4 h-4 text-purple-600" />
+            </Link>
+          )}
+
+          <button
+            type="button"
+            onClick={onLogout}
+            disabled={isLoggingOut}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-heading font-bold text-xs transition-colors disabled:opacity-60 cursor-pointer"
+          >
+            {isLoggingOut ? (
+              <Loader2 className="w-4 h-4 animate-spin text-rose-600" />
+            ) : (
+              <LogOut className="w-4 h-4 text-rose-600" />
+            )}
+            <span>{isLoggingOut ? 'Sedang Keluar...' : 'Keluar dari Akun (Logout)'}</span>
+          </button>
+        </div>
       </div>
 
       {/* Menu Navigasi Desktop - Clay Block */}

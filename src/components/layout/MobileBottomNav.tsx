@@ -12,6 +12,11 @@ function MobileBottomNavContent() {
   const { data: session } = useSession();
   const isAuthenticated = !!session?.user;
 
+  // Sembunyikan bottom navbar saat berada di panel admin
+  if (pathname.startsWith('/admin')) {
+    return null;
+  }
+
   // Check promo condition
   const isPromo =
     pathname.startsWith('/katalog') &&

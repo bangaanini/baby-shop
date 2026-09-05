@@ -3,6 +3,7 @@ import localFont from 'next/font/local';
 import { paymentService } from '@/server/services/payment.service';
 import { FloatingWhatsApp } from '@/components/layout/FloatingWhatsApp';
 import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
+import { PwaInstallPrompt } from '@/components/layout/PwaInstallPrompt';
 import './globals.css';
 
 export const viewport: Viewport = {
@@ -100,6 +101,11 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description,
     keywords,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'default',
+      title: storeName,
+    },
     icons: faviconUrl
       ? {
           icon: [{ url: faviconUrl }],
@@ -186,6 +192,7 @@ export default async function RootLayout({
       </head>
       <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E] max-w-full pb-16 md:pb-0">
         {children}
+        <PwaInstallPrompt />
         <FloatingWhatsApp />
         <MobileBottomNav />
       </body>

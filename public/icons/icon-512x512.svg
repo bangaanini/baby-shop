@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FF9F43"/>
+      <stop offset="100%" stop-color="#EE8A2B"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#D96B00" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)"/>
+  <!-- Baby Store Bag / Teddy Bear Mascot Icon -->
+  <g transform="translate(106, 106)" filter="url(#shadow)">
+    <!-- Bag / Cart Body -->
+    <rect x="25" y="70" width="250" height="200" rx="40" fill="#FFFFFF" stroke="#FFE8D6" stroke-width="8"/>
+    <!-- Handles -->
+    <path d="M 85 70 C 85 10, 215 10, 215 70" fill="none" stroke="#FFFFFF" stroke-width="20" stroke-linecap="round"/>
+    <path d="M 85 70 C 85 15, 215 15, 215 70" fill="none" stroke="#FF9F43" stroke-width="8" stroke-linecap="round"/>
+    <!-- Cute Mascot Face inside bag -->
+    <circle cx="150" cy="155" r="55" fill="#FFF2E5"/>
+    <!-- Ears -->
+    <circle cx="105" cy="115" r="18" fill="#FF9F43"/>
+    <circle cx="195" cy="115" r="18" fill="#FF9F43"/>
+    <!-- Eyes -->
+    <circle cx="130" cy="148" r="7" fill="#2D3748"/>
+    <circle cx="170" cy="148" r="7" fill="#2D3748"/>
+    <!-- Nose & Smile -->
+    <ellipse cx="150" cy="162" rx="6" ry="4" fill="#D96B00"/>
+    <path d="M 142 170 Q 150 178 158 170" fill="none" stroke="#D96B00" stroke-width="4" stroke-linecap="round"/>
+    <!-- Sparkle -->
+    <polygon points="230,90 234,105 249,109 234,113 230,128 226,113 211,109 226,105" fill="#FFD4B2"/>
+  </g>
+</svg>
