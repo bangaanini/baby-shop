@@ -553,25 +553,16 @@ export async function handleWebhookNotification(
     const fraudStatus = String(body.fraud_status || '').toLowerCase();
     const paymentType = String(body.payment_type || 'midtrans');
 
-    // Validasi Signature SHA512 jika Server Key tersedia
     const serverKey = settings.midtrans_server_key;
     if (serverKey && signatureKey) {
       const payloadString = `${orderId}${statusCode}${grossAmount}${serverKey}`;
-      const expectedSignature = crypto
-        .createHash('sha512')
-        .update(payloadString)
-        .digest('hex');
-
+      const expectedSignature = crypto.createHash('sha512').update(payloadString).digest('hex');
       if (signatureKey !== expectedSignature) {
-        console.warn(
-          `[PaymentService] Midtrans Webhook Invalid Signature for Order ${orderId}`
-        );
-        return {
-          success: false,
-          provider: 'midtrans',
-          message: 'Signature key Midtrans tidak valid.',
-        };
+        console.warn(`[PaymentService] Midtrans Webhook Invalid Signature for Order ${orderId}`);
+        return { success: false, provider: 'midtrans', message: 'Signature key Midtrans tidak valid.' };
       }
+    } else if (!serverKey) {
+      console.warn('[PaymentService] Midtrans server key is not configured — webhook signature not verified');
     }
 
     // Cari pesanan berdasarkan invoice_number atau ID
@@ -589,6 +580,11 @@ export async function handleWebhookNotification(
         provider: 'midtrans',
         message: `Pesanan ${orderId} tidak ditemukan`,
       };
+    }
+
+    if (['diproses', 'selesai', 'dibatalkan'].includes(existingOrder.status)) {
+      console.log(`[PaymentService] Webhook idempotent — order ${existingOrder.invoice_number} already ${existingOrder.status}`);
+      return { success: true, provider: 'midtrans', orderId: existingOrder.id, invoiceNumber: existingOrder.invoice_number, status: existingOrder.status, message: 'Pesanan sudah diproses sebelumnya.' };
     }
 
     const isSuccess =
@@ -689,14 +685,11 @@ export async function handleWebhookNotification(
     const receivedToken = getHeader('x-callback-token');
 
     if (webhookToken && receivedToken && webhookToken !== receivedToken) {
-      console.warn(
-        `[PaymentService] Xendit Callback Token Mismatch for Invoice ${externalId}`
-      );
-      return {
-        success: false,
-        provider: 'xendit',
-        message: 'Callback token Xendit tidak valid.',
-      };
+      console.warn(`[PaymentService] Xendit Callback Token Mismatch for Invoice ${externalId}`);
+      return { success: false, provider: 'xendit', message: 'Callback token Xendit tidak valid.' };
+    }
+    if (!webhookToken) {
+      console.warn('[PaymentService] Xendit webhook token is not configured — callback token not verified');
     }
 
     const existingOrder = await db.query.ordersTable.findFirst({
@@ -713,6 +706,11 @@ export async function handleWebhookNotification(
         provider: 'xendit',
         message: `Pesanan ${externalId} tidak ditemukan`,
       };
+    }
+
+    if (['diproses', 'selesai', 'dibatalkan'].includes(existingOrder.status)) {
+      console.log(`[PaymentService] Webhook idempotent — order ${existingOrder.invoice_number} already ${existingOrder.status}`);
+      return { success: true, provider: 'xendit', orderId: existingOrder.id, invoiceNumber: existingOrder.invoice_number, status: existingOrder.status, message: 'Pesanan sudah diproses sebelumnya.' };
     }
 
     const isSuccess = status === 'PAID' || status === 'SETTLED';
