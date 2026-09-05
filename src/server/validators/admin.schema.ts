@@ -68,6 +68,21 @@ export const adminProductFilterSchema = z.object({
   sort: productSortEnum.optional().default('rekomendasi'),
 });
 
+export const adminFlashSaleProductSchema = z.object({
+  productId: z.string().min(1, 'ID produk wajib diisi'),
+  isFlashSale: z.boolean(),
+  flashSalePrice: z.coerce.number().int().min(0, 'Harga flash sale minimal 0').optional().nullable(),
+});
+
+export const adminFlashSaleSettingsSchema = z.object({
+  isActive: z.boolean().optional(),
+  flash_sale_is_active: z.boolean().optional(),
+  title: z.string().trim().optional(),
+  flash_sale_title: z.string().trim().optional(),
+  endTime: z.union([z.string(), z.date()]).optional().nullable(),
+  flash_sale_end_time: z.union([z.string(), z.date()]).optional().nullable(),
+});
+
 export type UpdateOrderStatusInput = z.infer<typeof updateOrderStatusSchema>;
 export type ProductVariantInput = z.infer<typeof productVariantInputSchema>;
 export type ProductImageInput = z.infer<typeof productImageInputSchema>;
@@ -75,3 +90,5 @@ export type AdminProductInput = z.infer<typeof adminProductSchema>;
 export type AdminProductUpdateInput = z.infer<typeof adminProductUpdateSchema>;
 export type AdminOrderFilterInput = z.infer<typeof adminOrderFilterSchema>;
 export type AdminProductFilterInput = z.infer<typeof adminProductFilterSchema>;
+export type AdminFlashSaleProductInput = z.infer<typeof adminFlashSaleProductSchema>;
+export type AdminFlashSaleSettingsInput = z.infer<typeof adminFlashSaleSettingsSchema>;

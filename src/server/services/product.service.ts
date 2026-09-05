@@ -286,10 +286,85 @@ export async function getRelatedProducts(
   return items;
 }
 
+/**
+ * Get all active flash sale products with relations (category, variants, images).
+ */
+export async function getFlashSaleProducts() {
+  const items = await db.query.productsTable.findMany({
+    where: eq(productsTable.is_flash_sale, true),
+    orderBy: [desc(productsTable.updated_at), desc(productsTable.sold_count)],
+    with: {
+      category: true,
+      variants: true,
+      images: {
+        orderBy: (images, { asc }) => [asc(images.sort_order)],
+      },
+    },
+  });
+
+  return items;
+}
+
+/**
+ * Update flash sale status and price for a product.
+ */
+export async function updateProductFlashSale(
+  productId: string,
+  isFlashSale: boolean,
+  flashSalePrice?: number | null
+) {
+  if (!productId || !productId.trim()) {
+    throw new Error('ID produk wajib diisi');
+  }
+
+  const existing = await db.query.productsTable.findFirst({
+    where: eq(productsTable.id, productId.trim()),
+  });
+
+  if (!existing) {
+    throw new Error(`Produk dengan ID "${productId}" tidak ditemukan`);
+  }
+
+  const updateData: {
+    is_flash_sale: boolean;
+    flash_sale_price?: number | null;
+    updated_at: Date;
+  } = {
+    is_flash_sale: isFlashSale,
+    updated_at: new Date(),
+  };
+
+  if (flashSalePrice !== undefined) {
+    updateData.flash_sale_price = flashSalePrice;
+  } else if (!isFlashSale) {
+    updateData.flash_sale_price = null;
+  }
+
+  await db
+    .update(productsTable)
+    .set(updateData)
+    .where(eq(productsTable.id, existing.id));
+
+  const updatedProduct = await db.query.productsTable.findFirst({
+    where: eq(productsTable.id, existing.id),
+    with: {
+      category: true,
+      variants: true,
+      images: {
+        orderBy: (images, { asc }) => [asc(images.sort_order)],
+      },
+    },
+  });
+
+  return updatedProduct;
+}
+
 export const productService = {
   getCategories,
   getProducts,
   getProductById,
   getProductBySlug,
   getRelatedProducts,
+  getFlashSaleProducts,
+  updateProductFlashSale,
 };
