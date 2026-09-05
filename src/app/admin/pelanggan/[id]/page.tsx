@@ -93,6 +93,54 @@ export default function CustomerDetailPage() {
   const [data, setData] = useState<CustomerDetailData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isUpdatingRole, setIsUpdatingRole] = useState(false);
+  const [actionFeedback, setActionFeedback] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+
+  const showFeedback = (message: string, type: 'success' | 'error' = 'success') => {
+    setActionFeedback({ message, type });
+    setTimeout(() => setActionFeedback(null), 4000);
+  };
+
+  const handleRoleChange = async (targetRole: 'admin' | 'buyer') => {
+    if (!data || isUpdatingRole) return;
+    const confirmMsg =
+      targetRole === 'admin'
+        ? `Apakah Anda yakin ingin mengangkat "${data.customer.name || data.customer.email}" menjadi Administrator Toko?`
+        : `Apakah Anda yakin ingin mencabut hak admin "${data.customer.name || data.customer.email}" dan mengembalikannya menjadi Pembeli biasa?`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setIsUpdatingRole(true);
+    try {
+      const res = await fetch(`/api/admin/customers/${encodeURIComponent(customerId)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: targetRole }),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || 'Gagal mengubah role pengguna');
+      }
+
+      showFeedback(json.message || `Role berhasil diubah menjadi ${targetRole}.`, 'success');
+      setData((prev) =>
+        prev
+          ? {
+              ...prev,
+              customer: {
+                ...prev.customer,
+                role: targetRole,
+              },
+            }
+          : null
+      );
+    } catch (err: any) {
+      showFeedback(err.message || 'Terjadi kesalahan saat mengubah role', 'error');
+    } finally {
+      setIsUpdatingRole(false);
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -157,6 +205,26 @@ export default function CustomerDetailPage() {
 
   return (
     <div className="space-y-6">
+      {/* Toast Feedback */}
+      {actionFeedback && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-5 duration-300">
+          <div
+            className={`px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-xs sm:text-sm font-heading font-bold border-2 ${
+              actionFeedback.type === 'error'
+                ? 'bg-rose-50 border-rose-300 text-rose-800'
+                : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+            }`}
+          >
+            {actionFeedback.type === 'error' ? (
+              <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
+            ) : (
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+            )}
+            <span>{actionFeedback.message}</span>
+          </div>
+        </div>
+      )}
+
       {/* Top Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white rounded-3xl p-6 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12)]">
         <div className="flex items-center gap-4">
@@ -189,8 +257,30 @@ export default function CustomerDetailPage() {
           </div>
         </div>
 
-        {/* Quick Action Buttons */}
+        {/* Quick Action Buttons & Role Changer */}
         <div className="flex items-center gap-2.5 flex-wrap">
+          {customer.role === 'admin' ? (
+            <button
+              type="button"
+              disabled={isUpdatingRole}
+              onClick={() => handleRoleChange('buyer')}
+              className="px-4 py-2 text-xs rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-700 border-2 border-rose-200 font-heading font-bold inline-flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer disabled:opacity-50"
+            >
+              {isUpdatingRole ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <User className="w-3.5 h-3.5" />}
+              <span>Ubah ke Pembeli Biasa</span>
+            </button>
+          ) : (
+            <button
+              type="button"
+              disabled={isUpdatingRole}
+              onClick={() => handleRoleChange('admin')}
+              className="px-4 py-2 text-xs rounded-2xl bg-purple-50 hover:bg-purple-100 text-purple-800 border-2 border-purple-200 font-heading font-bold inline-flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer disabled:opacity-50"
+            >
+              {isUpdatingRole ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Crown className="w-3.5 h-3.5 text-purple-600" />}
+              <span>Angkat Jadi Admin Toko</span>
+            </button>
+          )}
+
           {waUrl && (
             <a
               href={waUrl}

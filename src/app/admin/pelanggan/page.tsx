@@ -78,6 +78,46 @@ export default function AdminPelangganPage() {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [filter, setFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [updatingUserId, setUpdatingUserId] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
+
+  const showToast = (text: string, type: 'success' | 'error' = 'success') => {
+    setToastMessage({ text, type });
+    setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const handleQuickRoleChange = async (targetUser: Customer, targetRole: 'admin' | 'buyer') => {
+    if (updatingUserId) return;
+    const confirmMsg =
+      targetRole === 'admin'
+        ? `Angkat "${targetUser.name || targetUser.email}" menjadi Administrator Toko?`
+        : `Cabut status admin dari "${targetUser.name || targetUser.email}" dan jadikan Pembeli biasa?`;
+
+    if (!window.confirm(confirmMsg)) return;
+
+    setUpdatingUserId(targetUser.id);
+    try {
+      const res = await fetch(`/api/admin/customers/${encodeURIComponent(targetUser.id)}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ role: targetRole }),
+      });
+
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || 'Gagal mengubah role');
+      }
+
+      showToast(json.message || `Role berhasil diubah menjadi ${targetRole}.`, 'success');
+      setCustomers((prev) =>
+        prev.map((c) => (c.id === targetUser.id ? { ...c, role: targetRole } : c))
+      );
+    } catch (err: any) {
+      showToast(err.message || 'Terjadi kesalahan saat mengubah role', 'error');
+    } finally {
+      setUpdatingUserId(null);
+    }
+  };
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search.trim()), 300);
@@ -117,6 +157,21 @@ export default function AdminPelangganPage() {
 
   return (
     <div className="space-y-6 font-body">
+      {/* Toast feedback */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 animate-in fade-in slide-in-from-bottom-5 duration-300">
+          <div
+            className={`px-5 py-3.5 rounded-2xl shadow-xl flex items-center gap-3 text-xs sm:text-sm font-heading font-bold border-2 ${
+              toastMessage.type === 'error'
+                ? 'bg-rose-50 border-rose-300 text-rose-800'
+                : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+            }`}
+          >
+            <span>{toastMessage.text}</span>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
@@ -323,16 +378,30 @@ export default function AdminPelangganPage() {
                           </div>
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <span
-                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-heading font-black border ${
+                          <button
+                            type="button"
+                            disabled={updatingUserId === c.id}
+                            onClick={() =>
+                              handleQuickRoleChange(c, c.role === 'admin' ? 'buyer' : 'admin')
+                            }
+                            title={
                               c.role === 'admin'
-                                ? 'bg-amber-100 text-amber-800 border-amber-200'
-                                : 'bg-sky-100 text-sky-800 border-sky-200'
+                                ? 'Klik untuk cabut hak admin (ubah ke buyer)'
+                                : 'Klik untuk angkat jadi admin'
+                            }
+                            className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-heading font-black border transition-all cursor-pointer hover:scale-105 active:scale-95 disabled:opacity-50 ${
+                              c.role === 'admin'
+                                ? 'bg-amber-100 text-amber-800 border-amber-200 hover:bg-rose-100 hover:text-rose-800'
+                                : 'bg-sky-100 text-sky-800 border-sky-200 hover:bg-purple-100 hover:text-purple-800'
                             }`}
                           >
-                            {c.role === 'admin' && <Crown className="w-3 h-3" />}
-                            {c.role === 'admin' ? 'admin' : 'buyer'}
-                          </span>
+                            {updatingUserId === c.id ? (
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                            ) : (
+                              c.role === 'admin' && <Crown className="w-3 h-3" />
+                            )}
+                            <span>{c.role === 'admin' ? 'admin' : 'buyer'}</span>
+                          </button>
                         </td>
                         <td className="px-4 py-3 text-center">
                           <span className="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-full bg-slate-900 text-white text-xs font-heading font-black">
@@ -383,16 +452,25 @@ export default function AdminPelangganPage() {
                     <div className="flex-1 min-w-0 space-y-1.5">
                       <div className="flex items-start justify-between gap-2">
                         <p className="font-heading font-bold text-slate-900 truncate">{c.name}</p>
-                        <span
-                          className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-heading font-black border ${
+                        <button
+                          type="button"
+                          disabled={updatingUserId === c.id}
+                          onClick={() =>
+                            handleQuickRoleChange(c, c.role === 'admin' ? 'buyer' : 'admin')
+                          }
+                          className={`shrink-0 inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-heading font-black border transition-all cursor-pointer ${
                             c.role === 'admin'
                               ? 'bg-amber-100 text-amber-800 border-amber-200'
                               : 'bg-sky-100 text-sky-800 border-sky-200'
                           }`}
                         >
-                          {c.role === 'admin' && <Crown className="w-3 h-3" />}
-                          {c.role}
-                        </span>
+                          {updatingUserId === c.id ? (
+                            <Loader2 className="w-3 h-3 animate-spin" />
+                          ) : (
+                            c.role === 'admin' && <Crown className="w-3 h-3" />
+                          )}
+                          <span>{c.role}</span>
+                        </button>
                       </div>
                       <a href={`mailto:${c.email}`} className="flex items-center gap-1 text-xs text-slate-600 font-body truncate">
                         <Mail className="w-3 h-3 text-slate-400 shrink-0" />

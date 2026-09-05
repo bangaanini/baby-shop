@@ -115,3 +115,87 @@ export async function GET(
     );
   }
 }
+
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const authCheck = await verifyAdmin(request);
+  if (!authCheck.authorized) return authCheck.response!;
+
+  try {
+    const { id } = await params;
+    if (!id || !id.trim()) {
+      return NextResponse.json({ success: false, error: 'ID Pelanggan wajib disertakan' }, { status: 400 });
+    }
+
+    const customerId = id.trim();
+    const body = await request.json().catch(() => ({}));
+    const { role } = body;
+
+    if (!role || !['admin', 'buyer'].includes(role)) {
+      return NextResponse.json(
+        { success: false, error: 'Role harus berupa "admin" atau "buyer"' },
+        { status: 400 }
+      );
+    }
+
+    // 1. Fetch Target User
+    const targetUser = await db.query.usersTable.findFirst({
+      where: eq(usersTable.id, customerId),
+    });
+
+    if (!targetUser) {
+      return NextResponse.json(
+        { success: false, error: `Pengguna dengan ID "${customerId}" tidak ditemukan` },
+        { status: 404 }
+      );
+    }
+
+    // 2. Proteksi Master Admin dari .env
+    const masterAdminEmails = (process.env.ADMIN_EMAILS || 'admin@nbusiness.id,admin@babykids.id')
+      .split(',')
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean);
+
+    if (
+      role === 'buyer' &&
+      targetUser.email &&
+      masterAdminEmails.includes(targetUser.email.toLowerCase())
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Akun "${targetUser.email}" terdaftar sebagai Master Admin di konfigurasi server (.env). Hak akses tidak dapat dicabut melalui dashboard web.`,
+        },
+        { status: 403 }
+      );
+    }
+
+    // 3. Update User Role
+    await db
+      .update(usersTable)
+      .set({
+        role,
+        updatedAt: new Date(),
+      })
+      .where(eq(usersTable.id, customerId));
+
+    return NextResponse.json({
+      success: true,
+      message: `Role pengguna "${targetUser.name || targetUser.email}" berhasil diubah menjadi "${role}".`,
+      data: {
+        id: targetUser.id,
+        email: targetUser.email,
+        name: targetUser.name,
+        role,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error in PATCH /api/admin/customers/[id]:', error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Gagal mengubah role pengguna' },
+      { status: 500 }
+    );
+  }
+}
