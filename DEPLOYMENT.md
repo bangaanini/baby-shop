@@ -506,4 +506,33 @@ Gunakan checklist ini sebelum membuka toko untuk transaksi umum:
 
 ---
 
-🎉 **Selamat! Toko Online NBusiness Anda telah siap melayani pembeli secara profesional!**
+## 13. Otomatisasi CI/CD via GitHub Actions (Auto-Deploy saat `git push`)
+
+Untuk membuat VPS otomatis melakukan `git pull`, `npm run db:push`, `npm run build`, dan `pm2 restart` setiap kali Anda melakukan `git push origin master`, ikuti 2 langkah mudah berikut:
+
+### Langkah 1: Tambahkan GitHub Secrets di Repository Anda
+1. Buka repository Anda di **GitHub** -> Pilih menu **Settings** -> **Secrets and variables** -> **Actions**.
+2. Klik **New repository secret** dan tambahkan data koneksi VPS Anda:
+   - `VPS_HOST`: IP Public VPS Anda (contoh: `103.187.146.xxx`).
+   - `VPS_USERNAME`: User login VPS Anda (contoh: `root` atau `aan`).
+   - `VPS_PASSWORD`: Password user VPS Anda (atau isi `VPS_SSH_KEY` jika login via SSH Private Key).
+   - `VPS_PORT`: Port SSH Anda (default: `22`).
+
+### Langkah 2: Selesai! Alur Kerja Otomatis
+File `.github/workflows/deploy.yml` telah terpasang di repository ini.
+Setiap kali Anda menjalankan `git push origin master` dari komputer lokal:
+1. GitHub Actions akan otomatis terpicu.
+2. GitHub melakukan SSH ke VPS Anda.
+3. VPS menjalankan:
+   ```bash
+   git pull origin master
+   npm install
+   npm run db:push
+   npm run build
+   pm2 restart nbusiness
+   ```
+4. Status deployment dapat dipantau langsung di tab **Actions** di GitHub repository Anda.
+
+---
+
+🎉 **Selamat! Toko Online NBusiness Anda telah siap melayani pembeli secara profesional dengan alur kerja CI/CD otomatis!**

@@ -1,0 +1,57 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - master # Atau main sesuai branch utama Anda
+
+jobs:
+  deploy:
+    name: Deploy Application to VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Executing Remote SSH Commands on VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          passphrase: ${{ secrets.VPS_PASSPHRASE }} # Opsional jika private key memiliki passphrase
+          password: ${{ secrets.VPS_PASSWORD }} # Gunakan jika login VPS memakai password bukan SSH key
+          port: ${{ secrets.VPS_PORT || 22 }}
+          script_stop: true
+          script: |
+            echo "🚀 Memulai proses deployment otomatis di VPS..."
+
+            # 1. Masuk ke direktori project di VPS
+            cd /home/aan/baby-shop || cd ~/baby-shop || cd /var/www/baby-shop
+
+            # Pastikan NVM / Node.js terbaca di SSH non-interactive session
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+            # 2. Tarik kode terbaru dari GitHub
+            echo "📥 Menarik pembaruan dari Git..."
+            git pull origin master
+
+            # 3. Install dependencies jika ada paket baru
+            echo "📦 Menginstall dependencies..."
+            npm install --prefer-offline --no-audit
+
+            # 4. Sinkronisasi skema database PostgreSQL
+            echo "🗄️ Sinkronisasi tabel database (db:push)..."
+            npm run db:push
+
+            # 5. Build aplikasi Next.js untuk produksi
+            echo "🏗️ Membangun aplikasi Next.js (npm run build)..."
+            npm run build
+
+            # 6. Restart PM2 agar perubahan langsung aktif
+            echo "♻️ Me-restart proses PM2 nbusiness..."
+            pm2 restart nbusiness || pm2 restart all
+
+            echo "✅ Deployment selesai! Website NBusiness telah aktif dengan versi terbaru."
