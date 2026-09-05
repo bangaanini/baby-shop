@@ -1,1896 +1,2133 @@
 {
   ".claude/skills/banner-design/SKILL.md": {
-    "summary": "Source file .claude/skills/banner-design/SKILL.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/banner-design/SKILL.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/banner-design/references/banner-sizes-and-styles.md": {
-    "summary": "Source file .claude/skills/banner-design/references/banner-sizes-and-styles.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/banner-design/references/banner-sizes-and-styles.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/SKILL.md": {
-    "summary": "Source file .claude/skills/brand/SKILL.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/SKILL.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/approval-checklist.md": {
-    "summary": "Source file .claude/skills/brand/references/approval-checklist.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/approval-checklist.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/asset-organization.md": {
-    "summary": "Source file .claude/skills/brand/references/asset-organization.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/asset-organization.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/brand-guideline-template.md": {
-    "summary": "Source file .claude/skills/brand/references/brand-guideline-template.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/brand-guideline-template.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/color-palette-management.md": {
-    "summary": "Source file .claude/skills/brand/references/color-palette-management.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/color-palette-management.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/consistency-checklist.md": {
-    "summary": "Source file .claude/skills/brand/references/consistency-checklist.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/consistency-checklist.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/logo-usage-rules.md": {
-    "summary": "Source file .claude/skills/brand/references/logo-usage-rules.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/logo-usage-rules.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/messaging-framework.md": {
-    "summary": "Source file .claude/skills/brand/references/messaging-framework.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/messaging-framework.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/typography-specifications.md": {
-    "summary": "Source file .claude/skills/brand/references/typography-specifications.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/typography-specifications.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/update.md": {
-    "summary": "Source file .claude/skills/brand/references/update.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/update.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/visual-identity.md": {
-    "summary": "Source file .claude/skills/brand/references/visual-identity.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/visual-identity.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/references/voice-framework.md": {
-    "summary": "Source file .claude/skills/brand/references/voice-framework.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/references/voice-framework.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/scripts/extract-colors.cjs": {
-    "summary": "Source file .claude/skills/brand/scripts/extract-colors.cjs for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/scripts/extract-colors.cjs for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/scripts/inject-brand-context.cjs": {
-    "summary": "Source file .claude/skills/brand/scripts/inject-brand-context.cjs for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/scripts/inject-brand-context.cjs for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/scripts/sync-brand-to-tokens.cjs": {
-    "summary": "Source file .claude/skills/brand/scripts/sync-brand-to-tokens.cjs for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/scripts/sync-brand-to-tokens.cjs for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/scripts/tests/test_sync_brand_to_tokens.py": {
-    "summary": "Source file .claude/skills/brand/scripts/tests/test_sync_brand_to_tokens.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/scripts/tests/test_sync_brand_to_tokens.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/scripts/validate-asset.cjs": {
-    "summary": "Source file .claude/skills/brand/scripts/validate-asset.cjs for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/scripts/validate-asset.cjs for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/brand/templates/brand-guidelines-starter.md": {
-    "summary": "Source file .claude/skills/brand/templates/brand-guidelines-starter.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/brand/templates/brand-guidelines-starter.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/SKILL.md": {
-    "summary": "Source file .claude/skills/design/SKILL.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/SKILL.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/data/cip/deliverables.csv": {
-    "summary": "Source file .claude/skills/design/data/cip/deliverables.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/data/cip/deliverables.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/data/cip/industries.csv": {
-    "summary": "Source file .claude/skills/design/data/cip/industries.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/data/cip/industries.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/data/cip/mockup-contexts.csv": {
-    "summary": "Source file .claude/skills/design/data/cip/mockup-contexts.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/data/cip/mockup-contexts.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/data/cip/styles.csv": {
-    "summary": "Source file .claude/skills/design/data/cip/styles.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/data/cip/styles.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/data/icon/styles.csv": {
-    "summary": "Source file .claude/skills/design/data/icon/styles.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/data/icon/styles.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/data/logo/colors.csv": {
-    "summary": "Source file .claude/skills/design/data/logo/colors.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/data/logo/colors.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/data/logo/industries.csv": {
-    "summary": "Source file .claude/skills/design/data/logo/industries.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/data/logo/industries.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/data/logo/styles.csv": {
-    "summary": "Source file .claude/skills/design/data/logo/styles.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/data/logo/styles.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/banner-sizes-and-styles.md": {
-    "summary": "Source file .claude/skills/design/references/banner-sizes-and-styles.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/banner-sizes-and-styles.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/cip-deliverable-guide.md": {
-    "summary": "Source file .claude/skills/design/references/cip-deliverable-guide.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/cip-deliverable-guide.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/cip-design.md": {
-    "summary": "Source file .claude/skills/design/references/cip-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/cip-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/cip-prompt-engineering.md": {
-    "summary": "Source file .claude/skills/design/references/cip-prompt-engineering.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/cip-prompt-engineering.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/cip-style-guide.md": {
-    "summary": "Source file .claude/skills/design/references/cip-style-guide.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/cip-style-guide.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/design-routing.md": {
-    "summary": "Source file .claude/skills/design/references/design-routing.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/design-routing.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/icon-design.md": {
-    "summary": "Source file .claude/skills/design/references/icon-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/icon-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/logo-color-psychology.md": {
-    "summary": "Source file .claude/skills/design/references/logo-color-psychology.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/logo-color-psychology.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/logo-design.md": {
-    "summary": "Source file .claude/skills/design/references/logo-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/logo-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/logo-prompt-engineering.md": {
-    "summary": "Source file .claude/skills/design/references/logo-prompt-engineering.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/logo-prompt-engineering.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/logo-style-guide.md": {
-    "summary": "Source file .claude/skills/design/references/logo-style-guide.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/logo-style-guide.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/slides-copywriting-formulas.md": {
-    "summary": "Source file .claude/skills/design/references/slides-copywriting-formulas.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/slides-copywriting-formulas.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/slides-create.md": {
-    "summary": "Source file .claude/skills/design/references/slides-create.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/slides-create.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/slides-html-template.md": {
-    "summary": "Source file .claude/skills/design/references/slides-html-template.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/slides-html-template.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/slides-layout-patterns.md": {
-    "summary": "Source file .claude/skills/design/references/slides-layout-patterns.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/slides-layout-patterns.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/slides-strategies.md": {
-    "summary": "Source file .claude/skills/design/references/slides-strategies.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/slides-strategies.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/slides.md": {
-    "summary": "Source file .claude/skills/design/references/slides.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/slides.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/references/social-photos-design.md": {
-    "summary": "Source file .claude/skills/design/references/social-photos-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/references/social-photos-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/scripts/cip/core.py": {
-    "summary": "Source file .claude/skills/design/scripts/cip/core.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/scripts/cip/core.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/scripts/cip/generate.py": {
-    "summary": "Source file .claude/skills/design/scripts/cip/generate.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/scripts/cip/generate.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/scripts/cip/render-html.py": {
-    "summary": "Source file .claude/skills/design/scripts/cip/render-html.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/scripts/cip/render-html.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/scripts/cip/search.py": {
-    "summary": "Source file .claude/skills/design/scripts/cip/search.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/scripts/cip/search.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/scripts/icon/generate.py": {
-    "summary": "Source file .claude/skills/design/scripts/icon/generate.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/scripts/icon/generate.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/scripts/logo/core.py": {
-    "summary": "Source file .claude/skills/design/scripts/logo/core.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/scripts/logo/core.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/scripts/logo/generate.py": {
-    "summary": "Source file .claude/skills/design/scripts/logo/generate.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/scripts/logo/generate.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design/scripts/logo/search.py": {
-    "summary": "Source file .claude/skills/design/scripts/logo/search.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design/scripts/logo/search.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/SKILL.md": {
-    "summary": "Source file .claude/skills/design-system/SKILL.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/SKILL.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/data/slide-backgrounds.csv": {
-    "summary": "Source file .claude/skills/design-system/data/slide-backgrounds.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/data/slide-backgrounds.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/data/slide-charts.csv": {
-    "summary": "Source file .claude/skills/design-system/data/slide-charts.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/data/slide-charts.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/data/slide-color-logic.csv": {
-    "summary": "Source file .claude/skills/design-system/data/slide-color-logic.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/data/slide-color-logic.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/data/slide-copy.csv": {
-    "summary": "Source file .claude/skills/design-system/data/slide-copy.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/data/slide-copy.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/data/slide-layout-logic.csv": {
-    "summary": "Source file .claude/skills/design-system/data/slide-layout-logic.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/data/slide-layout-logic.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/data/slide-layouts.csv": {
-    "summary": "Source file .claude/skills/design-system/data/slide-layouts.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/data/slide-layouts.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/data/slide-strategies.csv": {
-    "summary": "Source file .claude/skills/design-system/data/slide-strategies.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/data/slide-strategies.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/data/slide-typography.csv": {
-    "summary": "Source file .claude/skills/design-system/data/slide-typography.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/data/slide-typography.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/references/component-specs.md": {
-    "summary": "Source file .claude/skills/design-system/references/component-specs.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/references/component-specs.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/references/component-tokens.md": {
-    "summary": "Source file .claude/skills/design-system/references/component-tokens.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/references/component-tokens.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/references/primitive-tokens.md": {
-    "summary": "Source file .claude/skills/design-system/references/primitive-tokens.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/references/primitive-tokens.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/references/semantic-tokens.md": {
-    "summary": "Source file .claude/skills/design-system/references/semantic-tokens.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/references/semantic-tokens.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/references/states-and-variants.md": {
-    "summary": "Source file .claude/skills/design-system/references/states-and-variants.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/references/states-and-variants.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/references/tailwind-integration.md": {
-    "summary": "Source file .claude/skills/design-system/references/tailwind-integration.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/references/tailwind-integration.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/references/token-architecture.md": {
-    "summary": "Source file .claude/skills/design-system/references/token-architecture.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/references/token-architecture.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/embed-tokens.cjs": {
-    "summary": "Source file .claude/skills/design-system/scripts/embed-tokens.cjs for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/embed-tokens.cjs for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/fetch-background.py": {
-    "summary": "Source file .claude/skills/design-system/scripts/fetch-background.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/fetch-background.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/generate-slide.py": {
-    "summary": "Source file .claude/skills/design-system/scripts/generate-slide.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/generate-slide.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/generate-tokens.cjs": {
-    "summary": "Source file .claude/skills/design-system/scripts/generate-tokens.cjs for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/generate-tokens.cjs for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/html-token-validator.py": {
-    "summary": "Source file .claude/skills/design-system/scripts/html-token-validator.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/html-token-validator.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/search-slides.py": {
-    "summary": "Source file .claude/skills/design-system/scripts/search-slides.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/search-slides.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/slide-token-validator.py": {
-    "summary": "Source file .claude/skills/design-system/scripts/slide-token-validator.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/slide-token-validator.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/slide_search_core.py": {
-    "summary": "Source file .claude/skills/design-system/scripts/slide_search_core.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/slide_search_core.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/tests/test_validate_tokens.py": {
-    "summary": "Source file .claude/skills/design-system/scripts/tests/test_validate_tokens.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/tests/test_validate_tokens.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/scripts/validate-tokens.cjs": {
-    "summary": "Source file .claude/skills/design-system/scripts/validate-tokens.cjs for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/scripts/validate-tokens.cjs for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/design-system/templates/design-tokens-starter.json": {
-    "summary": "Source file .claude/skills/design-system/templates/design-tokens-starter.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/design-system/templates/design-tokens-starter.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ngodingpakeai/SKILL.md": {
-    "summary": "Source file .claude/skills/ngodingpakeai/SKILL.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ngodingpakeai/SKILL.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/slides/SKILL.md": {
-    "summary": "Source file .claude/skills/slides/SKILL.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/slides/SKILL.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/slides/references/copywriting-formulas.md": {
-    "summary": "Source file .claude/skills/slides/references/copywriting-formulas.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/slides/references/copywriting-formulas.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/slides/references/create.md": {
-    "summary": "Source file .claude/skills/slides/references/create.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/slides/references/create.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/slides/references/html-template.md": {
-    "summary": "Source file .claude/skills/slides/references/html-template.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/slides/references/html-template.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/slides/references/layout-patterns.md": {
-    "summary": "Source file .claude/skills/slides/references/layout-patterns.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/slides/references/layout-patterns.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/slides/references/slide-strategies.md": {
-    "summary": "Source file .claude/skills/slides/references/slide-strategies.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/slides/references/slide-strategies.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/LICENSE.txt": {
-    "summary": "Source file .claude/skills/ui-styling/LICENSE.txt for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/LICENSE.txt for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/SKILL.md": {
-    "summary": "Source file .claude/skills/ui-styling/SKILL.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/SKILL.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/references/canvas-design-system.md": {
-    "summary": "Source file .claude/skills/ui-styling/references/canvas-design-system.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/references/canvas-design-system.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/references/shadcn-accessibility.md": {
-    "summary": "Source file .claude/skills/ui-styling/references/shadcn-accessibility.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/references/shadcn-accessibility.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/references/shadcn-components.md": {
-    "summary": "Source file .claude/skills/ui-styling/references/shadcn-components.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/references/shadcn-components.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/references/shadcn-theming.md": {
-    "summary": "Source file .claude/skills/ui-styling/references/shadcn-theming.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/references/shadcn-theming.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/references/tailwind-customization.md": {
-    "summary": "Source file .claude/skills/ui-styling/references/tailwind-customization.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/references/tailwind-customization.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/references/tailwind-responsive.md": {
-    "summary": "Source file .claude/skills/ui-styling/references/tailwind-responsive.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/references/tailwind-responsive.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/references/tailwind-utilities.md": {
-    "summary": "Source file .claude/skills/ui-styling/references/tailwind-utilities.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/references/tailwind-utilities.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/scripts/requirements.txt": {
-    "summary": "Source file .claude/skills/ui-styling/scripts/requirements.txt for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/scripts/requirements.txt for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/scripts/shadcn_add.py": {
-    "summary": "Source file .claude/skills/ui-styling/scripts/shadcn_add.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/scripts/shadcn_add.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/scripts/tailwind_config_gen.py": {
-    "summary": "Source file .claude/skills/ui-styling/scripts/tailwind_config_gen.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/scripts/tailwind_config_gen.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/scripts/tests/coverage-ui.json": {
-    "summary": "Source file .claude/skills/ui-styling/scripts/tests/coverage-ui.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/scripts/tests/coverage-ui.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/scripts/tests/requirements.txt": {
-    "summary": "Source file .claude/skills/ui-styling/scripts/tests/requirements.txt for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/scripts/tests/requirements.txt for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/scripts/tests/test_shadcn_add.py": {
-    "summary": "Source file .claude/skills/ui-styling/scripts/tests/test_shadcn_add.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/scripts/tests/test_shadcn_add.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-styling/scripts/tests/test_tailwind_config_gen.py": {
-    "summary": "Source file .claude/skills/ui-styling/scripts/tests/test_tailwind_config_gen.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-styling/scripts/tests/test_tailwind_config_gen.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/SKILL.md": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/SKILL.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/SKILL.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/app-interface.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/app-interface.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/app-interface.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/catalog-summary.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/catalog-summary.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/catalog-summary.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/charts.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/charts.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/charts.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/colors.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/colors.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/colors.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/data-provenance.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/data-provenance.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/data-provenance.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/google-font-licenses.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/google-font-licenses.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/google-font-licenses.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/google-fonts.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/google-fonts.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/google-fonts.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/icons.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/icons.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/icons.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/landing.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/landing.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/landing.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/motion.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/motion.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/motion.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/phosphor-icons-upstream.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/phosphor-icons-upstream.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/phosphor-icons-upstream.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/products.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/products.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/products.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/react-performance.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/react-performance.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/react-performance.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/angular.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/angular.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/angular.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/astro.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/astro.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/astro.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/avalonia.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/avalonia.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/avalonia.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/flutter.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/flutter.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/flutter.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/html-tailwind.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/html-tailwind.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/html-tailwind.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/javafx.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/javafx.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/javafx.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/jetpack-compose.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/laravel.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/laravel.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/laravel.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/nextjs.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/nextjs.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/nextjs.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/nuxt-ui.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/nuxtjs.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/nuxtjs.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/nuxtjs.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/react-native.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/react-native.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/react-native.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/react.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/react.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/react.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/shadcn.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/shadcn.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/shadcn.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/svelte.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/svelte.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/svelte.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/swiftui.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/swiftui.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/swiftui.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/threejs.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/threejs.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/threejs.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/uno.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/uno.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/uno.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/uwp.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/uwp.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/uwp.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/vue.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/vue.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/vue.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/winui.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/winui.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/winui.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/stacks/wpf.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/wpf.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/stacks/wpf.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/styles.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/styles.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/styles.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/typography.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/typography.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/typography.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/ui-reasoning.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/ui-reasoning.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/ui-reasoning.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/data/ux-guidelines.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/data/ux-guidelines.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/data/ux-guidelines.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/core.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/core.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/core.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/design_system.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/design_system.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/design_system.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/reasoning_contract.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/reasoning_contract.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/reasoning_contract.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/search.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/search.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/search.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-api.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-api.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-api.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-catalog.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-catalog.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-catalog.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-existing.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-existing.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-existing.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-metadata.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-metadata.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-metadata.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-overrides.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-overrides.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/google-overrides.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/icons-curated.csv": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/icons-curated.csv for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/icons-curated.csv for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-core.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-core.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-core.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-package.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-package.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-package.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-react-exports.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-react-exports.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-react-exports.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-react-package.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-react-package.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/catalogs/phosphor-react-package.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-baseline.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-baseline.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-baseline.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-cases.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-cases.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-cases.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-thresholds.json": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-thresholds.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/fixtures/relevance-thresholds.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_catalog_refresh.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_catalog_refresh.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_catalog_refresh.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_core.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_core.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_core.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_core_data_quality.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_core_data_quality.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_core_data_quality.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_data_contracts.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_data_contracts.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_data_contracts.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_design_system_mode.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_design_system_mode.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_design_system_mode.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_native_desktop_stack_freshness.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_native_desktop_stack_freshness.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_native_desktop_stack_freshness.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_relevance_evaluator.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_relevance_evaluator.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_relevance_evaluator.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_style_taxonomy.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_style_taxonomy.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_style_taxonomy.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_text_layout_resilience.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_text_layout_resilience.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_text_layout_resilience.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/tests/test_web_stack_freshness.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_web_stack_freshness.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/tests/test_web_stack_freshness.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".claude/skills/ui-ux-pro-max/scripts/validate_data.py": {
-    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/validate_data.py for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .claude/skills/ui-ux-pro-max/scripts/validate_data.py for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".gitignore": {
-    "summary": "Source file .gitignore for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .gitignore for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   ".ngodingpakeaiignore": {
-    "summary": "Source file .ngodingpakeaiignore for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file .ngodingpakeaiignore for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "AGENTS.md": {
-    "summary": "Source file AGENTS.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file AGENTS.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/plans/2026-09-03-backend-database.md": {
-    "summary": "Source file docs/superpowers/plans/2026-09-03-backend-database.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/plans/2026-09-03-backend-database.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/plans/2026-09-03-better-auth.md": {
-    "summary": "Source file docs/superpowers/plans/2026-09-03-better-auth.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/plans/2026-09-03-better-auth.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/plans/2026-09-03-frontend-sync-admin-crud.md": {
-    "summary": "Source file docs/superpowers/plans/2026-09-03-frontend-sync-admin-crud.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/plans/2026-09-03-frontend-sync-admin-crud.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/plans/2026-09-04-payment-gateway.md": {
-    "summary": "Source file docs/superpowers/plans/2026-09-04-payment-gateway.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/plans/2026-09-04-payment-gateway.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/plans/2026-09-04-seller-center-admin.md": {
-    "summary": "Source file docs/superpowers/plans/2026-09-04-seller-center-admin.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/plans/2026-09-04-seller-center-admin.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/plans/2026-09-04-settings-seo-nbusiness.md": {
-    "summary": "Source file docs/superpowers/plans/2026-09-04-settings-seo-nbusiness.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/plans/2026-09-04-settings-seo-nbusiness.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/plans/2026-09-04-shipping-api.md": {
-    "summary": "Source file docs/superpowers/plans/2026-09-04-shipping-api.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/plans/2026-09-04-shipping-api.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/plans/2026-09-04-tokopedia-user-profile.md": {
-    "summary": "Source file docs/superpowers/plans/2026-09-04-tokopedia-user-profile.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/plans/2026-09-04-tokopedia-user-profile.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/specs/2026-09-03-backend-database-design.md": {
-    "summary": "Source file docs/superpowers/specs/2026-09-03-backend-database-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/specs/2026-09-03-backend-database-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/specs/2026-09-03-better-auth-design.md": {
-    "summary": "Source file docs/superpowers/specs/2026-09-03-better-auth-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/specs/2026-09-03-better-auth-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/specs/2026-09-04-payment-gateway-design.md": {
-    "summary": "Source file docs/superpowers/specs/2026-09-04-payment-gateway-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/specs/2026-09-04-payment-gateway-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/specs/2026-09-04-seller-center-admin-design.md": {
-    "summary": "Source file docs/superpowers/specs/2026-09-04-seller-center-admin-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/specs/2026-09-04-seller-center-admin-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/specs/2026-09-04-settings-seo-nbusiness-design.md": {
-    "summary": "Source file docs/superpowers/specs/2026-09-04-settings-seo-nbusiness-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/specs/2026-09-04-settings-seo-nbusiness-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/specs/2026-09-04-shipping-api-design.md": {
-    "summary": "Source file docs/superpowers/specs/2026-09-04-shipping-api-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/specs/2026-09-04-shipping-api-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "docs/superpowers/specs/2026-09-04-tokopedia-user-profile-design.md": {
-    "summary": "Source file docs/superpowers/specs/2026-09-04-tokopedia-user-profile-design.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file docs/superpowers/specs/2026-09-04-tokopedia-user-profile-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "drizzle.config.ts": {
-    "summary": "Source file drizzle.config.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file drizzle.config.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "eslint.config.mjs": {
-    "summary": "Source file eslint.config.mjs for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file eslint.config.mjs for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "next.config.ts": {
-    "summary": "Source file next.config.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file next.config.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "package-lock.json": {
-    "summary": "Source file package-lock.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file package-lock.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "package.json": {
-    "summary": "Source file package.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file package.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "postcss.config.mjs": {
-    "summary": "Source file postcss.config.mjs for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file postcss.config.mjs for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "public/font/Nunito/OFL.txt": {
-    "summary": "Source file public/font/Nunito/OFL.txt for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file public/font/Nunito/OFL.txt for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "public/font/Nunito/README.txt": {
-    "summary": "Source file public/font/Nunito/README.txt for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file public/font/Nunito/README.txt for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "public/font/Quicksand/OFL.txt": {
-    "summary": "Source file public/font/Quicksand/OFL.txt for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file public/font/Quicksand/OFL.txt for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "public/font/Quicksand/README.txt": {
-    "summary": "Source file public/font/Quicksand/README.txt for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file public/font/Quicksand/README.txt for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/admin/layout.tsx": {
-    "summary": "Source file src/app/admin/layout.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/admin/layout.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/admin/pesanan/page.tsx": {
-    "summary": "Source file src/app/admin/pesanan/page.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/admin/pesanan/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/admin/produk/[id]/edit/page.tsx": {
-    "summary": "Source file src/app/admin/produk/[id]/edit/page.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/admin/produk/[id]/edit/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/admin/produk/page.tsx": {
-    "summary": "Source file src/app/admin/produk/page.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/admin/produk/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/admin/produk/tambah/page.tsx": {
-    "summary": "Source file src/app/admin/produk/tambah/page.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/admin/produk/tambah/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/admin/setting/page.tsx": {
-    "summary": "Source file src/app/admin/setting/page.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/admin/setting/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/admin/statistik/page.tsx": {
-    "summary": "Source file src/app/admin/statistik/page.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/admin/statistik/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/admin/orders/route.ts": {
-    "summary": "Source file src/app/api/admin/orders/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/admin/orders/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/admin/products/route.ts": {
-    "summary": "Source file src/app/api/admin/products/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/admin/products/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/admin/settings/route.ts": {
-    "summary": "Source file src/app/api/admin/settings/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/admin/settings/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/admin/settings/test-gateway/route.ts": {
-    "summary": "Source file src/app/api/admin/settings/test-gateway/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/admin/settings/test-gateway/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/admin/stats/route.ts": {
-    "summary": "Source file src/app/api/admin/stats/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/admin/stats/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/admin/upload/route.ts": {
-    "summary": "Source file src/app/api/admin/upload/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/admin/upload/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/auth/[...all]/route.ts": {
-    "summary": "Source file src/app/api/auth/[...all]/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/auth/[...all]/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/cart/[itemId]/route.ts": {
-    "summary": "Source file src/app/api/cart/[itemId]/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/cart/[itemId]/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/cart/route.ts": {
-    "summary": "Source file src/app/api/cart/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/cart/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/categories/route.ts": {
-    "summary": "Source file src/app/api/categories/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/categories/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/checkout/calculate/route.ts": {
-    "summary": "Source file src/app/api/checkout/calculate/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/checkout/calculate/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/checkout/order/route.ts": {
-    "summary": "Source file src/app/api/checkout/order/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/checkout/order/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/orders/[id]/confirm/route.ts": {
-    "summary": "Source file src/app/api/orders/[id]/confirm/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/orders/[id]/confirm/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/orders/[id]/route.ts": {
-    "summary": "Source file src/app/api/orders/[id]/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/orders/[id]/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/orders/route.ts": {
-    "summary": "Source file src/app/api/orders/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/orders/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/payment/methods/route.ts": {
-    "summary": "Source file src/app/api/payment/methods/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/payment/methods/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/products/[slug]/route.ts": {
-    "summary": "Source file src/app/api/products/[slug]/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/products/[slug]/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/products/route.ts": {
-    "summary": "Source file src/app/api/products/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/products/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/shipping/rates/route.ts": {
-    "summary": "Source file src/app/api/shipping/rates/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/shipping/rates/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/user/addresses/[id]/primary/route.ts": {
-    "summary": "Source file src/app/api/user/addresses/[id]/primary/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/user/addresses/[id]/primary/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/user/addresses/[id]/route.ts": {
-    "summary": "Source file src/app/api/user/addresses/[id]/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/user/addresses/[id]/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/user/addresses/route.ts": {
-    "summary": "Source file src/app/api/user/addresses/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/user/addresses/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/user/change-password/route.ts": {
-    "summary": "Source file src/app/api/user/change-password/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/user/change-password/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/user/profile/route.ts": {
-    "summary": "Source file src/app/api/user/profile/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/user/profile/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/api/webhooks/payment/route.ts": {
-    "summary": "Source file src/app/api/webhooks/payment/route.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/api/webhooks/payment/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/auth/login/page.tsx": {
-    "summary": "Source file src/app/auth/login/page.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/auth/login/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/auth/register/page.tsx": {
-    "summary": "Source file src/app/auth/register/page.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/auth/register/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/auth/unauthorized/page.tsx": {
-    "summary": "Source file src/app/auth/unauthorized/page.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/auth/unauthorized/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/globals.css": {
-    "summary": "Source file src/app/globals.css for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/globals.css for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
@@ -1904,153 +2141,172 @@
     ]
   },
   "src/app/robots.ts": {
-    "summary": "Source file src/app/robots.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/robots.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/app/sitemap.ts": {
-    "summary": "Source file src/app/sitemap.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/app/sitemap.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/AdminHeader.tsx": {
-    "summary": "Source file src/components/admin/AdminHeader.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/AdminHeader.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/AdminSidebar.tsx": {
-    "summary": "Source file src/components/admin/AdminSidebar.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/AdminSidebar.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/DeleteProductDialog.tsx": {
-    "summary": "Source file src/components/admin/DeleteProductDialog.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/DeleteProductDialog.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/OrderDetailDrawer.tsx": {
-    "summary": "Source file src/components/admin/OrderDetailDrawer.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/OrderDetailDrawer.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/ProductFormModal.tsx": {
-    "summary": "Source file src/components/admin/ProductFormModal.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/ProductFormModal.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/ProductPhotoUploader.tsx": {
-    "summary": "Source file src/components/admin/ProductPhotoUploader.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/ProductPhotoUploader.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/ProductTable.tsx": {
-    "summary": "Source file src/components/admin/ProductTable.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/ProductTable.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/ShippingDimensionForm.tsx": {
-    "summary": "Source file src/components/admin/ShippingDimensionForm.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/ShippingDimensionForm.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/settings/CouriersSettingsTab.tsx": {
-    "summary": "Source file src/components/admin/settings/CouriersSettingsTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/settings/CouriersSettingsTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/settings/PaymentSettingsTab.tsx": {
-    "summary": "Source file src/components/admin/settings/PaymentSettingsTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/settings/PaymentSettingsTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/settings/ProfileSettingsTab.tsx": {
-    "summary": "Source file src/components/admin/settings/ProfileSettingsTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/settings/ProfileSettingsTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/settings/SeoSettingsTab.tsx": {
-    "summary": "Source file src/components/admin/settings/SeoSettingsTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/settings/SeoSettingsTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/settings/StorageSettingsTab.tsx": {
-    "summary": "Source file src/components/admin/settings/StorageSettingsTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/settings/StorageSettingsTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/admin/settings/WarehouseSettingsTab.tsx": {
-    "summary": "Source file src/components/admin/settings/WarehouseSettingsTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/admin/settings/WarehouseSettingsTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/auth/LoginForm.tsx": {
-    "summary": "Source file src/components/auth/LoginForm.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/auth/LoginForm.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/auth/RegisterForm.tsx": {
-    "summary": "Source file src/components/auth/RegisterForm.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/auth/RegisterForm.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/catalog/CatalogView.tsx": {
-    "summary": "Source file src/components/catalog/CatalogView.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/catalog/CatalogView.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
@@ -2080,9 +2336,10 @@
     ]
   },
   "src/components/home/HomeSections.tsx": {
-    "summary": "Source file src/components/home/HomeSections.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/home/HomeSections.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
@@ -2104,25 +2361,28 @@
     ]
   },
   "src/components/product/ProductCard.tsx": {
-    "summary": "Source file src/components/product/ProductCard.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/product/ProductCard.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/product/ProductDetailView.tsx": {
-    "summary": "Source file src/components/product/ProductDetailView.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/product/ProductDetailView.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/user/AddressModal.tsx": {
-    "summary": "Source file src/components/user/AddressModal.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/user/AddressModal.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
@@ -2136,409 +2396,523 @@
     ]
   },
   "src/components/user/UserSidebar.tsx": {
-    "summary": "Source file src/components/user/UserSidebar.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/user/UserSidebar.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/user/tabs/AddressesTab.tsx": {
-    "summary": "Source file src/components/user/tabs/AddressesTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/user/tabs/AddressesTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/user/tabs/BiodataTab.tsx": {
-    "summary": "Source file src/components/user/tabs/BiodataTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/user/tabs/BiodataTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/user/tabs/OrdersTab.tsx": {
-    "summary": "Source file src/components/user/tabs/OrdersTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/user/tabs/OrdersTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/components/user/tabs/SecurityTab.tsx": {
-    "summary": "Source file src/components/user/tabs/SecurityTab.tsx for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/components/user/tabs/SecurityTab.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/index.ts": {
-    "summary": "Source file src/db/index.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/index.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/0000_acoustic_namorita.sql": {
-    "summary": "Source file src/db/migrations/0000_acoustic_namorita.sql for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/0000_acoustic_namorita.sql for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/0001_blushing_mandrill.sql": {
-    "summary": "Source file src/db/migrations/0001_blushing_mandrill.sql for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/0001_blushing_mandrill.sql for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/0002_sticky_ricochet.sql": {
-    "summary": "Source file src/db/migrations/0002_sticky_ricochet.sql for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/0002_sticky_ricochet.sql for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/0003_gigantic_vector.sql": {
-    "summary": "Source file src/db/migrations/0003_gigantic_vector.sql for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/0003_gigantic_vector.sql for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/0004_strong_wind_dancer.sql": {
-    "summary": "Source file src/db/migrations/0004_strong_wind_dancer.sql for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/0004_strong_wind_dancer.sql for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/0005_sudden_maggott.sql": {
-    "summary": "Source file src/db/migrations/0005_sudden_maggott.sql for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/0005_sudden_maggott.sql for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/meta/0000_snapshot.json": {
-    "summary": "Source file src/db/migrations/meta/0000_snapshot.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/meta/0000_snapshot.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/meta/0001_snapshot.json": {
-    "summary": "Source file src/db/migrations/meta/0001_snapshot.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/meta/0001_snapshot.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/meta/0002_snapshot.json": {
-    "summary": "Source file src/db/migrations/meta/0002_snapshot.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/meta/0002_snapshot.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/meta/0003_snapshot.json": {
-    "summary": "Source file src/db/migrations/meta/0003_snapshot.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/meta/0003_snapshot.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/meta/0004_snapshot.json": {
-    "summary": "Source file src/db/migrations/meta/0004_snapshot.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/meta/0004_snapshot.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/meta/0005_snapshot.json": {
-    "summary": "Source file src/db/migrations/meta/0005_snapshot.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/meta/0005_snapshot.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/migrations/meta/_journal.json": {
-    "summary": "Source file src/db/migrations/meta/_journal.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/migrations/meta/_journal.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/schema/auth.ts": {
-    "summary": "Source file src/db/schema/auth.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/schema/auth.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/schema/carts.ts": {
-    "summary": "Source file src/db/schema/carts.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/schema/carts.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/schema/categories.ts": {
-    "summary": "Source file src/db/schema/categories.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/schema/categories.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/schema/index.ts": {
-    "summary": "Source file src/db/schema/index.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/schema/index.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/schema/orders.ts": {
-    "summary": "Source file src/db/schema/orders.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/schema/orders.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/schema/products.ts": {
-    "summary": "Source file src/db/schema/products.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/schema/products.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/schema/settings.ts": {
-    "summary": "Source file src/db/schema/settings.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/schema/settings.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/schema/users.ts": {
-    "summary": "Source file src/db/schema/users.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/schema/users.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/db/seed.ts": {
-    "summary": "Source file src/db/seed.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/db/seed.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/lib/auth-client.ts": {
-    "summary": "Source file src/lib/auth-client.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/lib/auth-client.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/lib/mappers.ts": {
-    "summary": "Source file src/lib/mappers.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/lib/mappers.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/middleware.ts": {
-    "summary": "Source file src/middleware.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/middleware.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/scripts/set-admin.ts": {
-    "summary": "Source file src/scripts/set-admin.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/scripts/set-admin.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/auth.ts": {
-    "summary": "Source file src/server/auth.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/auth.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/services/admin.service.ts": {
-    "summary": "Source file src/server/services/admin.service.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/services/admin.service.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/services/cart.service.ts": {
-    "summary": "Source file src/server/services/cart.service.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/services/cart.service.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/services/checkout.service.ts": {
-    "summary": "Source file src/server/services/checkout.service.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/services/checkout.service.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/services/order.service.ts": {
-    "summary": "Source file src/server/services/order.service.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/services/order.service.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/services/payment.service.ts": {
-    "summary": "Source file src/server/services/payment.service.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/services/payment.service.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/services/product.service.ts": {
-    "summary": "Source file src/server/services/product.service.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/services/product.service.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/services/shipping.service.ts": {
-    "summary": "Source file src/server/services/shipping.service.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/services/shipping.service.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/services/storage.service.ts": {
-    "summary": "Source file src/server/services/storage.service.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/services/storage.service.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/services/user.service.ts": {
-    "summary": "Source file src/server/services/user.service.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/services/user.service.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/validators/admin.schema.ts": {
-    "summary": "Source file src/server/validators/admin.schema.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/validators/admin.schema.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/validators/cart.schema.ts": {
-    "summary": "Source file src/server/validators/cart.schema.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/validators/cart.schema.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/validators/checkout.schema.ts": {
-    "summary": "Source file src/server/validators/checkout.schema.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/validators/checkout.schema.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/validators/order.schema.ts": {
-    "summary": "Source file src/server/validators/order.schema.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/validators/order.schema.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/validators/product.schema.ts": {
-    "summary": "Source file src/server/validators/product.schema.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/validators/product.schema.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/validators/shipping.schema.ts": {
-    "summary": "Source file src/server/validators/shipping.schema.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/validators/shipping.schema.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "src/server/validators/user.schema.ts": {
-    "summary": "Source file src/server/validators/user.schema.ts for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file src/server/validators/user.schema.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "toko-kebutuhan-anak-PRD.md": {
-    "summary": "Source file toko-kebutuhan-anak-PRD.md for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file toko-kebutuhan-anak-PRD.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
   },
   "tsconfig.json": {
-    "summary": "Source file tsconfig.json for NBusiness eCommerce app with Claymorphism design.",
+    "summary": "Source file tsconfig.json for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
     "tags": [
       "ecommerce",
+      "flash-sale",
+      "nbusiness",
+      "ui"
+    ]
+  },
+  "docs/superpowers/plans/2026-09-05-flash-sale-and-catalog-fix.md": {
+    "summary": "Source file docs/superpowers/plans/2026-09-05-flash-sale-and-catalog-fix.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
+    "tags": [
+      "ecommerce",
+      "flash-sale",
+      "nbusiness",
+      "ui"
+    ]
+  },
+  "docs/superpowers/specs/2026-09-05-flash-sale-catalog-design.md": {
+    "summary": "Source file docs/superpowers/specs/2026-09-05-flash-sale-catalog-design.md for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
+    "tags": [
+      "ecommerce",
+      "flash-sale",
+      "nbusiness",
+      "ui"
+    ]
+  },
+  "src/app/admin/flash-sale/page.tsx": {
+    "summary": "Source file src/app/admin/flash-sale/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
+    "tags": [
+      "ecommerce",
+      "flash-sale",
+      "nbusiness",
+      "ui"
+    ]
+  },
+  "src/app/api/admin/flash-sale/route.ts": {
+    "summary": "Source file src/app/api/admin/flash-sale/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
+    "tags": [
+      "ecommerce",
+      "flash-sale",
+      "nbusiness",
+      "ui"
+    ]
+  },
+  "src/app/api/admin/flash-sale/settings/route.ts": {
+    "summary": "Source file src/app/api/admin/flash-sale/settings/route.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
+    "tags": [
+      "ecommerce",
+      "flash-sale",
+      "nbusiness",
+      "ui"
+    ]
+  },
+  "src/app/page.tsx": {
+    "summary": "Source file src/app/page.tsx for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
+    "tags": [
+      "ecommerce",
+      "flash-sale",
+      "nbusiness",
+      "ui"
+    ]
+  },
+  "src/types/product.ts": {
+    "summary": "Source file src/types/product.ts for NBusiness eCommerce app with Flash Sale system and Claymorphism design.",
+    "tags": [
+      "ecommerce",
+      "flash-sale",
       "nbusiness",
       "ui"
     ]
