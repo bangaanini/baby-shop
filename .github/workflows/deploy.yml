@@ -3,7 +3,7 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - master # Atau main sesuai branch utama Anda
+      - master
 
 jobs:
   deploy:
@@ -11,47 +11,58 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
       - name: Executing Remote SSH Commands on VPS
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          passphrase: ${{ secrets.VPS_PASSPHRASE }} # Opsional jika private key memiliki passphrase
-          password: ${{ secrets.VPS_PASSWORD }} # Gunakan jika login VPS memakai password bukan SSH key
+          password: ${{ secrets.VPS_PASSWORD }}
           port: ${{ secrets.VPS_PORT || 22 }}
           script_stop: true
           script: |
             echo "🚀 Memulai proses deployment otomatis di VPS..."
 
-            # 1. Masuk ke direktori project di VPS
-            cd /home/aan/baby-shop || cd ~/baby-shop || cd /var/www/baby-shop
-
-            # Pastikan NVM / Node.js terbaca di SSH non-interactive session
+            # 1. Pastikan PATH dan NVM terbaca
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            export PATH=$PATH:/usr/local/bin:/usr/bin:/bin:$HOME/.nvm/versions/node/$(ls $HOME/.nvm/versions/node 2>/dev/null | tail -n 1)/bin
 
-            # 2. Tarik kode terbaru dari GitHub
+            # 2. Deteksi direktori project di VPS
+            if [ -d "$HOME/baby-shop" ]; then
+              cd "$HOME/baby-shop"
+            elif [ -d "/root/baby-shop" ]; then
+              cd "/root/baby-shop"
+            elif [ -d "/home/aan/baby-shop" ]; then
+              cd "/home/aan/baby-shop"
+            elif [ -d "/var/www/baby-shop" ]; then
+              cd "/var/www/baby-shop"
+            else
+              echo "❌ Direktori baby-shop tidak ditemukan di VPS!"
+              exit 1
+            fi
+
+            echo "📂 Direktori aktif: $(pwd)"
+
+            # 3. Tarik kode terbaru dari GitHub (bersihkan perubahan lokal jika ada)
             echo "📥 Menarik pembaruan dari Git..."
-            git pull origin master
+            git fetch origin master
+            git reset --hard origin/master
 
-            # 3. Install dependencies jika ada paket baru
+            # 4. Install dependencies jika ada paket baru
             echo "📦 Menginstall dependencies..."
             npm install --prefer-offline --no-audit
 
-            # 4. Sinkronisasi skema database PostgreSQL
+            # 5. Sinkronisasi skema database PostgreSQL
             echo "🗄️ Sinkronisasi tabel database (db:push)..."
             npm run db:push
 
-            # 5. Build aplikasi Next.js untuk produksi
+            # 6. Build aplikasi Next.js untuk produksi
             echo "🏗️ Membangun aplikasi Next.js (npm run build)..."
             npm run build
 
-            # 6. Restart PM2 agar perubahan langsung aktif
+            # 7. Restart PM2 agar perubahan langsung aktif
             echo "♻️ Me-restart proses PM2 nbusiness..."
-            pm2 restart nbusiness
+            pm2 restart nbusiness || pm2 restart all || pm2 start npm --name "nbusiness" -- start
 
             echo "✅ Deployment selesai! Website NBusiness telah aktif dengan versi terbaru."
