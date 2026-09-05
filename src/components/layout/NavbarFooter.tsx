@@ -503,9 +503,11 @@ export function Footer() {
         <div className="pt-8 border-t border-slate-700/80 flex flex-col sm:flex-row items-center justify-between text-xs font-body text-slate-400 gap-4">
           <p>© {new Date().getFullYear()} NBusiness. Hak Cipta Dilindungi.</p>
           <div className="flex items-center gap-4 text-xs">
-            <Link href="/katalog" className="hover:text-white transition-colors">Syarat & Ketentuan</Link>
+            <Link href="/syarat-ketentuan" className="hover:text-white transition-colors">Syarat & Ketentuan</Link>
             <span>•</span>
-            <Link href="/katalog" className="hover:text-white transition-colors">Kebijakan Privasi</Link>
+            <Link href="/kebijakan-privasi" className="hover:text-white transition-colors">Kebijakan Privasi</Link>
+            <span>•</span>
+            <Link href="/kebijakan-pengembalian" className="hover:text-white transition-colors">Kebijakan Pengembalian</Link>
             <span>•</span>
             <Link href="/admin" className="hover:text-[#FF9F43] transition-colors">Seller Center</Link>
           </div>
