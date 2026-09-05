@@ -1,14 +1,43 @@
 import crypto from 'crypto';
-import { eq, or } from 'drizzle-orm';
+import { eq, or, sql } from 'drizzle-orm';
 import { db } from '@/db';
 import {
   storeSettingsTable,
   StoreSettings,
   NewStoreSettings,
 } from '@/db/schema/settings';
-import { ordersTable, trackingHistoryTable } from '@/db/schema/orders';
+import { ordersTable, trackingHistoryTable, orderItemsTable } from '@/db/schema/orders';
+import { productsTable, productVariantsTable } from '@/db/schema/products';
 import { MOCK_PAYMENT_METHODS } from '@/data/mock-checkout';
 import { PaymentMethod } from '@/types/checkout';
+
+/**
+ * Inline stock-restore helper for payment webhooks (duplicated here to avoid circular
+ * dependency on admin.service.ts — keep behavior identical).
+ */
+async function restoreStockInline(tx: any, orderId: string): Promise<void> {
+  const items = await tx.select().from(orderItemsTable).where(eq(orderItemsTable.order_id, orderId));
+  for (const it of items) {
+    const variantId = (it as any).variant_id as string | null | undefined;
+    const productId = (it as any).product_id as string | null | undefined;
+    const qty: number = (it as any).quantity;
+    if (variantId) {
+      await tx
+        .update(productVariantsTable)
+        .set({ stock: sql`${productVariantsTable.stock} + ${qty}` })
+        .where(eq(productVariantsTable.id, variantId));
+    } else if (productId) {
+      await tx
+        .update(productsTable)
+        .set({
+          stock: sql`${productsTable.stock} + ${qty}`,
+          sold_count: sql`GREATEST(0, ${productsTable.sold_count} - ${qty})`,
+          updated_at: new Date(),
+        })
+        .where(eq(productsTable.id, productId));
+    }
+  }
+}
 
 export interface CreatePaymentTransactionParams {
   orderId: string;
@@ -630,20 +659,23 @@ export async function handleWebhookNotification(
     }
 
     if (isFailed) {
-      await db
-        .update(ordersTable)
-        .set({
-          status: 'dibatalkan',
-          updated_at: now,
-        })
-        .where(eq(ordersTable.id, existingOrder.id));
+      await db.transaction(async (tx) => {
+        await restoreStockInline(tx, existingOrder.id);
+        await tx
+          .update(ordersTable)
+          .set({
+            status: 'dibatalkan',
+            updated_at: now,
+          })
+          .where(eq(ordersTable.id, existingOrder.id));
 
-      await db.insert(trackingHistoryTable).values({
-        order_id: existingOrder.id,
-        status_title: 'Pembayaran Dibatalkan / Kedaluwarsa',
-        description: `Transaksi pembayaran dibatalkan atau kedaluwarsa oleh sistem payment gateway (${transactionStatus}).`,
-        location: 'Midtrans Payment Gateway',
-        occurred_at: now,
+        await tx.insert(trackingHistoryTable).values({
+          order_id: existingOrder.id,
+          status_title: 'Pembayaran Dibatalkan / Kedaluwarsa',
+          description: `Transaksi pembayaran dibatalkan atau kedaluwarsa oleh sistem payment gateway (${transactionStatus}).`,
+          location: 'Midtrans Payment Gateway',
+          occurred_at: now,
+        });
       });
 
       return {
@@ -748,20 +780,23 @@ export async function handleWebhookNotification(
     }
 
     if (isFailed) {
-      await db
-        .update(ordersTable)
-        .set({
-          status: 'dibatalkan',
-          updated_at: now,
-        })
-        .where(eq(ordersTable.id, existingOrder.id));
+      await db.transaction(async (tx) => {
+        await restoreStockInline(tx, existingOrder.id);
+        await tx
+          .update(ordersTable)
+          .set({
+            status: 'dibatalkan',
+            updated_at: now,
+          })
+          .where(eq(ordersTable.id, existingOrder.id));
 
-      await db.insert(trackingHistoryTable).values({
-        order_id: existingOrder.id,
-        status_title: 'Invoice Xendit Kedaluwarsa',
-        description: 'Batas waktu pembayaran invoice Xendit telah berakhir.',
-        location: 'Xendit Payment Gateway',
-        occurred_at: now,
+        await tx.insert(trackingHistoryTable).values({
+          order_id: existingOrder.id,
+          status_title: 'Invoice Xendit Kedaluwarsa',
+          description: 'Batas waktu pembayaran invoice Xendit telah berakhir.',
+          location: 'Xendit Payment Gateway',
+          occurred_at: now,
+        });
       });
 
       return {

@@ -21,6 +21,33 @@ import {
   DetailedOrder,
 } from './order.service';
 
+/**
+ * Restore stock for every line-item of an order. Handles both variant and non-variant
+ * lines. Must be called inside a db.transaction(tx => ...) context so all writes are atomic.
+ * Exported so sibling services (e.g. payment.service) can reuse without circular imports —
+ * callers may also inline the same loop.
+ */
+export async function restoreStockForOrder(tx: any, orderId: string): Promise<void> {
+  const items = await tx.select().from(orderItemsTable).where(eq(orderItemsTable.order_id, orderId));
+  for (const it of items) {
+    if ((it as any).variant_id) {
+      await tx
+        .update(productVariantsTable)
+        .set({ stock: sql`${productVariantsTable.stock} + ${(it as any).quantity}` })
+        .where(eq(productVariantsTable.id, (it as any).variant_id));
+    } else if ((it as any).product_id) {
+      await tx
+        .update(productsTable)
+        .set({
+          stock: sql`${productsTable.stock} + ${(it as any).quantity}`,
+          sold_count: sql`GREATEST(0, ${productsTable.sold_count} - ${(it as any).quantity})`,
+          updated_at: new Date(),
+        })
+        .where(eq(productsTable.id, (it as any).product_id));
+    }
+  }
+}
+
 function isValidUUID(str: string): boolean {
   return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 }
@@ -484,47 +511,14 @@ export async function updateOrderStatus(
     ? (notes && notes.trim() ? notes.trim() : null)
     : existingOrder.notes;
 
-  // If order is cancelled and was not already cancelled, restore inventory
-  if (status === 'dibatalkan' && existingOrder.status !== 'dibatalkan') {
-    const orderItems = await db.query.orderItemsTable.findMany({
-      where: eq(orderItemsTable.order_id, existingOrder.id),
-    });
-
-    for (const item of orderItems) {
-      if (item.product_id) {
-        await db
-          .update(productsTable)
-          .set({
-            stock: sql`${productsTable.stock} + ${item.quantity}`,
-            sold_count: sql`GREATEST(0, ${productsTable.sold_count} - ${item.quantity})`,
-            updated_at: now,
-          })
-          .where(eq(productsTable.id, item.product_id));
-      }
-
-      if (item.variant_id) {
-        await db
-          .update(productVariantsTable)
-          .set({
-            stock: sql`${productVariantsTable.stock} + ${item.quantity}`,
-          })
-          .where(eq(productVariantsTable.id, item.variant_id));
-      }
-    }
+  // Idempotency guard: don't double-restore stock if already cancelled.
+  if (status === 'dibatalkan' && existingOrder.status === 'dibatalkan') {
+    const existing = await getOrderByIdOrInvoice(existingOrder.id);
+    if (!existing) throw new Error('Gagal memuat data pesanan setelah diperbarui');
+    return existing;
   }
 
-  // Update order status and details
-  await db
-    .update(ordersTable)
-    .set({
-      status,
-      tracking_number: effectiveTrackingNumber,
-      notes: effectiveNotes,
-      updated_at: now,
-    })
-    .where(eq(ordersTable.id, existingOrder.id));
-
-  // Add tracking events based on status
+  // Resolve tracking event upfront so it can be inserted inside the transaction
   let trackingEvent: {
     status_title: string;
     description: string;
@@ -571,15 +565,33 @@ export async function updateOrderStatus(
       break;
   }
 
-  if (trackingEvent) {
-    await db.insert(trackingHistoryTable).values({
-      order_id: existingOrder.id,
-      status_title: trackingEvent.status_title,
-      description: trackingEvent.description,
-      location: trackingEvent.location,
-      occurred_at: now,
-    });
-  }
+  // Wrap cancellation stock-restore + status update + tracking in one transaction.
+  // Non-cancellation status updates are also done inside the transaction for consistency.
+  await db.transaction(async (tx) => {
+    if (status === 'dibatalkan') {
+      await restoreStockForOrder(tx, existingOrder.id);
+    }
+
+    await tx
+      .update(ordersTable)
+      .set({
+        status,
+        tracking_number: effectiveTrackingNumber,
+        notes: effectiveNotes,
+        updated_at: now,
+      })
+      .where(eq(ordersTable.id, existingOrder.id));
+
+    if (trackingEvent) {
+      await tx.insert(trackingHistoryTable).values({
+        order_id: existingOrder.id,
+        status_title: trackingEvent!.status_title,
+        description: trackingEvent!.description,
+        location: trackingEvent!.location,
+        occurred_at: now,
+      });
+    }
+  });
 
   const updated = await getOrderByIdOrInvoice(existingOrder.id);
   if (!updated) {

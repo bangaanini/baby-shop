@@ -505,8 +505,12 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
 
     const itemSnapshots: ValidatedItemSnapshot[] = [];
 
-    // 1. Stock validation and stock decrement per item
+    // 1. Stock validation and stock decrement per item (fully transactional)
     for (const item of items) {
+      if (!item.quantity || item.quantity < 1) {
+        throw new Error(`Jumlah produk untuk "${item.productId}" minimal 1`);
+      }
+
       if (!isValidUUID(item.productId)) {
         throw new Error(`Product ID tidak valid: ${item.productId}`);
       }
@@ -554,7 +558,6 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
           );
         }
 
-        // Decrement variant stock
         await tx
           .update(productVariantsTable)
           .set({
@@ -565,23 +568,22 @@ export async function createOrder(payload: CreateOrderInput): Promise<CreatedOrd
         variantColor = variant.color;
         variantSize = variant.size;
         unitPrice = baseProductPrice + (variant.additional_price || 0);
-      }
+      } else {
+        if (product.stock < item.quantity) {
+          throw new Error(
+            `Stok produk "${product.name}" tidak mencukupi (tersedia: ${product.stock}, diminta: ${item.quantity})`
+          );
+        }
 
-      if (product.stock < item.quantity) {
-        throw new Error(
-          `Stok produk "${product.name}" tidak mencukupi (tersedia: ${product.stock}, diminta: ${item.quantity})`
-        );
+        await tx
+          .update(productsTable)
+          .set({
+            stock: sql`${productsTable.stock} - ${item.quantity}`,
+            sold_count: sql`${productsTable.sold_count} + ${item.quantity}`,
+            updated_at: new Date(),
+          })
+          .where(eq(productsTable.id, product.id));
       }
-
-      // Decrement product stock and increment sold count
-      await tx
-        .update(productsTable)
-        .set({
-          stock: sql`${productsTable.stock} - ${item.quantity}`,
-          sold_count: sql`${productsTable.sold_count} + ${item.quantity}`,
-          updated_at: new Date(),
-        })
-        .where(eq(productsTable.id, product.id));
 
       const unitWeight =
         product.weight_gram && product.weight_gram > 0
