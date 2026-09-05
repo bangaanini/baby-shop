@@ -16,11 +16,15 @@ export async function GET() {
         },
         store: {
           name: settings.store_name || 'NBusiness',
+          tagline: settings.store_tagline || 'Kebutuhan & Mainan Anak',
+          logoUrl: settings.store_logo || null,
+          faviconUrl: settings.store_favicon || null,
+          headerLogoDisplay: settings.header_logo_display || 'both',
           phone: settings.store_phone || '0812-3456-7890',
           email: settings.store_email || 'halo@babykids.id',
           address: settings.store_address,
-          city: settings.store_city,
-          postalCode: settings.store_postal_code,
+          city: settings.store_city || 'Jakarta Selatan',
+          postalCode: settings.store_postal_code || '12160',
         },
       },
     });

@@ -106,6 +106,9 @@ export async function getStoreSettings(): Promise<StoreSettings> {
         store_description:
           existing.store_description ||
           'Pusat belanja perlengkapan bayi, pakaian anak, dan mainan edukasi terstandar SNI di NBusiness.',
+        store_logo: existing.store_logo || null,
+        store_favicon: existing.store_favicon || null,
+        header_logo_display: existing.header_logo_display || 'both',
         seo_meta_title:
           existing.seo_meta_title ||
           'NBusiness — Toko Kebutuhan Anak & Perlengkapan Terlengkap',
@@ -162,6 +165,9 @@ export async function getStoreSettings(): Promise<StoreSettings> {
       store_tagline: 'Marketplace & Toko Kebutuhan Anak Terpercaya',
       store_description:
         'Pusat belanja perlengkapan bayi, pakaian anak, dan mainan edukasi terstandar SNI di NBusiness.',
+      store_logo: null,
+      store_favicon: null,
+      header_logo_display: 'both',
       store_email: 'halo@babykids.id',
       store_phone: '0812-3456-7890',
       store_address: 'Jl. Melati Indah No. 42, RT 03 / RW 07, Kebayoran Baru',
@@ -222,6 +228,9 @@ export async function getStoreSettings(): Promise<StoreSettings> {
       store_tagline: 'Marketplace & Toko Kebutuhan Anak Terpercaya',
       store_description:
         'Pusat belanja perlengkapan bayi, pakaian anak, dan mainan edukasi terstandar SNI di NBusiness.',
+      store_logo: null,
+      store_favicon: null,
+      header_logo_display: 'both',
       store_email: 'halo@babykids.id',
       store_phone: '0812-3456-7890',
       store_address: 'Jl. Melati Indah No. 42, RT 03 / RW 07, Kebayoran Baru',

@@ -53,6 +53,11 @@ export async function GET(request: NextRequest) {
           storeName: storeSettings.store_name,
           tagline: storeSettings.store_tagline,
           description: storeSettings.store_description,
+          logo: storeSettings.store_logo,
+          storeLogo: storeSettings.store_logo,
+          favicon: storeSettings.store_favicon,
+          storeFavicon: storeSettings.store_favicon,
+          headerLogoDisplay: storeSettings.header_logo_display || 'both',
           email: storeSettings.store_email,
           phone: storeSettings.store_phone,
           address: storeSettings.store_address,
@@ -149,11 +154,23 @@ export async function POST(request: NextRequest) {
 
     if (body.profile) {
       if (body.profile.storeName !== undefined) updatePayload.store_name = body.profile.storeName;
+      if (body.profile.store_name !== undefined) updatePayload.store_name = body.profile.store_name;
       if (body.profile.tagline !== undefined) updatePayload.store_tagline = body.profile.tagline;
+      if (body.profile.store_tagline !== undefined) updatePayload.store_tagline = body.profile.store_tagline;
       if (body.profile.storeDescription !== undefined)
         updatePayload.store_description = body.profile.storeDescription;
       if (body.profile.description !== undefined)
         updatePayload.store_description = body.profile.description;
+      if (body.profile.store_description !== undefined)
+        updatePayload.store_description = body.profile.store_description;
+      if (body.profile.logo !== undefined) updatePayload.store_logo = body.profile.logo || null;
+      if (body.profile.storeLogo !== undefined) updatePayload.store_logo = body.profile.storeLogo || null;
+      if (body.profile.store_logo !== undefined) updatePayload.store_logo = body.profile.store_logo || null;
+      if (body.profile.favicon !== undefined) updatePayload.store_favicon = body.profile.favicon || null;
+      if (body.profile.storeFavicon !== undefined) updatePayload.store_favicon = body.profile.storeFavicon || null;
+      if (body.profile.store_favicon !== undefined) updatePayload.store_favicon = body.profile.store_favicon || null;
+      if (body.profile.headerLogoDisplay !== undefined) updatePayload.header_logo_display = body.profile.headerLogoDisplay;
+      if (body.profile.header_logo_display !== undefined) updatePayload.header_logo_display = body.profile.header_logo_display;
       if (body.profile.customerServiceEmail !== undefined)
         updatePayload.store_email = body.profile.customerServiceEmail;
       if (body.profile.whatsappNumber !== undefined)
@@ -224,6 +241,9 @@ export async function POST(request: NextRequest) {
       'store_name',
       'store_tagline',
       'store_description',
+      'store_logo',
+      'store_favicon',
+      'header_logo_display',
       'store_email',
       'store_phone',
       'store_address',

@@ -30,6 +30,17 @@ export function Navbar() {
     text: string;
     link: string | null;
   } | null>(null);
+  const [storeInfo, setStoreInfo] = useState<{
+    name: string;
+    tagline: string;
+    logoUrl: string | null;
+    headerLogoDisplay: 'both' | 'logo_only';
+  }>({
+    name: 'NBusiness',
+    tagline: 'Kebutuhan & Mainan Anak',
+    logoUrl: null,
+    headerLogoDisplay: 'both',
+  });
   const userMenuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -74,27 +85,37 @@ export function Navbar() {
     };
   }, [fetchCartCount]);
 
-  // Fetch announcement bar from public endpoint (no auth required)
+  // Fetch announcement bar and store profile from public endpoint
   useEffect(() => {
     let cancelled = false;
-    async function loadAnnouncement() {
+    async function loadPublicSettings() {
       try {
         const res = await fetch('/api/settings/public');
         if (res.ok) {
           const json = await res.json();
-          if (!cancelled && json.success && json.data?.announcement) {
-            setAnnouncement({
-              enabled: json.data.announcement.enabled ?? true,
-              text: json.data.announcement.text ?? '',
-              link: json.data.announcement.link ?? null,
-            });
+          if (!cancelled && json.success) {
+            if (json.data?.announcement) {
+              setAnnouncement({
+                enabled: json.data.announcement.enabled ?? true,
+                text: json.data.announcement.text ?? '',
+                link: json.data.announcement.link ?? null,
+              });
+            }
+            if (json.data?.store) {
+              setStoreInfo({
+                name: json.data.store.name || 'NBusiness',
+                tagline: json.data.store.tagline || 'Kebutuhan & Mainan Anak',
+                logoUrl: json.data.store.logoUrl || null,
+                headerLogoDisplay: (json.data.store.headerLogoDisplay as 'both' | 'logo_only') || 'both',
+              });
+            }
           }
         }
       } catch {
-        // Keep banner hidden on network failure; fallback to default text
+        // Keep fallback values
       }
     }
-    loadAnnouncement();
+    loadPublicSettings();
     return () => {
       cancelled = true;
     };
@@ -190,17 +211,36 @@ export function Navbar() {
         <div className="flex items-center justify-between h-16 sm:h-20 gap-3 sm:gap-6">
           {/* Brand Logo - Playful Claymorphic Block */}
           <Link href="/" className="flex items-center gap-3 shrink-0 group">
-            <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#FF9F43] to-[#EE8A2B] text-white flex items-center justify-center font-heading font-black text-2xl border-2 border-[#F38C26] shadow-[0_6px_14px_rgba(255,159,67,0.35),inset_0_2px_4px_rgba(255,255,255,0.6)] group-hover:scale-105 group-hover:rotate-2 transition-all duration-200">
-              <Store className="w-6 h-6 drop-shadow-xs" />
-            </div>
-            <div>
-              <span className="text-2xl sm:text-3xl font-heading font-black text-[#D96B00] tracking-tight group-hover:text-[#FF9F43] transition-colors drop-shadow-xs">
-                NBusiness
-              </span>
-              <span className="text-[11px] block font-body font-semibold text-slate-500 -mt-1">
-                Kebutuhan & Mainan Anak
-              </span>
-            </div>
+            {storeInfo.logoUrl ? (
+              <div
+                className={`${
+                  storeInfo.headerLogoDisplay === 'logo_only'
+                    ? 'h-11 sm:h-14 w-auto'
+                    : 'w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white border-2 border-[#FFE8D6] shadow-[0_4px_12px_rgba(255,159,67,0.12)] p-1'
+                } flex items-center justify-center overflow-hidden group-hover:scale-105 transition-all`}
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={storeInfo.logoUrl}
+                  alt={storeInfo.name}
+                  className="max-h-full max-w-full object-contain"
+                />
+              </div>
+            ) : (
+              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#FF9F43] to-[#EE8A2B] text-white flex items-center justify-center font-heading font-black text-2xl border-2 border-[#F38C26] shadow-[0_6px_14px_rgba(255,159,67,0.35),inset_0_2px_4px_rgba(255,255,255,0.6)] group-hover:scale-105 group-hover:rotate-2 transition-all duration-200">
+                <Store className="w-6 h-6 drop-shadow-xs" />
+              </div>
+            )}
+            {storeInfo.headerLogoDisplay !== 'logo_only' && (
+              <div>
+                <span className="text-2xl sm:text-3xl font-heading font-black text-[#D96B00] tracking-tight group-hover:text-[#FF9F43] transition-colors drop-shadow-xs">
+                  {storeInfo.name}
+                </span>
+                <span className="text-[11px] block font-body font-semibold text-slate-500 -mt-1">
+                  {storeInfo.tagline}
+                </span>
+              </div>
+            )}
           </Link>
 
           {/* Search Bar ala Marketplace - Clay Rounded Pill */}

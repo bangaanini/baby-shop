@@ -5,6 +5,9 @@ export const storeSettingsTable = pgTable('store_settings', {
   store_name: varchar('store_name', { length: 150 }).default('NBusiness').notNull(),
   store_tagline: varchar('store_tagline', { length: 255 }).default('Marketplace & Toko Kebutuhan Anak Terpercaya'),
   store_description: text('store_description').default('Pusat belanja perlengkapan bayi, pakaian anak, dan mainan edukasi terstandar SNI di NBusiness.'),
+  store_logo: text('store_logo'),
+  store_favicon: text('store_favicon'),
+  header_logo_display: varchar('header_logo_display', { length: 20 }).default('both').notNull(), // 'both' | 'logo_only'
   store_email: varchar('store_email', { length: 255 }).default('halo@babykids.id'),
   store_phone: varchar('store_phone', { length: 50 }).default('0812-3456-7890'),
   store_address: text('store_address').default('Jl. Melati Indah No. 42, RT 03 / RW 07, Kebayoran Baru'),
