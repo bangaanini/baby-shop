@@ -698,34 +698,34 @@ export function CheckoutStepper() {
   if (isOrderPlaced) {
     return (
       <div className="max-w-3xl mx-auto py-8">
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-rose-100 shadow-lg text-center">
-          <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">
+        <div className="bg-white rounded-3xl p-6 sm:p-10 border-2 border-[#FFE8D6] shadow-[0_16px_36px_rgba(255,159,67,0.14),inset_0_2px_4px_rgba(255,255,255,0.95)] text-center">
+          <div className="w-16 h-16 bg-[#FFF2E5] text-[#D96B00] border-2 border-[#FFD4B2] rounded-3xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-xs">
             🎉
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-800 mb-2">
+          <h1 className="text-2xl sm:text-3xl font-heading font-black text-slate-800 mb-2">
             Pesanan Berhasil Dibuat!
           </h1>
-          <p className="text-sm text-slate-500 max-w-md mx-auto mb-6">
+          <p className="text-sm font-body font-medium text-slate-500 max-w-md mx-auto mb-6">
             Terima kasih telah berbelanja di NBusiness. Pesanan Anda akan segera kami kemas dan kirimkan ke tujuan setelah pembayaran diverifikasi.
           </p>
 
           {/* Payment Gateway Actions if pending */}
           {paymentTx && (
-            <div className="mb-6 p-5 rounded-2xl bg-gradient-to-r from-rose-50/70 to-purple-50/70 border border-rose-100 max-w-md mx-auto text-left shadow-xs">
+            <div className="mb-6 p-5 rounded-3xl bg-[#FFF8F0] border-2 border-[#FFE8D6] max-w-md mx-auto text-left shadow-xs">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-bold text-slate-700">Gateway Pembayaran:</span>
+                <span className="text-xs font-heading font-bold text-slate-700">Gateway Pembayaran:</span>
                 {paymentTx.provider === 'midtrans' && (
-                  <span className="text-xs font-bold text-blue-700 bg-blue-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-blue-200">
+                  <span className="text-xs font-heading font-bold text-blue-700 bg-blue-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-blue-200">
                     <span>🔵</span> Midtrans Snap
                   </span>
                 )}
                 {paymentTx.provider === 'xendit' && (
-                  <span className="text-xs font-bold text-purple-700 bg-purple-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-purple-200">
+                  <span className="text-xs font-heading font-bold text-purple-700 bg-purple-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-purple-200">
                     <span>🟣</span> Xendit Invoice
                   </span>
                 )}
                 {(paymentTx.isSimulator || paymentTx.provider === 'simulator') && (
-                  <span className="text-xs font-bold text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-amber-200">
+                  <span className="text-xs font-heading font-bold text-[#D96B00] bg-[#FFF2E5] px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-[#FFD4B2]">
                     <span>🟡</span> Simulator
                   </span>
                 )}
@@ -736,12 +736,12 @@ export function CheckoutStepper() {
                   <button
                     type="button"
                     onClick={() => handleOpenMidtransSnap()}
-                    className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                    className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
                   >
                     <span>Buka Popup Pembayaran Midtrans Snap</span>
                     <Sparkles className="w-3.5 h-3.5" />
                   </button>
-                  <p className="text-[11px] text-slate-500 text-center">
+                  <p className="text-[11px] font-body text-slate-500 text-center">
                     Klik tombol di atas jika jendela pembayaran Midtrans tidak muncul otomatis.
                   </p>
                 </div>
@@ -753,12 +753,12 @@ export function CheckoutStepper() {
                     href={paymentTx.invoiceUrl || paymentTx.redirectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                    className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-heading font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
                   >
                     <span>Buka Halaman Pembayaran Xendit</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
-                  <p className="text-[11px] text-slate-500 text-center">
+                  <p className="text-[11px] font-body text-slate-500 text-center">
                     Anda akan dialihkan ke halaman tagihan resmi Xendit XenInvoice.
                   </p>
                 </div>
@@ -768,12 +768,12 @@ export function CheckoutStepper() {
                 <div className="space-y-2">
                   <Link
                     href={paymentTx.redirectUrl || `/user/pesanan?invoice=${orderCode}&simulated=true`}
-                    className="w-full py-3 px-4 bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                    className="w-full py-3 px-4 clay-btn-orange text-white font-heading font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
                   >
                     <span>Simulasikan Pembayaran Berhasil</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
-                  <p className="text-[11px] text-slate-500 text-center">
+                  <p className="text-[11px] font-body text-slate-500 text-center">
                     Mode simulasi aktif untuk menyelesaikan pembayaran secara instan tanpa gateway nyata.
                   </p>
                 </div>
@@ -782,13 +782,13 @@ export function CheckoutStepper() {
           )}
 
           {/* Kode Pesanan Card */}
-          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-4 sm:p-5 max-w-md mx-auto mb-8 text-left">
+          <div className="bg-[#FFF8F0] border-2 border-[#FFE8D6] rounded-3xl p-5 sm:p-6 max-w-md mx-auto mb-8 text-left">
             <div className="flex items-center justify-between mb-2">
-              <span className="text-xs text-slate-500 font-medium">Nomor Invoice Pesanan:</span>
+              <span className="text-xs font-body font-medium text-slate-500">Nomor Invoice Pesanan:</span>
               <button
                 type="button"
                 onClick={handleCopyCode}
-                className="text-xs text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1"
+                className="text-xs font-heading font-bold text-[#D96B00] hover:text-[#FF9F43] flex items-center gap-1 cursor-pointer"
               >
                 <Copy className="w-3.5 h-3.5" />
                 <span>{isCopied ? 'Tersalin!' : 'Salin Nomor'}</span>
@@ -798,37 +798,37 @@ export function CheckoutStepper() {
               {orderCode}
             </div>
 
-            <div className="mt-4 pt-4 border-t border-slate-200 space-y-1.5 text-xs text-slate-600">
+            <div className="mt-4 pt-4 border-t-2 border-[#FFE8D6] space-y-2 text-xs font-body text-slate-600">
               <div className="flex justify-between">
                 <span>Metode Pembayaran:</span>
-                <strong className="text-slate-800">{selectedPayment.nama}</strong>
+                <strong className="text-slate-800 font-heading">{selectedPayment.nama}</strong>
               </div>
               <div className="flex justify-between">
                 <span>Total Pembayaran:</span>
-                <strong className="text-rose-600 font-bold text-sm">{formatRupiah(calcSummary.totalBayar)}</strong>
+                <strong className="text-[#D96B00] font-heading font-black text-base">{formatRupiah(calcSummary.totalBayar)}</strong>
               </div>
               <div className="flex justify-between">
                 <span>Kurir Pengiriman:</span>
-                <strong className="text-slate-800">{selectedCourier.courierName} - {selectedCourier.serviceName}</strong>
+                <strong className="text-slate-800 font-heading">{selectedCourier.courierName} - {selectedCourier.serviceName}</strong>
               </div>
               <div className="flex justify-between">
                 <span>Penerima:</span>
-                <strong className="text-slate-800">{selectedAddress.namaPenerima}</strong>
+                <strong className="text-slate-800 font-heading">{selectedAddress.namaPenerima}</strong>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <Link
               href="/user/pesanan"
-              className="w-full sm:w-auto px-6 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+              className="clay-btn-orange w-full sm:w-auto px-6 py-3.5 text-white font-heading font-bold text-xs rounded-2xl shadow-md flex items-center justify-center gap-2"
             >
               <span>Pantau Status Pesanan</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
               href="/katalog"
-              className="w-full sm:w-auto px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-2xl transition-colors"
+              className="clay-btn-white w-full sm:w-auto px-6 py-3.5 text-slate-700 font-heading font-bold text-xs rounded-2xl"
             >
               Belanja Produk Lainnya
             </Link>
@@ -861,17 +861,17 @@ export function CheckoutStepper() {
 
   return (
     <div className="py-4">
-      {/* Stepper Header Tabs */}
-      <div className="bg-white rounded-3xl p-5 sm:p-7 border border-rose-100 shadow-xs mb-8">
-        <div className="flex items-center justify-between mb-4">
+      {/* Stepper Header Tabs - Clay Block */}
+      <div className="bg-white rounded-3xl p-5 sm:p-7 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] mb-8">
+        <div className="flex items-center justify-between mb-5">
           <Link
             href="/keranjang"
-            className="text-xs text-slate-500 hover:text-rose-600 flex items-center gap-1 font-semibold"
+            className="text-xs font-heading font-bold text-slate-500 hover:text-[#D96B00] flex items-center gap-1.5 transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 text-[#FF9F43]" />
             <span>Kembali ke Keranjang</span>
           </Link>
-          <span className="text-xs font-bold text-rose-500 bg-rose-50 px-2.5 py-1 rounded-full">
+          <span className="clay-badge-orange text-xs font-heading font-extrabold px-3 py-1">
             Langkah {currentStep} dari 4
           </span>
         </div>
@@ -902,26 +902,26 @@ export function CheckoutStepper() {
                 disabled={s.step > 1 && !isAddressValid}
                 className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl transition-all ${
                   isCurrent
-                    ? 'text-rose-600 font-bold bg-rose-50/50'
+                    ? 'text-[#D96B00] font-heading font-black bg-[#FFF2E5] border border-[#FFD4B2]'
                     : isDone
-                    ? 'text-emerald-600 font-medium cursor-pointer'
+                    ? 'text-emerald-700 font-heading font-bold cursor-pointer'
                     : !isAddressValid && s.step > 1
                     ? 'text-slate-300 opacity-40 cursor-not-allowed'
-                    : 'text-slate-400 font-normal hover:text-slate-600 cursor-pointer'
+                    : 'text-slate-400 font-body font-medium hover:text-slate-600 cursor-pointer'
                 }`}
               >
                 <div
-                  className={`w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-transform ${
+                  className={`w-10 h-10 rounded-2xl flex items-center justify-center text-xs font-heading font-black transition-transform ${
                     isCurrent
-                      ? 'bg-rose-500 text-white scale-110 shadow-xs'
+                      ? 'bg-[#FF9F43] text-white scale-110 shadow-[0_4px_10px_rgba(255,159,67,0.4)] border-2 border-[#F38C26]'
                       : isDone
-                      ? 'bg-emerald-500 text-white'
-                      : 'bg-slate-100 text-slate-400'
+                      ? 'bg-emerald-500 text-white shadow-xs'
+                      : 'bg-[#FFF8F0] text-slate-400 border border-[#FFE8D6]'
                   }`}
                 >
-                  {isDone ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-4 h-4" />}
+                  {isDone ? <CheckCircle2 className="w-5 h-5" /> : <Icon className="w-5 h-5" />}
                 </div>
-                <span className="text-[11px] sm:text-xs leading-tight hidden xs:inline">
+                <span className="text-[11px] sm:text-xs leading-tight hidden xs:inline font-heading">
                   {s.label}
                 </span>
               </button>
@@ -936,13 +936,13 @@ export function CheckoutStepper() {
         <div className="lg:col-span-2 space-y-6">
           {/* Error Banner if any */}
           {errorMessage && (
-            <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-3">
+            <div className="p-4 rounded-2xl bg-rose-50 border-2 border-rose-200 text-rose-700 text-xs font-heading font-bold flex items-center gap-3">
               <AlertCircle className="w-5 h-5 shrink-0 text-rose-500" />
               <span className="flex-1">{errorMessage}</span>
               <button
                 type="button"
                 onClick={() => setErrorMessage(null)}
-                className="text-rose-400 hover:text-rose-600 font-bold text-sm"
+                className="text-rose-400 hover:text-rose-600 font-black text-sm cursor-pointer"
               >
                 ×
               </button>
@@ -951,22 +951,22 @@ export function CheckoutStepper() {
 
           {/* STEP 1: PILIH ALAMAT PENGIRIMAN */}
           {currentStep === 1 && (
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs">
-              <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-5">
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)]">
+              <div className="flex items-center justify-between pb-4 border-b-2 border-[#FFE8D6] mb-5">
                 <div>
-                  <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-rose-500" />
+                  <h2 className="text-lg font-heading font-black text-slate-800 flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-[#FF9F43]" />
                     <span>Langkah 1: Alamat Pengiriman ke Seluruh Indonesia</span>
                   </h2>
-                  <p className="text-xs text-slate-500">Pilih alamat tujuan atau tambahkan alamat baru</p>
+                  <p className="text-xs font-body font-medium text-slate-500">Pilih alamat tujuan atau tambahkan alamat baru</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setShowAddAddress(!showAddAddress)}
-                  className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-bold flex items-center gap-1 transition-colors"
+                  className="clay-badge-orange px-3.5 py-2 text-xs cursor-pointer hover:scale-105 transition-transform"
                 >
-                  <Plus className="w-4 h-4" />
-                  <span>Tambah Alamat Baru</span>
+                  <Plus className="w-4 h-4 mr-1" />
+                  <span>Tambah Alamat</span>
                 </button>
               </div>
 
@@ -974,98 +974,98 @@ export function CheckoutStepper() {
               {showAddAddress && (
                 <form
                   onSubmit={handleAddNewAddress}
-                  className="mb-6 p-4 sm:p-5 bg-rose-50/40 rounded-2xl border border-rose-100 space-y-3"
+                  className="mb-6 p-5 bg-[#FFF8F0] rounded-3xl border-2 border-[#FFD4B2] space-y-3.5 shadow-sm"
                 >
-                  <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Tambah Alamat Baru</h3>
+                  <h3 className="text-xs font-heading font-extrabold text-[#D96B00] uppercase tracking-wider">Form Tambah Alamat Baru</h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-600 block mb-1">Nama Penerima</label>
+                      <label className="text-xs font-heading font-bold text-slate-700 block mb-1">Nama Penerima</label>
                       <input
                         type="text"
                         required
                         placeholder="Contoh: Sarah Azhari"
                         value={newAddressForm.namaPenerima}
                         onChange={(e) => setNewAddressForm({ ...newAddressForm, namaPenerima: e.target.value })}
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-rose-500"
+                        className="w-full px-3.5 py-2.5 text-xs font-body rounded-xl border-2 border-[#FFE8D6] bg-white focus:outline-none focus:border-[#FF9F43]"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-600 block mb-1">Nomor WhatsApp / Telepon</label>
+                      <label className="text-xs font-heading font-bold text-slate-700 block mb-1">Nomor WhatsApp / Telepon</label>
                       <input
                         type="tel"
                         required
                         placeholder="0812-xxxx-xxxx"
                         value={newAddressForm.telepon}
                         onChange={(e) => setNewAddressForm({ ...newAddressForm, telepon: e.target.value })}
-                        className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-rose-500"
+                        className="w-full px-3.5 py-2.5 text-xs font-body rounded-xl border-2 border-[#FFE8D6] bg-white focus:outline-none focus:border-[#FF9F43]"
                       />
                     </div>
                   </div>
 
                   <div>
-                    <label className="text-[11px] font-semibold text-slate-600 block mb-1">Alamat Lengkap & Patokan</label>
+                    <label className="text-xs font-heading font-bold text-slate-700 block mb-1">Alamat Lengkap & Patokan</label>
                     <textarea
                       required
                       rows={2}
                       placeholder="Nama jalan, nomor rumah, RT/RW, komplek / patokan warna pagar"
                       value={newAddressForm.alamatLengkap}
                       onChange={(e) => setNewAddressForm({ ...newAddressForm, alamatLengkap: e.target.value })}
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:border-rose-500"
+                      className="w-full px-3.5 py-2.5 text-xs font-body rounded-xl border-2 border-[#FFE8D6] bg-white focus:outline-none focus:border-[#FF9F43]"
                     />
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-600 block mb-1">Provinsi</label>
+                      <label className="text-[11px] font-heading font-bold text-slate-600 block mb-1">Provinsi</label>
                       <input
                         type="text"
                         value={newAddressForm.provinsi}
                         onChange={(e) => setNewAddressForm({ ...newAddressForm, provinsi: e.target.value })}
-                        className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-slate-200 bg-white"
+                        className="w-full px-2.5 py-2 text-xs font-body rounded-xl border-2 border-[#FFE8D6] bg-white"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-600 block mb-1">Kota/Kab</label>
+                      <label className="text-[11px] font-heading font-bold text-slate-600 block mb-1">Kota/Kab</label>
                       <input
                         type="text"
                         value={newAddressForm.kotaKabupaten}
                         onChange={(e) => setNewAddressForm({ ...newAddressForm, kotaKabupaten: e.target.value })}
-                        className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-slate-200 bg-white"
+                        className="w-full px-2.5 py-2 text-xs font-body rounded-xl border-2 border-[#FFE8D6] bg-white"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-600 block mb-1">Kecamatan</label>
+                      <label className="text-[11px] font-heading font-bold text-slate-600 block mb-1">Kecamatan</label>
                       <input
                         type="text"
                         placeholder="Kecamatan"
                         value={newAddressForm.kecamatan}
                         onChange={(e) => setNewAddressForm({ ...newAddressForm, kecamatan: e.target.value })}
-                        className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-slate-200 bg-white"
+                        className="w-full px-2.5 py-2 text-xs font-body rounded-xl border-2 border-[#FFE8D6] bg-white"
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-semibold text-slate-600 block mb-1">Kode Pos</label>
+                      <label className="text-[11px] font-heading font-bold text-slate-600 block mb-1">Kode Pos</label>
                       <input
                         type="text"
                         placeholder="12345"
                         value={newAddressForm.kodePos}
                         onChange={(e) => setNewAddressForm({ ...newAddressForm, kodePos: e.target.value })}
-                        className="w-full px-2.5 py-1.5 text-xs rounded-xl border border-slate-200 bg-white"
+                        className="w-full px-2.5 py-2 text-xs font-body rounded-xl border-2 border-[#FFE8D6] bg-white"
                       />
                     </div>
                   </div>
 
-                  <div className="flex justify-end gap-2 pt-2">
+                  <div className="flex justify-end gap-2.5 pt-2">
                     <button
                       type="button"
                       onClick={() => setShowAddAddress(false)}
-                      className="px-3.5 py-1.5 text-xs text-slate-600 hover:bg-slate-200 rounded-xl"
+                      className="px-4 py-2 text-xs font-heading font-bold text-slate-600 hover:bg-slate-200 rounded-xl cursor-pointer"
                     >
                       Batal
                     </button>
                     <button
                       type="submit"
-                      className="px-4 py-1.5 text-xs font-bold bg-rose-500 hover:bg-rose-600 text-white rounded-xl shadow-xs"
+                      className="clay-btn-orange px-5 py-2 text-xs text-white cursor-pointer"
                     >
                       Simpan Alamat
                     </button>
@@ -1083,35 +1083,35 @@ export function CheckoutStepper() {
                       <div
                         key={addr.id}
                         onClick={() => setSelectedAddressId(addr.id)}
-                        className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-4 ${
+                        className={`p-4.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-4 ${
                           isSelected
-                            ? 'border-rose-500 bg-rose-50/20 shadow-xs'
-                            : 'border-slate-100 hover:border-slate-200 bg-white'
+                            ? 'border-[#FF9F43] bg-[#FFF2E5]/50 shadow-[0_4px_12px_rgba(255,159,67,0.15)]'
+                            : 'border-[#FFE8D6] hover:border-[#FFD4B2] bg-white'
                         }`}
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-slate-800">{addr.namaPenerima}</span>
-                            <span className="text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                            <span className="font-heading font-bold text-sm text-slate-800">{addr.namaPenerima}</span>
+                            <span className="text-[10px] uppercase font-heading font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">
                               {addr.labelAlamat}
                             </span>
                             {addr.isUtama && (
-                              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
+                              <span className="clay-badge-orange text-[10px] px-2 py-0.5">
                                 Utama
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-slate-500">{addr.telepon}</p>
-                          <p className="text-xs text-slate-600 leading-relaxed pt-1">{addr.alamatLengkap}</p>
-                          <p className="text-[11px] text-slate-400">
+                          <p className="text-xs font-body text-slate-500">{addr.telepon}</p>
+                          <p className="text-xs font-body text-slate-600 leading-relaxed pt-1">{addr.alamatLengkap}</p>
+                          <p className="text-[11px] font-body text-slate-400">
                             {addr.kecamatan ? addr.kecamatan + ', ' : ''}{addr.kotaKabupaten}, {addr.provinsi} {addr.kodePos}
                           </p>
                         </div>
 
-                        <div className="mt-1">
+                        <div className="shrink-0 pt-1">
                           <div
                             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              isSelected ? 'border-rose-500 bg-rose-500 text-white' : 'border-slate-300'
+                              isSelected ? 'border-[#FF9F43] bg-[#FF9F43] text-white' : 'border-slate-300'
                             }`}
                           >
                             {isSelected && <CheckCircle2 className="w-4 h-4" />}
@@ -1121,34 +1121,24 @@ export function CheckoutStepper() {
                     );
                   })}
                 </div>
-              ) : !showAddAddress && (
-                <div className="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200 mb-6 space-y-3">
-                  <p className="text-xs text-slate-600">
-                    Belum ada alamat pengiriman tersimpan. Silakan tambahkan alamat tujuan pengiriman Anda.
+              ) : (
+                <div className="py-8 text-center bg-[#FFF8F0] rounded-3xl border-2 border-dashed border-[#FFD4B2] mb-6 p-6">
+                  <p className="text-xs font-body font-medium text-slate-600 mb-3">
+                    Belum ada alamat pengiriman tersimpan. Silakan klik tombol di bawah untuk memasukkan alamat tujuan pengiriman Anda.
                   </p>
                   <button
                     type="button"
                     onClick={() => setShowAddAddress(true)}
-                    className="px-4 py-2 bg-rose-500 text-white rounded-xl text-xs font-bold hover:bg-rose-600 transition-colors"
+                    className="clay-btn-orange px-5 py-2.5 text-xs text-white"
                   >
-                    Tambah Alamat Sekarang
+                    + Masukkan Alamat Pengiriman Sekarang
                   </button>
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-                {!isAddressValid ? (
-                  <p className="text-xs text-rose-600 font-medium flex items-center gap-1.5">
-                    <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
-                    <span>Mohon lengkapi atau pilih alamat pengiriman Anda terlebih dahulu.</span>
-                  </p>
-                ) : (
-                  <div />
-                )}
-
+              <div className="flex justify-end pt-3">
                 <button
                   type="button"
-                  disabled={!isAddressValid}
                   onClick={() => {
                     if (!isAddressValid) {
                       setErrorMessage('Mohon lengkapi alamat tujuan pengiriman Anda terlebih dahulu.');
@@ -1157,7 +1147,12 @@ export function CheckoutStepper() {
                     setErrorMessage(null);
                     setCurrentStep(2);
                   }}
-                  className="w-full sm:w-auto px-6 py-3 bg-rose-500 hover:bg-rose-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer"
+                  disabled={!isAddressValid}
+                  className={`px-6 py-3.5 rounded-2xl font-heading font-black text-xs flex items-center gap-2 transition-all ${
+                    isAddressValid
+                      ? 'clay-btn-orange text-white cursor-pointer shadow-md hover:scale-[1.02]'
+                      : 'bg-slate-200 text-slate-400 border-2 border-slate-300 cursor-not-allowed'
+                  }`}
                 >
                   <span>Pilih Jasa Pengiriman</span>
                   <ChevronRight className="w-4 h-4" />
@@ -1168,33 +1163,33 @@ export function CheckoutStepper() {
 
           {/* STEP 2: PILIH JASA KURIR & PENGIRIMAN */}
           {currentStep === 2 && (
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs">
-              <div className="pb-4 border-b border-slate-100 mb-5">
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)]">
+              <div className="pb-4 border-b-2 border-[#FFE8D6] mb-5">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                    <Truck className="w-5 h-5 text-rose-500" />
+                  <h2 className="text-lg font-heading font-black text-slate-800 flex items-center gap-2">
+                    <Truck className="w-5 h-5 text-[#87CEEB]" />
                     <span>Langkah 2: Pilihan Kurir & Ongkir Otomatis</span>
                   </h2>
                   {shippingWeights.isLiveRate && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-heading font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                       <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      🟢 Live Rate Aktif
+                      🟢 Live Rate Biteship
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-slate-500 mt-1">
-                  Kirim ke: <strong className="text-slate-700">{selectedAddress.kotaKabupaten}, {selectedAddress.provinsi}</strong>
+                <p className="text-xs font-body text-slate-500 mt-1">
+                  Kirim ke: <strong className="text-slate-700 font-heading">{selectedAddress.kotaKabupaten}, {selectedAddress.provinsi}</strong>
                 </p>
 
                 {/* Dimensional cargo weight badge */}
-                <div className="mt-3 p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-2xl flex flex-wrap items-center justify-between gap-2.5 text-xs">
-                  <div className="flex items-center gap-2 text-amber-900 font-medium">
-                    <Scale className="w-4 h-4 text-amber-600 shrink-0" />
+                <div className="mt-3 p-3.5 bg-[#FFF8F0] border-2 border-[#FFE8D6] rounded-2xl flex flex-wrap items-center justify-between gap-2.5 text-xs font-body">
+                  <div className="flex items-center gap-2 text-slate-700">
+                    <Scale className="w-4 h-4 text-[#FF9F43] shrink-0" />
                     <span>
-                      Berat Aktual: <strong>{(shippingWeights.totalWeightGram / 1000).toFixed(1)} kg</strong> • Berat Volumetrik: <strong>{(shippingWeights.totalVolumeWeightGram / 1000).toFixed(1)} kg</strong> — Dihitung: <strong className="text-rose-600 font-extrabold">{shippingWeights.chargeableWeightKg.toFixed(1)} kg</strong>
+                      Berat Aktual: <strong>{(shippingWeights.totalWeightGram / 1000).toFixed(1)} kg</strong> • Volumetrik: <strong>{(shippingWeights.totalVolumeWeightGram / 1000).toFixed(1)} kg</strong> — Dikenakan: <strong className="text-[#D96B00] font-heading font-black">{shippingWeights.chargeableWeightKg.toFixed(1)} kg</strong>
                     </span>
                   </div>
-                  <span className="text-[10px] text-amber-700/80 font-medium italic">
+                  <span className="text-[10px] text-slate-400 font-medium italic">
                     (Standar cargo: volumetrik / 6000)
                   </span>
                 </div>
@@ -1203,8 +1198,8 @@ export function CheckoutStepper() {
               {/* Loading Indicator or Dynamic Courier List */}
               {isLoadingRates ? (
                 <div className="py-12 flex flex-col items-center justify-center gap-3 text-slate-500">
-                  <Loader2 className="w-8 h-8 animate-spin text-rose-500" />
-                  <p className="text-xs font-semibold">Mengambil tarif ongkir live real-time...</p>
+                  <Loader2 className="w-8 h-8 animate-spin text-[#FF9F43]" />
+                  <p className="text-xs font-heading font-bold">Mengambil tarif ongkir live real-time...</p>
                 </div>
               ) : (
                 <div className="space-y-3 mb-6">
@@ -1216,34 +1211,34 @@ export function CheckoutStepper() {
                       <div
                         key={courier.id}
                         onClick={() => setSelectedCourierId(courier.id)}
-                        className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-4 ${
+                        className={`p-4.5 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between gap-4 ${
                           isSelected
-                            ? 'border-rose-500 bg-rose-50/20 shadow-xs'
-                            : 'border-slate-100 hover:border-slate-200 bg-white'
+                            ? 'border-[#87CEEB] bg-[#F0F9FD] shadow-[0_4px_12px_rgba(135,206,235,0.2)]'
+                            : 'border-[#FFE8D6] hover:border-[#87CEEB] bg-white'
                         }`}
                       >
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 rounded-xl bg-slate-100 text-slate-800 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200/50">
+                        <div className="flex items-center gap-3.5">
+                          <div className="w-12 h-12 rounded-2xl bg-[#FFF8F0] text-slate-800 font-heading font-black text-xs flex items-center justify-center shrink-0 border-2 border-[#FFE8D6] shadow-xs">
                             {courier.iconText || courier.courierCode.toUpperCase()}
                           </div>
                           <div>
                             <div className="flex flex-wrap items-center gap-2">
-                              <span className="font-bold text-sm text-slate-800">
+                              <span className="font-heading font-black text-sm text-slate-800">
                                 {courier.courierName} - {courier.serviceCode || courier.serviceName}
                               </span>
                               {courier.serviceName && courier.serviceName !== courier.serviceCode && (
-                                <span className="text-xs font-semibold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-md">
+                                <span className="clay-badge-sky text-[10px] px-2 py-0.5">
                                   {courier.serviceName}
                                 </span>
                               )}
                               {courier.isLiveRate && (
-                                <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span className="text-[10px] font-heading font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
                                   <span>🟢</span>
                                   <span>Live Rate</span>
                                 </span>
                               )}
                             </div>
-                            <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
+                            <p className="text-xs font-body text-slate-500 flex items-center gap-1 mt-0.5">
                               <Clock className="w-3 h-3 text-slate-400 shrink-0" />
                               <span>Estimasi sampai: <strong>{courier.etd}</strong></span>
                               {courier.description ? (
@@ -1255,14 +1250,14 @@ export function CheckoutStepper() {
 
                         <div className="text-right flex items-center gap-3 shrink-0">
                           <div>
-                            <span className="text-sm font-bold text-slate-800 block">
+                            <span className="text-sm sm:text-base font-heading font-black text-[#D96B00] block">
                               {formatRupiah(displayPrice)}
                             </span>
-                            <span className="text-[10px] text-slate-400">Ongkir Otomatis</span>
+                            <span className="text-[10px] font-body text-slate-400">Ongkir Otomatis</span>
                           </div>
                           <div
                             className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                              isSelected ? 'border-rose-500 bg-rose-500 text-white' : 'border-slate-300'
+                              isSelected ? 'border-[#87CEEB] bg-[#87CEEB] text-[#0A445C]' : 'border-slate-300'
                             }`}
                           >
                             {isSelected && <CheckCircle2 className="w-4 h-4" />}
@@ -1276,7 +1271,7 @@ export function CheckoutStepper() {
 
               {/* Catatan untuk Penjual / Kurir */}
               <div className="mb-6">
-                <label className="text-xs font-bold text-slate-700 block mb-1">
+                <label className="text-xs font-heading font-bold text-slate-700 block mb-1">
                   Catatan Pengiriman (Opsional):
                 </label>
                 <input
@@ -1284,7 +1279,7 @@ export function CheckoutStepper() {
                   value={buyerNotes}
                   onChange={(e) => setBuyerNotes(e.target.value)}
                   placeholder="Contoh: Titipkan ke satpam jika tidak ada orang di rumah"
-                  className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-rose-500"
+                  className="w-full px-3.5 py-2.5 text-xs font-body rounded-xl border-2 border-[#FFE8D6] focus:outline-none focus:border-[#FF9F43] bg-[#FFF8F0]"
                 />
               </div>
 
@@ -1292,17 +1287,17 @@ export function CheckoutStepper() {
                 <button
                   type="button"
                   onClick={() => setCurrentStep(1)}
-                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-2xl transition-colors"
+                  className="px-5 py-2.5 clay-btn-white text-slate-700 text-xs cursor-pointer"
                 >
                   Kembali ke Alamat
                 </button>
                 <button
                   type="button"
                   onClick={() => setCurrentStep(3)}
-                  className="px-6 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center gap-2"
+                  className="clay-btn-orange px-6 py-3 text-xs text-white cursor-pointer shadow-md"
                 >
                   <span>Lanjut ke Pembayaran</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
               </div>
             </div>
@@ -1310,20 +1305,20 @@ export function CheckoutStepper() {
 
           {/* STEP 3: METODE PEMBAYARAN */}
           {currentStep === 3 && (
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs">
-              <div className="pb-4 border-b border-slate-100 mb-5">
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)]">
+              <div className="pb-4 border-b-2 border-[#FFE8D6] mb-5">
                 <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <div>
-                    <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
-                      <CreditCard className="w-5 h-5 text-rose-500" />
+                    <h2 className="text-lg font-heading font-black text-slate-800 flex items-center gap-2">
+                      <CreditCard className="w-5 h-5 text-[#FF9F43]" />
                       <span>Langkah 3: Pilih Metode Pembayaran Terverifikasi</span>
                     </h2>
-                    <p className="text-xs text-slate-500">Semua transaksi diamankan dengan enkripsi SSL 256-bit standar perbankan</p>
+                    <p className="text-xs font-body font-medium text-slate-500">Semua transaksi diamankan dengan enkripsi SSL 256-bit standar perbankan</p>
                   </div>
 
                   <div>
                     {activeGateway === 'midtrans' && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-heading font-bold bg-blue-50 text-blue-700 border border-blue-200">
                         <span>🔵 Midtrans Snap</span>
                         <span className="text-[10px] font-semibold bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
                           {isMidtransProduction ? 'Production' : 'Sandbox'}
@@ -1331,7 +1326,7 @@ export function CheckoutStepper() {
                       </span>
                     )}
                     {activeGateway === 'xendit' && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-heading font-bold bg-purple-50 text-purple-700 border border-purple-200">
                         <span>🟣 Xendit</span>
                         <span className="text-[10px] font-semibold bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">
                           XenInvoice
@@ -1339,9 +1334,9 @@ export function CheckoutStepper() {
                       </span>
                     )}
                     {activeGateway === 'simulator' && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                      <span className="clay-badge-orange text-xs px-3 py-1">
                         <span>🟡 Simulator</span>
-                        <span className="text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded">
+                        <span className="text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded ml-1">
                           Lokal
                         </span>
                       </span>
@@ -1352,8 +1347,8 @@ export function CheckoutStepper() {
 
               <div className="space-y-3 mb-6">
                 {isLoadingPaymentMethods && (
-                  <div className="py-8 text-center text-xs text-slate-500 flex flex-col items-center justify-center gap-2 bg-slate-50 rounded-2xl border border-slate-100">
-                    <Loader2 className="w-5 h-5 animate-spin text-rose-500" />
+                  <div className="py-8 text-center text-xs font-heading font-bold text-slate-500 flex flex-col items-center justify-center gap-2 bg-[#FFF8F0] rounded-2xl border-2 border-[#FFE8D6]">
+                    <Loader2 className="w-5 h-5 animate-spin text-[#FF9F43]" />
                     <span>Memuat metode pembayaran aktif...</span>
                   </div>
                 )}
@@ -1365,45 +1360,44 @@ export function CheckoutStepper() {
                     <div
                       key={pay.id}
                       onClick={() => setSelectedPaymentId(pay.id)}
-                      className={`p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-4 ${
+                      className={`p-4.5 rounded-2xl border-2 transition-all cursor-pointer flex items-start justify-between gap-4 ${
                         isSelected
-                          ? 'border-rose-500 bg-rose-50/20 shadow-xs'
-                          : 'border-slate-100 hover:border-slate-200 bg-white'
+                          ? 'border-[#FF9F43] bg-[#FFF2E5]/50 shadow-[0_4px_12px_rgba(255,159,67,0.15)]'
+                          : 'border-[#FFE8D6] hover:border-[#FFD4B2] bg-white'
                       }`}
                     >
-                      <div className="flex items-start gap-3">
+                      <div className="flex items-start gap-3.5">
                         <span className="text-2xl">{pay.icon}</span>
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="font-bold text-sm text-slate-800">{pay.nama}</span>
-                            <span className="text-[10px] uppercase font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-md">
+                            <span className="font-heading font-black text-sm text-slate-800">{pay.nama}</span>
+                            <span className="clay-badge-sky text-[10px] px-2 py-0.5 uppercase">
                               {pay.kategori.replace('_', ' ')}
                             </span>
                             {/* Provider Badge */}
                             {activeGateway === 'midtrans' && (
-                              <span className="text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <span className="text-[10px] font-heading font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full flex items-center gap-1">
                                 <span>🔵</span>
                                 <span>Midtrans Snap</span>
                               </span>
                             )}
                             {activeGateway === 'xendit' && (
-                              <span className="text-[10px] font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                              <span className="text-[10px] font-heading font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full flex items-center gap-1">
                                 <span>🟣</span>
                                 <span>Xendit</span>
                               </span>
                             )}
                             {activeGateway === 'simulator' && (
-                              <span className="text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <span>🟡</span>
-                                <span>Simulator</span>
+                              <span className="clay-badge-orange text-[10px] px-2 py-0.5">
+                                <span>🟡 Instant Settlement</span>
                               </span>
                             )}
                           </div>
-                          <p className="text-xs text-slate-500 mt-1 leading-relaxed">
+                          <p className="text-xs font-body text-slate-500 mt-1 leading-relaxed">
                             {pay.deskripsi}
                           </p>
                           {pay.nomorAkun && (
-                            <div className="mt-2 text-xs font-mono font-bold text-rose-700 bg-rose-50/80 px-2.5 py-1 rounded-lg inline-block border border-rose-100">
+                            <div className="mt-2 text-xs font-mono font-bold text-[#D96B00] bg-[#FFF8F0] px-2.5 py-1 rounded-lg inline-block border border-[#FFE8D6]">
                               VA: {pay.nomorAkun}
                             </div>
                           )}
@@ -1413,7 +1407,7 @@ export function CheckoutStepper() {
                       <div className="mt-1">
                         <div
                           className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                            isSelected ? 'border-rose-500 bg-rose-500 text-white' : 'border-slate-300'
+                            isSelected ? 'border-[#FF9F43] bg-[#FF9F43] text-white' : 'border-slate-300'
                           }`}
                         >
                           {isSelected && <CheckCircle2 className="w-4 h-4" />}
@@ -1428,17 +1422,17 @@ export function CheckoutStepper() {
                 <button
                   type="button"
                   onClick={() => setCurrentStep(2)}
-                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-2xl transition-colors"
+                  className="px-5 py-2.5 clay-btn-white text-slate-700 text-xs cursor-pointer"
                 >
                   Kembali ke Kurir
                 </button>
                 <button
                   type="button"
                   onClick={() => setCurrentStep(4)}
-                  className="px-6 py-3 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center gap-2"
+                  className="clay-btn-orange px-6 py-3 text-xs text-white cursor-pointer shadow-md"
                 >
                   <span>Lanjut Periksa Pesanan</span>
-                  <ChevronRight className="w-4 h-4" />
+                  <ChevronRight className="w-4 h-4 ml-1" />
                 </button>
               </div>
             </div>
@@ -1446,62 +1440,62 @@ export function CheckoutStepper() {
 
           {/* STEP 4: PERIKSA KEMBALI PESANAN & SELESAIKAN PEMBAYARAN */}
           {currentStep === 4 && (
-            <div className="bg-white rounded-3xl p-6 border border-slate-100 shadow-xs space-y-6">
-              <div className="pb-4 border-b border-slate-100">
-                <h2 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <div className="bg-white rounded-3xl p-6 sm:p-7 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-6">
+              <div className="pb-4 border-b-2 border-[#FFE8D6]">
+                <h2 className="text-lg font-heading font-black text-slate-800 flex items-center gap-2">
                   <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                   <span>Langkah 4: Periksa Kembali Detail Pesanan Sebelum Bayar</span>
                 </h2>
-                <p className="text-xs text-slate-500">Pastikan alamat, kurir, daftar barang, dan metode bayar sudah benar</p>
+                <p className="text-xs font-body font-medium text-slate-500">Pastikan alamat, kurir, daftar barang, dan metode bayar sudah benar</p>
               </div>
 
               {/* Rincian Alamat & Kurir Terpilih */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="p-4.5 bg-[#FFF8F0] rounded-2xl border-2 border-[#FFE8D6]">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1">
-                      <MapPin className="w-3.5 h-3.5 text-rose-500" /> Alamat Tujuan
+                    <span className="text-xs font-heading font-extrabold uppercase tracking-wider text-[#D96B00] flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5 text-[#FF9F43]" /> Alamat Tujuan
                     </span>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(1)}
-                      className="text-[11px] text-rose-600 font-bold hover:underline"
+                      className="text-[11px] font-heading font-bold text-[#D96B00] hover:underline cursor-pointer"
                     >
                       Ubah
                     </button>
                   </div>
-                  <strong className="text-xs text-slate-800 block">{selectedAddress.namaPenerima} ({selectedAddress.telepon})</strong>
-                  <p className="text-xs text-slate-600 mt-1 leading-relaxed">{selectedAddress.alamatLengkap}</p>
-                  <p className="text-[11px] text-slate-400 mt-0.5">{selectedAddress.kotaKabupaten}, {selectedAddress.provinsi}</p>
+                  <strong className="text-xs font-heading text-slate-800 block">{selectedAddress.namaPenerima} ({selectedAddress.telepon})</strong>
+                  <p className="text-xs font-body text-slate-600 mt-1 leading-relaxed">{selectedAddress.alamatLengkap}</p>
+                  <p className="text-[11px] font-body text-slate-400 mt-0.5">{selectedAddress.kotaKabupaten}, {selectedAddress.provinsi}</p>
                 </div>
 
-                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <div className="p-4.5 bg-[#F0F9FD] rounded-2xl border-2 border-[#BCE4F7]">
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-slate-600 flex items-center gap-1">
-                      <Truck className="w-3.5 h-3.5 text-sky-500" /> Jasa Kirim & Bayar
+                    <span className="text-xs font-heading font-extrabold uppercase tracking-wider text-[#0E678E] flex items-center gap-1">
+                      <Truck className="w-3.5 h-3.5 text-[#87CEEB]" /> Jasa Kirim & Bayar
                     </span>
                     <button
                       type="button"
                       onClick={() => setCurrentStep(2)}
-                      className="text-[11px] text-rose-600 font-bold hover:underline"
+                      className="text-[11px] font-heading font-bold text-[#0E678E] hover:underline cursor-pointer"
                     >
                       Ubah
                     </button>
                   </div>
-                  <div className="text-xs text-slate-800 space-y-1">
-                    <p>Kurir: <strong>{selectedCourier.courierName} - {selectedCourier.serviceName}</strong></p>
-                    <p>Estimasi: <strong>{selectedCourier.etd}</strong></p>
-                    <p>Metode Bayar: <strong>{selectedPayment.nama}</strong></p>
+                  <div className="text-xs font-body text-slate-800 space-y-1">
+                    <p>Kurir: <strong className="font-heading">{selectedCourier.courierName} - {selectedCourier.serviceName}</strong></p>
+                    <p>Estimasi: <strong className="font-heading">{selectedCourier.etd}</strong></p>
+                    <p>Metode Bayar: <strong className="font-heading">{selectedPayment.nama}</strong></p>
                   </div>
                 </div>
               </div>
 
               {/* Daftar Barang yang Dibeli */}
               <div>
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-3">
+                <h3 className="text-xs font-heading font-extrabold uppercase tracking-wider text-[#D96B00] mb-3">
                   Barang yang Dibeli ({items.reduce((s, i) => s + i.jumlah, 0)} Item):
                 </h3>
-                <div className="divide-y divide-slate-100 border border-slate-100 rounded-2xl overflow-hidden">
+                <div className="divide-y divide-[#FFE8D6] border-2 border-[#FFE8D6] rounded-2xl overflow-hidden bg-white">
                   {items.map((item) => (
                     <div key={item.id} className="p-3.5 flex items-center justify-between gap-4 bg-white">
                       <div className="flex items-center gap-3">
@@ -1509,16 +1503,16 @@ export function CheckoutStepper() {
                         <img
                           src={item.gambar}
                           alt={item.nama}
-                          className="w-12 h-12 rounded-xl object-cover bg-slate-100 shrink-0"
+                          className="w-12 h-12 rounded-xl object-cover bg-[#FFF8F0] border border-[#FFE8D6] shrink-0"
                         />
                         <div>
-                          <h4 className="text-xs font-bold text-slate-800 line-clamp-1">{item.nama}</h4>
-                          <span className="text-[11px] text-slate-400">
+                          <h4 className="text-xs font-heading font-bold text-slate-800 line-clamp-1">{item.nama}</h4>
+                          <span className="text-[11px] font-body text-slate-400">
                             {item.jumlah} x {formatRupiah(item.harga)} {item.warna || item.ukuran ? `(${[item.warna, item.ukuran].filter(Boolean).join(', ')})` : ''}
                           </span>
                         </div>
                       </div>
-                      <span className="text-xs font-bold text-slate-800 whitespace-nowrap">
+                      <span className="text-xs font-heading font-black text-[#D96B00] whitespace-nowrap">
                         {formatRupiah(item.harga * item.jumlah)}
                       </span>
                     </div>
@@ -1526,11 +1520,11 @@ export function CheckoutStepper() {
                 </div>
               </div>
 
-              <div className="flex justify-between pt-4 border-t border-slate-100">
+              <div className="flex justify-between pt-4 border-t-2 border-[#FFE8D6]">
                 <button
                   type="button"
                   onClick={() => setCurrentStep(3)}
-                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-2xl transition-colors"
+                  className="px-5 py-2.5 clay-btn-white text-slate-700 text-xs cursor-pointer"
                 >
                   Kembali ke Pembayaran
                 </button>
@@ -1538,16 +1532,16 @@ export function CheckoutStepper() {
                   type="button"
                   disabled={isSubmitting}
                   onClick={handlePlaceOrder}
-                  className="px-8 py-3.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 disabled:opacity-75 disabled:cursor-not-allowed text-white font-black text-sm rounded-2xl shadow-lg transition-all flex items-center gap-2 hover:scale-105"
+                  className="clay-btn-orange px-8 py-3.5 text-white text-xs sm:text-sm font-heading font-black shadow-lg cursor-pointer hover:scale-[1.02] disabled:opacity-75 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
                       <span>Memproses Pesanan...</span>
                     </>
                   ) : (
                     <>
-                      <Sparkles className="w-4 h-4" />
+                      <Sparkles className="w-4 h-4 mr-2" />
                       <span>Bayar Sekarang ({formatRupiah(calcSummary.totalBayar)})</span>
                     </>
                   )}
@@ -1559,21 +1553,21 @@ export function CheckoutStepper() {
 
         {/* Right 1 Col: Summary Card */}
         <div className="space-y-4">
-          <div className="bg-white rounded-3xl p-5 sm:p-6 border border-slate-100 shadow-xs sticky top-24">
-            <h3 className="text-base font-bold text-slate-800 pb-3 border-b border-slate-100 mb-4">
-              Ringkasan Pesanan
+          <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] sticky top-24">
+            <h3 className="text-base font-heading font-black text-slate-800 pb-3.5 border-b-2 border-[#FFE8D6] mb-4">
+              Ringkasan Pesanan 🧾
             </h3>
 
-            <div className="space-y-2.5 text-xs text-slate-600 mb-5">
+            <div className="space-y-2.5 text-xs font-body font-semibold text-slate-600 mb-5">
               <div className="flex justify-between">
                 <span>Total Harga Barang</span>
-                <span className="font-semibold text-slate-800">{formatRupiah(calcSummary.subtotal)}</span>
+                <span className="font-heading font-bold text-slate-800">{formatRupiah(calcSummary.subtotal)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Ongkos Kirim ({calcSummary.totalBeratKg} kg)</span>
-                <span className="font-semibold text-slate-800">{formatRupiah(calcSummary.ongkir)}</span>
+                <span className="font-heading font-bold text-[#0E678E]">{formatRupiah(calcSummary.ongkir)}</span>
               </div>
-              <div className="flex justify-between text-emerald-600 font-semibold">
+              <div className="flex justify-between text-emerald-600 font-heading font-bold">
                 <span>Diskon Promo Hemat</span>
                 <span>-{formatRupiah(calcSummary.diskonVoucher)}</span>
               </div>
@@ -1583,10 +1577,10 @@ export function CheckoutStepper() {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-slate-100 mb-6">
+            <div className="pt-4 border-t-2 border-[#FFE8D6] mb-6">
               <div className="flex items-baseline justify-between">
-                <span className="text-xs text-slate-500 font-medium">Total Tagihan:</span>
-                <span className="text-xl font-black text-rose-600">{formatRupiah(calcSummary.totalBayar)}</span>
+                <span className="text-xs font-body text-slate-500 font-medium">Total Tagihan:</span>
+                <span className="text-2xl font-heading font-black text-[#D96B00]">{formatRupiah(calcSummary.totalBayar)}</span>
               </div>
             </div>
 
@@ -1594,7 +1588,7 @@ export function CheckoutStepper() {
               <button
                 type="button"
                 onClick={() => setCurrentStep((Math.min(4, currentStep + 1) as Step))}
-                className="w-full py-3.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full clay-btn-orange py-3.5 text-xs text-white flex items-center justify-center gap-2 shadow-md cursor-pointer"
               >
                 <span>Langkah Selanjutnya</span>
                 <ArrowRight className="w-4 h-4" />
@@ -1604,24 +1598,24 @@ export function CheckoutStepper() {
                 type="button"
                 disabled={isSubmitting}
                 onClick={handlePlaceOrder}
-                className="w-full py-3.5 bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 disabled:opacity-75 disabled:cursor-not-allowed text-white font-black text-sm rounded-2xl shadow-md transition-all flex items-center justify-center gap-2"
+                className="w-full clay-btn-orange py-3.5 text-xs text-white flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:opacity-75 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
                     <span>Memproses Pesanan...</span>
                   </>
                 ) : (
                   <>
                     <span>Bayar Sekarang</span>
-                    <Sparkles className="w-4 h-4" />
+                    <Sparkles className="w-4 h-4 ml-2" />
                   </>
                 )}
               </button>
             )}
 
-            <div className="mt-4 pt-4 border-t border-slate-100 text-[11px] text-slate-400 space-y-1.5">
-              <div className="flex items-center gap-1.5 text-emerald-600 font-medium">
+            <div className="mt-4 pt-4 border-t-2 border-[#FFE8D6] text-[11px] font-body text-slate-500 space-y-1.5">
+              <div className="flex items-center gap-1.5 text-emerald-700 font-heading font-bold">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>Garansi 100% Pengembalian Dana</span>
               </div>

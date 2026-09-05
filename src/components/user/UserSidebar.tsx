@@ -9,7 +9,6 @@ import {
   ShieldCheck,
   LogOut,
   Store,
-  Ticket,
   Loader2,
   ChevronRight,
   Sparkles,
@@ -91,13 +90,13 @@ export function UserSidebar({
             <button
               key={item.id}
               onClick={() => onTabChange(item.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all shrink-0 ${
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-heading font-bold whitespace-nowrap transition-all shrink-0 cursor-pointer ${
                 isActive
-                  ? 'bg-rose-500 text-white shadow-md shadow-rose-200'
-                  : 'bg-white text-slate-700 hover:bg-rose-50 hover:text-rose-600 border border-slate-200'
+                  ? 'clay-btn-orange text-white'
+                  : 'bg-white text-slate-700 hover:bg-[#FFF8F0] border-2 border-[#FFE8D6]'
               }`}
             >
-              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-slate-500'}`} />
+              <Icon className={`w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-[#FF9F43]'}`} />
               <span>{item.label}</span>
             </button>
           );
@@ -105,7 +104,7 @@ export function UserSidebar({
         {isAdmin && (
           <Link
             href="/admin"
-            className="flex items-center gap-2 px-4 py-2.5 rounded-full text-xs font-semibold whitespace-nowrap bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 transition-all shrink-0"
+            className="flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-heading font-bold whitespace-nowrap bg-purple-50 text-purple-700 hover:bg-purple-100 border-2 border-purple-200 transition-all shrink-0"
           >
             <Store className="w-3.5 h-3.5 text-purple-600" />
             <span>Admin Toko</span>
@@ -113,52 +112,52 @@ export function UserSidebar({
         )}
       </div>
 
-      {/* Profile Header Card */}
-      <div className="bg-white rounded-3xl p-5 sm:p-6 border border-rose-100 shadow-xs">
+      {/* Profile Header Card - Clay Block */}
+      <div className="bg-white rounded-3xl p-5 sm:p-6 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)]">
         <div className="flex items-center gap-4">
           {user?.image ? (
             <img
               src={user.image}
               alt={displayName}
-              className="w-14 h-14 sm:w-16 sm:h-16 rounded-full object-cover border-2 border-rose-200 shadow-sm shrink-0"
+              className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl object-cover border-2 border-[#FF9F43] shadow-[0_4px_12px_rgba(255,159,67,0.25)] shrink-0"
             />
           ) : (
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-tr from-rose-500 via-pink-500 to-amber-500 text-white font-black text-xl sm:text-2xl flex items-center justify-center shadow-md shrink-0">
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-tr from-[#87CEEB] via-[#FFAF60] to-[#FF9F43] text-white font-heading font-black text-xl sm:text-2xl flex items-center justify-center border-2 border-white shadow-[0_6px_14px_rgba(255,159,67,0.3)] shrink-0">
               {getInitials(displayName)}
             </div>
           )}
 
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap mb-1">
-              <h2 className="text-base sm:text-lg font-bold text-slate-900 truncate" title={displayName}>
+              <h2 className="text-base sm:text-lg font-heading font-black text-slate-900 truncate" title={displayName}>
                 {displayName}
               </h2>
             </div>
             {displayEmail && (
-              <p className="text-xs text-slate-500 truncate mb-2" title={displayEmail}>
+              <p className="text-xs font-body text-slate-500 truncate mb-2" title={displayEmail}>
                 {displayEmail}
               </p>
             )}
-            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-[11px] font-semibold text-slate-700">
+            <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-heading font-bold">
               {isAdmin ? (
-                <>
-                  <ShieldCheck className="w-3 h-3 text-purple-600" />
+                <span className="bg-purple-100 text-purple-800 border border-purple-200 px-2.5 py-0.5 rounded-full inline-flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
                   <span>Administrator Toko</span>
-                </>
+                </span>
               ) : (
-                <>
-                  <User className="w-3 h-3 text-rose-500" />
+                <span className="clay-badge-orange text-[10px] px-2.5 py-0.5 inline-flex items-center gap-1">
+                  <User className="w-3.5 h-3.5 text-[#FF9F43]" />
                   <span>Akun Pembeli</span>
-                </>
+                </span>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Menu Navigasi Desktop (hidden on mobile, visible on md+) */}
-      <div className="hidden md:flex flex-col bg-white rounded-3xl p-3 border border-rose-100 shadow-xs divide-y divide-slate-100">
-        <div className="py-1 space-y-1">
+      {/* Menu Navigasi Desktop - Clay Block */}
+      <div className="hidden md:flex flex-col bg-white rounded-3xl p-3.5 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] divide-y-2 divide-[#FFE8D6]">
+        <div className="py-1 space-y-1.5">
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeTab === item.id;
@@ -168,30 +167,30 @@ export function UserSidebar({
                 onClick={() => onTabChange(item.id)}
                 className={`w-full flex items-center justify-between p-3 rounded-2xl text-left transition-all cursor-pointer ${
                   isActive
-                    ? 'bg-gradient-to-r from-rose-50 to-pink-50 text-rose-700 font-bold border border-rose-200/60 shadow-xs'
-                    : 'text-slate-700 hover:bg-slate-50 hover:text-slate-900 font-medium'
+                    ? 'bg-[#FFF2E5] text-[#D96B00] font-heading font-bold border-2 border-[#FFD4B2] shadow-[0_4px_10px_rgba(255,159,67,0.15)]'
+                    : 'text-slate-700 hover:bg-[#FFF8F0] hover:text-[#D96B00] font-body font-semibold'
                 }`}
               >
                 <div className="flex items-center gap-3 min-w-0">
                   <div
                     className={`w-9 h-9 rounded-xl flex items-center justify-center transition-colors shrink-0 ${
                       isActive
-                        ? 'bg-rose-500 text-white shadow-xs'
-                        : 'bg-slate-100 text-slate-600 group-hover:bg-rose-100 group-hover:text-rose-600'
+                        ? 'bg-[#FF9F43] text-white shadow-xs'
+                        : 'bg-[#FFF8F0] text-[#FF9F43]'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
                   <div className="min-w-0">
-                    <p className={`text-sm ${isActive ? 'font-bold text-rose-900' : 'text-slate-800'}`}>
+                    <p className={`text-sm ${isActive ? 'font-heading font-black text-[#D96B00]' : 'font-heading font-bold text-slate-800'}`}>
                       {item.label}
                     </p>
-                    <p className="text-[11px] text-slate-500 truncate">{item.description}</p>
+                    <p className="text-[11px] font-body text-slate-500 truncate">{item.description}</p>
                   </div>
                 </div>
                 <ChevronRight
                   className={`w-4 h-4 shrink-0 transition-transform ${
-                    isActive ? 'text-rose-600 translate-x-0.5' : 'text-slate-400'
+                    isActive ? 'text-[#FF9F43] translate-x-0.5' : 'text-slate-400'
                   }`}
                 />
               </button>
@@ -201,10 +200,10 @@ export function UserSidebar({
 
         {/* Panel Admin Toko (Conditional) */}
         {isAdmin && (
-          <div className="pt-2 pb-1">
+          <div className="pt-2.5 pb-1">
             <Link
               href="/admin"
-              className="w-full flex items-center justify-between p-3 rounded-2xl bg-purple-50/70 hover:bg-purple-100/80 text-purple-900 border border-purple-200/60 transition-all group"
+              className="w-full flex items-center justify-between p-3 rounded-2xl bg-purple-50/80 hover:bg-purple-100 text-purple-900 border-2 border-purple-200 transition-all group"
             >
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-9 h-9 rounded-xl bg-purple-600 text-white flex items-center justify-center shadow-xs shrink-0">
@@ -212,12 +211,12 @@ export function UserSidebar({
                 </div>
                 <div className="min-w-0">
                   <div className="flex items-center gap-1.5">
-                    <p className="text-sm font-bold text-purple-950">Panel Admin Toko</p>
-                    <span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-purple-200 text-purple-800">
+                    <p className="text-sm font-heading font-black text-purple-950">Panel Admin Toko</p>
+                    <span className="px-1.5 py-0.5 rounded text-[10px] font-heading font-black bg-purple-200 text-purple-800">
                       Seller
                     </span>
                   </div>
-                  <p className="text-[11px] text-purple-700 truncate">Kelola produk, stok & pesanan</p>
+                  <p className="text-[11px] font-body text-purple-700 truncate">Kelola produk, stok & pesanan</p>
                 </div>
               </div>
               <ChevronRight className="w-4 h-4 text-purple-500 group-hover:translate-x-0.5 transition-transform shrink-0" />
@@ -226,28 +225,28 @@ export function UserSidebar({
         )}
 
         {/* Tombol Logout */}
-        <div className="pt-2">
+        <div className="pt-2.5">
           <button
             onClick={onLogout}
             disabled={isLoggingOut}
-            className="w-full flex items-center justify-between p-3 rounded-2xl text-slate-600 hover:text-red-600 hover:bg-red-50/80 transition-all font-medium group disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+            className="w-full flex items-center justify-between p-3 rounded-2xl text-rose-600 hover:bg-rose-50 transition-all font-heading font-bold group disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 group-hover:bg-red-100 group-hover:text-red-600 flex items-center justify-center transition-colors shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 group-hover:bg-rose-100 flex items-center justify-center transition-colors shrink-0">
                 {isLoggingOut ? (
-                  <Loader2 className="w-4 h-4 animate-spin text-red-600" />
+                  <Loader2 className="w-4 h-4 animate-spin text-rose-600" />
                 ) : (
                   <LogOut className="w-4 h-4" />
                 )}
               </div>
               <div className="text-left">
-                <p className="text-sm font-semibold text-slate-700 group-hover:text-red-700">
+                <p className="text-sm font-heading font-bold text-rose-700">
                   {isLoggingOut ? 'Sedang Keluar...' : 'Keluar dari Akun'}
                 </p>
-                <p className="text-[11px] text-slate-500 group-hover:text-red-500">Akhiri sesi login Anda</p>
+                <p className="text-[11px] font-body text-slate-500">Akhiri sesi login Anda</p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-red-400 group-hover:translate-x-0.5 transition-transform" />
+            <ChevronRight className="w-4 h-4 text-rose-400 group-hover:translate-x-0.5 transition-transform" />
           </button>
         </div>
       </div>

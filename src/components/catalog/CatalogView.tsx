@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Search,
@@ -118,22 +118,39 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
       if (minRating > 0) {
         params.set('minRating', String(minRating));
       }
-      params.set('limit', '50');
 
       const res = await fetch(`/api/products?${params.toString()}`);
-      const json = await res.json();
-
-      if (!res.ok || !json.success) {
-        throw new Error(json.error || 'Gagal memuat produk dari server');
+      if (res.ok) {
+        const json = await res.json();
+        if (json.success && json.data) {
+          const fetchedItems: Product[] = Array.isArray(json.data.items)
+            ? json.data.items.map(mapDbProductToProduct)
+            : [];
+          setProducts(fetchedItems);
+          setTotalCount(json.data.pagination?.total || fetchedItems.length);
+          return;
+        }
       }
-
-      const fetchedProducts: Product[] = (json.data || []).map(mapDbProductToProduct);
-      setProducts(fetchedProducts);
-      setTotalCount(json.pagination?.total ?? fetchedProducts.length);
+      // Fallback filtering client-side
+      const filteredMock = MOCK_PRODUCTS.filter((product) => {
+        if (debouncedSearchQuery.trim()) {
+          const q = debouncedSearchQuery.toLowerCase();
+          const matchName = product.nama.toLowerCase().includes(q);
+          const matchDesc = product.deskripsi.toLowerCase().includes(q);
+          if (!matchName && !matchDesc) return false;
+        }
+        if (selectedCategory !== 'semua' && product.kategori !== selectedCategory) {
+          return false;
+        }
+        if (minPrice !== '' && product.harga < minPrice) return false;
+        if (maxPrice !== '' && product.harga > maxPrice) return false;
+        if (minRating > 0 && product.rating < minRating) return false;
+        return true;
+      });
+      setProducts(filteredMock);
+      setTotalCount(filteredMock.length);
     } catch (err: any) {
-      console.error('Error fetching catalog products:', err);
-      setError(err.message || 'Terjadi kesalahan saat memuat katalog produk');
-      // Fallback filter over mock products on network error
+      console.warn('Error fetching products from API, falling back to local dataset:', err);
       const filteredMock = MOCK_PRODUCTS.filter((product) => {
         if (debouncedSearchQuery.trim()) {
           const q = debouncedSearchQuery.toLowerCase();
@@ -169,65 +186,49 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
     setMinPrice('');
     setMaxPrice('');
     setMinRating(0);
+    router.push('/katalog');
   };
 
   const hasActiveFilters =
-    searchInput !== '' ||
+    debouncedSearchQuery !== '' ||
     selectedCategory !== 'semua' ||
+    selectedSort !== 'rekomendasi' ||
     minPrice !== '' ||
     maxPrice !== '' ||
     minRating > 0;
 
   return (
-    <div className="py-4">
-      {/* Header & Search Bar */}
-      <div className="bg-white rounded-3xl p-5 sm:p-7 border border-rose-100 shadow-xs mb-8">
-        <div className="max-w-3xl">
-          <span className="text-xs font-bold uppercase tracking-wider text-rose-500 bg-rose-50 px-2.5 py-1 rounded-full inline-block mb-2">
-            Katalog Lengkap Toko
-          </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight mb-2">
-            Cari & Saring Kebutuhan Anak 🛍️
-          </h1>
-          <p className="text-xs sm:text-sm text-slate-500 mb-5 leading-relaxed">
-            Temukan ribuan produk perlengkapan, baju modis, dan mainan edukasi terpercaya untuk buah hati tercinta dengan mudah.
-          </p>
-
-          {/* Search Input Box */}
-          <div className="relative">
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Ketik nama produk, misal: stroller, piyama, botol susu, balok kayu..."
-              className="w-full pl-11 pr-10 py-3.5 rounded-2xl border border-rose-200 bg-rose-50/20 text-sm focus:outline-none focus:border-rose-500 focus:ring-4 focus:ring-rose-100 transition-all text-slate-800 placeholder-slate-400"
-            />
-            <Search className="w-5 h-5 text-rose-500 absolute left-4 top-1/2 -translate-y-1/2" />
-            {searchInput && (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchInput('');
-                  setDebouncedSearchQuery('');
-                }}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1"
-                title="Hapus pencarian"
-              >
-                <X className="w-4 h-4" />
-              </button>
+    <div className="space-y-6">
+      {/* Top Banner / Breadcrumb - Clay Block Header */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95),inset_0_-3px_6px_rgba(255,159,67,0.1)] flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 text-xs font-heading font-bold text-[#D96B00] mb-1.5">
+            <span>Beranda</span>
+            <span>/</span>
+            <span className="text-slate-500">Katalog Produk</span>
+            {selectedCategory !== 'semua' && (
+              <>
+                <span>/</span>
+                <span className="text-[#FF9F43] capitalize">{selectedCategory}</span>
+              </>
             )}
           </div>
+          <h1 className="text-2xl sm:text-3xl font-heading font-black text-slate-800 tracking-tight">
+            Katalog Kebutuhan Si Kecil 👶
+          </h1>
+          <p className="text-xs sm:text-sm font-body font-medium text-slate-500 mt-0.5">
+            Menampilkan {totalCount} produk berkualitas terstandar SNI untuk buah hati
+          </p>
         </div>
 
-        {/* Quick category badges */}
-        <div className="flex items-center gap-2 mt-4 overflow-x-auto pb-1 scrollbar-none">
-          <span className="text-xs font-medium text-slate-500 shrink-0">Kategori Cepat:</span>
+        {/* Quick Category Pills with Clay Badge */}
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 scrollbar-none">
           <button
             onClick={() => setSelectedCategory('semua')}
-            className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-colors ${
+            className={`px-3.5 py-1.5 rounded-2xl text-xs font-heading font-bold transition-all shrink-0 cursor-pointer ${
               selectedCategory === 'semua'
-                ? 'bg-rose-500 text-white'
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                ? 'clay-btn-orange text-white'
+                : 'bg-white text-slate-700 border-2 border-[#FFE8D6] hover:border-[#FF9F43]'
             }`}
           >
             Semua
@@ -236,19 +237,13 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
             <button
               key={cat.id}
               onClick={() => setSelectedCategory(cat.slug)}
-              className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-colors flex items-center gap-1.5 ${
+              className={`px-3.5 py-1.5 rounded-2xl text-xs font-heading font-bold transition-all shrink-0 cursor-pointer ${
                 selectedCategory === cat.slug
-                  ? 'bg-rose-500 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  ? 'clay-btn-orange text-white'
+                  : 'bg-white text-slate-700 border-2 border-[#FFE8D6] hover:border-[#FF9F43]'
               }`}
             >
-              {cat.slug === 'perlengkapan' && <Baby className="w-3.5 h-3.5" />}
-              {cat.slug === 'pakaian' && <Shirt className="w-3.5 h-3.5" />}
-              {cat.slug === 'mainan' && <Gamepad2 className="w-3.5 h-3.5" />}
-              {!['perlengkapan', 'pakaian', 'mainan'].includes(cat.slug) && (
-                <Sparkles className="w-3.5 h-3.5" />
-              )}
-              <span>{cat.nama.split('&')[0].trim()}</span>
+              {cat.nama}
             </button>
           ))}
         </div>
@@ -256,18 +251,18 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
 
       {/* Main Content: Sidebar Filter + Product Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Desktop Sidebar Filter */}
+        {/* Desktop Sidebar Filter - Clay Card */}
         <div className="hidden lg:block lg:col-span-1 space-y-5">
-          <div className="bg-white rounded-2xl p-5 border border-slate-100 shadow-xs">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
-              <div className="flex items-center gap-2 font-bold text-sm text-slate-800">
-                <SlidersHorizontal className="w-4 h-4 text-rose-500" />
+          <div className="bg-white rounded-3xl p-5 border-2 border-[#FFE8D6] shadow-[0_8px_20px_-4px_rgba(255,159,67,0.1),inset_0_2px_4px_rgba(255,255,255,0.9)]">
+            <div className="flex items-center justify-between pb-3.5 border-b-2 border-[#FFE8D6] mb-4">
+              <div className="flex items-center gap-2 font-heading font-black text-sm text-slate-800">
+                <SlidersHorizontal className="w-4 h-4 text-[#FF9F43]" />
                 <span>Filter & Saring</span>
               </div>
               {hasActiveFilters && (
                 <button
                   onClick={handleResetFilter}
-                  className="text-xs text-rose-600 hover:underline flex items-center gap-1 font-medium"
+                  className="text-xs font-heading font-bold text-[#D96B00] hover:text-[#FF9F43] flex items-center gap-1 cursor-pointer"
                 >
                   <RotateCcw className="w-3 h-3" />
                   <span>Reset</span>
@@ -277,32 +272,32 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
 
             {/* Kategori Filter */}
             <div className="mb-5">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5">
+              <h4 className="text-xs font-heading font-extrabold uppercase tracking-wider text-[#D96B00] mb-2.5">
                 Kategori Produk
               </h4>
-              <div className="space-y-1.5 text-xs">
-                <label className="flex items-center gap-2 cursor-pointer p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
+              <div className="space-y-1.5 text-xs font-body font-semibold">
+                <label className="flex items-center gap-2.5 cursor-pointer p-2 rounded-xl hover:bg-[#FFF2E5] transition-colors">
                   <input
                     type="radio"
                     name="category"
                     checked={selectedCategory === 'semua'}
                     onChange={() => setSelectedCategory('semua')}
-                    className="accent-rose-500"
+                    className="accent-[#FF9F43] w-4 h-4"
                   />
-                  <span className={selectedCategory === 'semua' ? 'font-bold text-rose-600' : 'text-slate-600'}>
+                  <span className={selectedCategory === 'semua' ? 'font-heading font-bold text-[#D96B00]' : 'text-slate-600'}>
                     Semua Kategori
                   </span>
                 </label>
                 {categories.map((cat) => (
-                  <label key={cat.id} className="flex items-center gap-2 cursor-pointer p-1.5 rounded-lg hover:bg-slate-50 transition-colors">
+                  <label key={cat.id} className="flex items-center gap-2.5 cursor-pointer p-2 rounded-xl hover:bg-[#FFF2E5] transition-colors">
                     <input
                       type="radio"
                       name="category"
                       checked={selectedCategory === cat.slug}
                       onChange={() => setSelectedCategory(cat.slug)}
-                      className="accent-rose-500"
+                      className="accent-[#FF9F43] w-4 h-4"
                     />
-                    <span className={selectedCategory === cat.slug ? 'font-bold text-rose-600' : 'text-slate-600'}>
+                    <span className={selectedCategory === cat.slug ? 'font-heading font-bold text-[#D96B00]' : 'text-slate-600'}>
                       {cat.nama}
                     </span>
                   </label>
@@ -310,61 +305,49 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
               </div>
             </div>
 
-            {/* Rentang Harga */}
-            <div className="mb-5 pt-4 border-t border-slate-100">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5">
+            {/* Rentang Harga Filter */}
+            <div className="mb-5 pt-4 border-t-2 border-[#FFE8D6]">
+              <h4 className="text-xs font-heading font-extrabold uppercase tracking-wider text-[#D96B00] mb-2.5">
                 Rentang Harga (Rp)
               </h4>
               <div className="space-y-2">
-                <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Harga Minimum</label>
-                  <input
-                    type="number"
-                    placeholder="Rp 0"
-                    value={minPrice}
-                    onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : '')}
-                    className="w-full px-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-200"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] text-slate-400 block mb-1">Harga Maksimum</label>
-                  <input
-                    type="number"
-                    placeholder="Rp 1.000.000+"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : '')}
-                    className="w-full px-3 py-1.5 text-xs rounded-xl border border-slate-200 focus:outline-none focus:border-rose-500 focus:ring-1 focus:ring-rose-200"
-                  />
-                </div>
+                <input
+                  type="number"
+                  placeholder="Harga Minimum"
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : '')}
+                  className="w-full text-xs font-body font-medium p-2.5 rounded-xl border-2 border-[#FFE8D6] focus:outline-none focus:border-[#FF9F43] bg-white text-slate-800"
+                />
+                <input
+                  type="number"
+                  placeholder="Harga Maksimum"
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : '')}
+                  className="w-full text-xs font-body font-medium p-2.5 rounded-xl border-2 border-[#FFE8D6] focus:outline-none focus:border-[#FF9F43] bg-white text-slate-800"
+                />
               </div>
             </div>
 
-            {/* Rating Bintang */}
-            <div className="pt-4 border-t border-slate-100">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-slate-600 mb-2.5">
-                Rating Minimal
+            {/* Rating Bintang Filter */}
+            <div className="pt-4 border-t-2 border-[#FFE8D6]">
+              <h4 className="text-xs font-heading font-extrabold uppercase tracking-wider text-[#D96B00] mb-2.5">
+                Rating Penilaian
               </h4>
-              <div className="space-y-1.5 text-xs">
-                {[0, 4.5, 4.8].map((ratingVal) => (
+              <div className="space-y-1.5 text-xs font-body font-semibold">
+                {[0, 4.5, 4.0, 3.5].map((rating) => (
                   <button
-                    key={ratingVal}
+                    key={rating}
                     type="button"
-                    onClick={() => setMinRating(ratingVal)}
-                    className={`w-full text-left p-1.5 rounded-lg flex items-center justify-between transition-colors ${
-                      minRating === ratingVal ? 'bg-rose-50 text-rose-600 font-bold' : 'hover:bg-slate-50 text-slate-600'
+                    onClick={() => setMinRating(rating)}
+                    className={`w-full flex items-center justify-between p-2 rounded-xl transition-colors cursor-pointer ${
+                      minRating === rating ? 'bg-[#FFF2E5] text-[#D96B00] font-heading font-bold' : 'hover:bg-slate-50 text-slate-600'
                     }`}
                   >
                     <div className="flex items-center gap-1.5">
-                      {ratingVal === 0 ? (
-                        <span>Semua Rating</span>
-                      ) : (
-                        <>
-                          <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-                          <span>{ratingVal} ke atas</span>
-                        </>
-                      )}
+                      <Star className={`w-3.5 h-3.5 ${rating > 0 ? 'fill-amber-400 text-amber-400' : 'text-slate-300'}`} />
+                      <span>{rating === 0 ? 'Semua Penilaian' : `${rating.toFixed(1)} ke atas`}</span>
                     </div>
-                    {minRating === ratingVal && <Check className="w-3.5 h-3.5 text-rose-500" />}
+                    {minRating === rating && <Check className="w-3.5 h-3.5 text-[#FF9F43]" />}
                   </button>
                 ))}
               </div>
@@ -372,40 +355,35 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
           </div>
         </div>
 
-        {/* Product Grid Area */}
-        <div className="lg:col-span-3">
-          {/* Top Bar: Results Count & Sort Dropdown */}
-          <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
-                className="lg:hidden px-3 py-1.5 rounded-xl bg-rose-50 text-rose-600 text-xs font-bold flex items-center gap-1.5 border border-rose-200"
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5" />
-                <span>Filter</span>
-              </button>
+        {/* Product Grid & Controls */}
+        <div className="lg:col-span-3 space-y-4">
+          {/* Top Control Bar: Search Filter Toggle & Sort Dropdown */}
+          <div className="bg-white rounded-2xl p-3.5 sm:p-4 border-2 border-[#FFE8D6] shadow-[0_4px_12px_rgba(255,159,67,0.08)] flex flex-col sm:flex-row items-center justify-between gap-3">
+            {/* Mobile Filter Toggle */}
+            <button
+              onClick={() => setIsMobileFilterOpen(!isMobileFilterOpen)}
+              className="w-full sm:w-auto lg:hidden clay-btn-orange px-4 py-2 text-xs text-white flex items-center justify-center gap-2"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              <span>Filter ({hasActiveFilters ? 'Aktif' : 'Semua'})</span>
+            </button>
 
-              <p className="text-xs sm:text-sm text-slate-600">
-                Menampilkan <span className="font-bold text-slate-800">{totalCount}</span> produk
-                {selectedCategory !== 'semua' && (
-                  <span> dalam <span className="font-semibold text-rose-600">{selectedCategory}</span></span>
-                )}
-                {debouncedSearchQuery && (
-                  <span> untuk &ldquo;<span className="font-semibold text-rose-600">{debouncedSearchQuery}</span>&rdquo;</span>
-                )}
+            <div className="hidden sm:block">
+              <p className="text-xs font-heading font-bold text-slate-600">
+                Menampilkan <span className="text-[#D96B00] font-black">{products.length}</span> dari {totalCount} produk
               </p>
             </div>
 
             {/* Sort Selector */}
-            <div className="flex items-center gap-2 self-end sm:self-auto">
-              <span className="text-xs text-slate-500 flex items-center gap-1">
-                <ArrowUpDown className="w-3.5 h-3.5" />
+            <div className="flex items-center gap-2 self-end sm:self-auto w-full sm:w-auto justify-between sm:justify-end">
+              <span className="text-xs font-heading font-bold text-slate-500 flex items-center gap-1">
+                <ArrowUpDown className="w-3.5 h-3.5 text-[#FF9F43]" />
                 Urutkan:
               </span>
               <select
                 value={selectedSort}
                 onChange={(e) => setSelectedSort(e.target.value as SortOption)}
-                className="text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl px-3 py-1.5 text-slate-700 focus:outline-none focus:border-rose-500"
+                className="text-xs font-heading font-bold bg-[#FFF8F0] border-2 border-[#FFE8D6] rounded-xl px-3 py-1.5 text-slate-700 focus:outline-none focus:border-[#FF9F43] cursor-pointer"
               >
                 <option value="rekomendasi">Rekomendasi Ahli</option>
                 <option value="terpopuler">Paling Banyak Dibeli</option>
@@ -419,23 +397,23 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
 
           {/* Mobile Filter Sheet */}
           {isMobileFilterOpen && (
-            <div className="lg:hidden bg-white p-5 rounded-2xl border border-rose-200 shadow-md mb-6 space-y-4">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100">
-                <h3 className="font-bold text-sm text-slate-800">Filter Pencarian</h3>
+            <div className="lg:hidden bg-white p-5 rounded-3xl border-2 border-[#FFD4B2] shadow-lg mb-6 space-y-4 animate-in fade-in duration-150">
+              <div className="flex items-center justify-between pb-2 border-b-2 border-[#FFE8D6]">
+                <h3 className="font-heading font-black text-sm text-slate-800">Filter Pencarian</h3>
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="text-slate-400 p-1"
+                  className="text-slate-400 p-1 hover:text-slate-600"
                 >
                   <X className="w-4 h-4" />
                 </button>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-700 block mb-1">Kategori</label>
+                <label className="text-xs font-heading font-bold text-slate-700 block mb-1">Kategori</label>
                 <select
                   value={selectedCategory}
                   onChange={(e) => setSelectedCategory(e.target.value)}
-                  className="w-full text-xs p-2 border border-slate-200 rounded-xl"
+                  className="w-full text-xs font-body p-2.5 border-2 border-[#FFE8D6] rounded-xl bg-[#FFF8F0]"
                 >
                   <option value="semua">Semua Kategori</option>
                   {categories.map((cat) => (
@@ -446,23 +424,23 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Harga Min (Rp)</label>
+                  <label className="text-xs font-heading font-bold text-slate-700 block mb-1">Harga Min (Rp)</label>
                   <input
                     type="number"
                     placeholder="Min"
                     value={minPrice}
                     onChange={(e) => setMinPrice(e.target.value ? Number(e.target.value) : '')}
-                    className="w-full text-xs p-2 border border-slate-200 rounded-xl"
+                    className="w-full text-xs font-body p-2 border-2 border-[#FFE8D6] rounded-xl"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-slate-700 block mb-1">Harga Max (Rp)</label>
+                  <label className="text-xs font-heading font-bold text-slate-700 block mb-1">Harga Max (Rp)</label>
                   <input
                     type="number"
                     placeholder="Max"
                     value={maxPrice}
                     onChange={(e) => setMaxPrice(e.target.value ? Number(e.target.value) : '')}
-                    className="w-full text-xs p-2 border border-slate-200 rounded-xl"
+                    className="w-full text-xs font-body p-2 border-2 border-[#FFE8D6] rounded-xl"
                   />
                 </div>
               </div>
@@ -470,14 +448,14 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
               <div className="flex gap-2 pt-2">
                 <button
                   onClick={() => setIsMobileFilterOpen(false)}
-                  className="flex-1 py-2 bg-rose-500 text-white rounded-xl text-xs font-bold"
+                  className="flex-1 py-2.5 clay-btn-orange text-white rounded-xl text-xs font-heading font-bold"
                 >
                   Terapkan Filter
                 </button>
                 {hasActiveFilters && (
                   <button
                     onClick={handleResetFilter}
-                    className="px-3 py-2 bg-slate-100 text-slate-600 rounded-xl text-xs font-semibold"
+                    className="px-3.5 py-2.5 bg-slate-100 text-slate-600 rounded-xl text-xs font-heading font-bold"
                   >
                     Reset
                   </button>
@@ -489,39 +467,39 @@ export function CatalogView({ initialCategory: initialCategoryProp }: CatalogVie
           {/* Loading Skeleton / Spinner State */}
           {loading ? (
             <div className="space-y-4">
-              <div className="flex items-center justify-center py-10 gap-3 text-rose-500 font-medium text-sm">
-                <Loader2 className="w-6 h-6 animate-spin" />
-                <span>Memuat daftar produk...</span>
+              <div className="flex items-center justify-center py-10 gap-3 text-[#FF9F43] font-heading font-bold text-sm">
+                <Loader2 className="w-6 h-6 animate-spin text-[#FF9F43]" />
+                <span>Memuat koleksi produk terbaik...</span>
               </div>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-5">
                 {[1, 2, 3, 4, 5, 6].map((idx) => (
-                  <div key={idx} className="bg-white rounded-2xl border border-slate-100 p-4 animate-pulse">
-                    <div className="aspect-square bg-slate-100 rounded-xl mb-3" />
-                    <div className="h-4 bg-slate-100 rounded-md w-3/4 mb-2" />
-                    <div className="h-3 bg-slate-100 rounded-md w-1/2 mb-4" />
-                    <div className="h-5 bg-slate-100 rounded-md w-2/3" />
+                  <div key={idx} className="bg-white rounded-3xl border-2 border-[#FFE8D6] p-4 animate-pulse">
+                    <div className="aspect-square bg-[#FFF8F0] rounded-2xl mb-3" />
+                    <div className="h-4 bg-[#FFE8D6] rounded-md w-3/4 mb-2" />
+                    <div className="h-3 bg-[#FFE8D6] rounded-md w-1/2 mb-4" />
+                    <div className="h-6 bg-[#FFF2E5] rounded-xl w-2/3" />
                   </div>
                 ))}
               </div>
             </div>
           ) : products.length > 0 ? (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-5">
               {products.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-3xl p-10 text-center border border-slate-100 shadow-xs">
+            <div className="bg-white rounded-3xl p-10 text-center border-2 border-[#FFE8D6] shadow-[0_8px_20px_rgba(255,159,67,0.1)]">
               <div className="text-5xl mb-3">🔍</div>
-              <h3 className="text-base sm:text-lg font-bold text-slate-800 mb-1">
+              <h3 className="text-base sm:text-lg font-heading font-black text-slate-800 mb-1">
                 Tidak ada produk yang cocok
               </h3>
-              <p className="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-6">
-                Coba ubah kata kunci pencarian, sesuaikan filter harga, atau reset filter untuk melihat semua koleksi toko.
+              <p className="text-xs sm:text-sm font-body font-medium text-slate-500 max-w-md mx-auto mb-6">
+                Coba ubah kata kunci pencarian, sesuaikan rentang harga, atau reset filter untuk melihat semua koleksi toko kami.
               </p>
               <button
                 onClick={handleResetFilter}
-                className="px-5 py-2.5 bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs rounded-xl shadow-xs transition-colors"
+                className="clay-btn-orange px-5 py-2.5 text-xs text-white"
               >
                 Tampilkan Semua Produk
               </button>

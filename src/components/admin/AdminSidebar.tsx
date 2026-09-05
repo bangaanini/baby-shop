@@ -84,17 +84,17 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
       {/* Brand Header */}
       <div className="p-5 border-b border-slate-800 flex items-center justify-between">
         <Link href="/admin" className="flex items-center gap-3 group" onClick={onClose}>
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white flex items-center justify-center font-black text-xl shadow-lg shadow-rose-500/20 group-hover:scale-105 transition-transform">
-            💼
+          <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#FF9F43] to-[#EE8A2B] text-white flex items-center justify-center font-heading font-black text-xl shadow-lg shadow-[#FF9F43]/25 border border-[#F38C26] group-hover:scale-105 transition-transform">
+            <Store className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-1.5">
-              <span className="text-base font-black text-white tracking-tight">NBusiness</span>
-              <span className="text-[10px] bg-rose-500/20 text-rose-400 font-bold px-1.5 py-0.5 rounded border border-rose-500/30">
+              <span className="text-base font-heading font-black text-white tracking-tight">NBusiness</span>
+              <span className="text-[10px] bg-[#FF9F43]/20 text-[#FF9F43] font-heading font-black px-1.5 py-0.5 rounded border border-[#FF9F43]/30">
                 SELLER
               </span>
             </div>
-            <p className="text-[11px] text-slate-400 font-medium">NBusiness Seller Center</p>
+            <p className="text-[11px] font-body text-slate-400 font-medium">NBusiness Seller Center</p>
           </div>
         </Link>
         {/* Mobile close button */}
@@ -110,7 +110,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       {/* Navigation Links */}
       <div className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
-        <div className="px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="px-3 pb-2 text-[10px] font-heading font-bold uppercase tracking-wider text-slate-400">
           Menu Utama
         </div>
 
@@ -118,16 +118,16 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         <Link
           href="/admin"
           onClick={onClose}
-          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-heading font-bold transition-all group ${
             isDashboardActive
-              ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-bold'
+              ? 'clay-btn-orange text-white shadow-md font-black'
               : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
           }`}
         >
           <div className="flex items-center gap-3">
             <LayoutDashboard
               className={`w-4 h-4 transition-colors ${
-                isDashboardActive ? 'text-white' : 'text-slate-400 group-hover:text-rose-400'
+                isDashboardActive ? 'text-white' : 'text-slate-400 group-hover:text-[#FF9F43]'
               }`}
             />
             <span>Dashboard</span>
@@ -139,7 +139,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           <button
             type="button"
             onClick={() => setProductMenuOpen(!productMenuOpen)}
-            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+            className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-heading font-bold transition-all group ${
               isProductRoute
                 ? 'text-white bg-slate-800/70 font-bold'
                 : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
@@ -148,7 +148,7 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
             <div className="flex items-center gap-3">
               <Package
                 className={`w-4 h-4 transition-colors ${
-                  isProductRoute ? 'text-rose-400' : 'text-slate-400 group-hover:text-rose-400'
+                  isProductRoute ? 'text-[#FF9F43]' : 'text-slate-400 group-hover:text-[#FF9F43]'
                 }`}
               />
               <span>Produk</span>
@@ -167,15 +167,15 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               <Link
                 href="/admin/produk/tambah"
                 onClick={onClose}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-heading font-bold transition-all ${
                   isTambahProdukActive
-                    ? 'bg-rose-500 text-white font-bold shadow-xs'
+                    ? 'bg-[#FFF2E5] text-[#D96B00] font-black border border-[#FFD4B2]'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
                 <PlusCircle
                   className={`w-3.5 h-3.5 ${
-                    isTambahProdukActive ? 'text-white' : 'text-slate-400'
+                    isTambahProdukActive ? 'text-[#D96B00]' : 'text-slate-400'
                   }`}
                 />
                 <span>Tambah Produk</span>
@@ -185,15 +185,15 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
               <Link
                 href="/admin/produk"
                 onClick={onClose}
-                className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-heading font-bold transition-all ${
                   isDaftarProdukActive
-                    ? 'bg-rose-500 text-white font-bold shadow-xs'
+                    ? 'bg-[#FFF2E5] text-[#D96B00] font-black border border-[#FFD4B2]'
                     : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
                 }`}
               >
                 <ListFilter
                   className={`w-3.5 h-3.5 ${
-                    isDaftarProdukActive ? 'text-white' : 'text-slate-400'
+                    isDaftarProdukActive ? 'text-[#D96B00]' : 'text-slate-400'
                   }`}
                 />
                 <span>Daftar Produk</span>
@@ -206,16 +206,16 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         <Link
           href="/admin/pesanan"
           onClick={onClose}
-          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-heading font-bold transition-all group ${
             isPesananActive
-              ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-bold'
+              ? 'clay-btn-orange text-white shadow-md font-black'
               : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
           }`}
         >
           <div className="flex items-center gap-3">
             <ShoppingBag
               className={`w-4 h-4 transition-colors ${
-                isPesananActive ? 'text-white' : 'text-slate-400 group-hover:text-rose-400'
+                isPesananActive ? 'text-white' : 'text-slate-400 group-hover:text-[#FF9F43]'
               }`}
             />
             <span>Pesanan</span>
@@ -226,19 +226,19 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         <Link
           href="/admin/statistik"
           onClick={onClose}
-          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-heading font-bold transition-all group ${
             isStatistikActive
-              ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-bold'
+              ? 'clay-btn-orange text-white shadow-md font-black'
               : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
           }`}
         >
           <div className="flex items-center gap-3">
             <TrendingUp
               className={`w-4 h-4 transition-colors ${
-                isStatistikActive ? 'text-white' : 'text-slate-400 group-hover:text-rose-400'
+                isStatistikActive ? 'text-white' : 'text-slate-400 group-hover:text-[#FF9F43]'
               }`}
             />
-            <span>Statistik</span>
+            <span>Statistik Penjualan</span>
           </div>
         </Link>
 
@@ -246,24 +246,24 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
         <Link
           href="/admin/setting"
           onClick={onClose}
-          className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all group ${
+          className={`flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-heading font-bold transition-all group ${
             isSettingActive
-              ? 'bg-rose-500 text-white shadow-md shadow-rose-500/20 font-bold'
+              ? 'clay-btn-orange text-white shadow-md font-black'
               : 'text-slate-300 hover:bg-slate-800/80 hover:text-white'
           }`}
         >
           <div className="flex items-center gap-3">
             <Settings
               className={`w-4 h-4 transition-colors ${
-                isSettingActive ? 'text-white' : 'text-slate-400 group-hover:text-rose-400'
+                isSettingActive ? 'text-white' : 'text-slate-400 group-hover:text-[#FF9F43]'
               }`}
             />
-            <span>Setting</span>
+            <span>Pengaturan Toko</span>
           </div>
         </Link>
 
         {/* Akses Luar Section */}
-        <div className="pt-4 px-3 pb-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="pt-4 px-3 pb-2 text-[10px] font-heading font-bold uppercase tracking-wider text-slate-400">
           Akses Luar
         </div>
 
@@ -271,10 +271,10 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold text-slate-300 hover:bg-slate-800/80 hover:text-white transition-all group"
+          className="flex items-center justify-between px-3.5 py-2.5 rounded-2xl text-xs font-heading font-bold text-slate-300 hover:bg-slate-800/80 hover:text-[#87CEEB] transition-all group"
         >
           <div className="flex items-center gap-3">
-            <Store className="w-4 h-4 text-slate-400 group-hover:text-amber-400" />
+            <Store className="w-4 h-4 text-slate-400 group-hover:text-[#87CEEB]" />
             <span>Ke Toko Utama</span>
           </div>
           <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-white" />
@@ -283,17 +283,17 @@ export function AdminSidebar({ isOpen, onClose }: AdminSidebarProps) {
 
       {/* Admin User Info & Logout Badge */}
       <div className="p-3 border-t border-slate-800 bg-slate-900/60">
-        <div className="p-3 bg-slate-800/80 rounded-2xl border border-slate-700/60 space-y-3">
+        <div className="p-3 bg-slate-800/80 rounded-3xl border border-slate-700/60 space-y-3">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-rose-500 to-amber-500 text-white flex items-center justify-center font-bold text-xs shadow-inner">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-[#87CEEB] to-[#FF9F43] text-white flex items-center justify-center font-heading font-black text-xs shadow-inner">
               {getInitials(displayName)}
             </div>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1.5">
-                <p className="text-xs font-bold text-white truncate">{displayName}</p>
-                <ShieldCheck className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                <p className="text-xs font-heading font-black text-white truncate">{displayName}</p>
+                <ShieldCheck className="w-3.5 h-3.5 text-[#FF9F43] shrink-0" />
               </div>
-              <p className="text-[10px] text-slate-400 truncate">{userEmail}</p>
+              <p className="text-[10px] font-body text-slate-400 truncate">{userEmail}</p>
             </div>
           </div>
 

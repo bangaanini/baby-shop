@@ -210,16 +210,16 @@ export function OrderHistoryView() {
         </div>
       )}
 
-      {/* Header */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-rose-100 shadow-xs mb-8">
+      {/* Header - Clay Block */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] mb-8">
         <div className="max-w-3xl">
-          <span className="text-xs font-bold uppercase tracking-wider text-rose-500 bg-rose-50 px-2.5 py-1 rounded-full inline-block mb-2">
+          <span className="clay-badge-orange text-xs px-3 py-1 mb-2.5">
             Akun Saya & Pesanan
           </span>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-800 tracking-tight mb-2">
+          <h1 className="text-2xl sm:text-3xl font-heading font-black text-slate-800 tracking-tight mb-2">
             Riwayat & Status Pesanan 📦
           </h1>
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
+          <p className="text-xs sm:text-sm font-body font-medium text-slate-500 leading-relaxed">
             Pantau status proses barang, lacak posisi kurir ekspres secara real-time, konfirmasi penerimaan paket, atau beli lagi produk favorit.
           </p>
         </div>
@@ -231,9 +231,9 @@ export function OrderHistoryView() {
             placeholder="Cari no. invoice (BK-...) atau nama produk..."
             value={searchInvoice}
             onChange={(e) => setSearchInvoice(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 text-xs rounded-2xl border border-slate-200 focus:outline-none focus:border-rose-500 transition-colors"
+            className="w-full pl-10 pr-4 py-2.5 text-xs font-body rounded-2xl border-2 border-[#FFE8D6] bg-[#FFF8F0] focus:outline-none focus:border-[#FF9F43] transition-colors text-slate-800"
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#FF9F43] absolute left-3.5 top-1/2 -translate-y-1/2" />
         </div>
       </div>
 
@@ -249,10 +249,10 @@ export function OrderHistoryView() {
             key={tab.key}
             type="button"
             onClick={() => setActiveTab(tab.key)}
-            className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer ${
+            className={`px-4 py-2.5 rounded-2xl text-xs font-heading font-bold transition-all whitespace-nowrap cursor-pointer ${
               activeTab === tab.key
-                ? 'bg-rose-500 text-white shadow-xs scale-105'
-                : 'bg-white text-slate-600 hover:bg-slate-100 border border-slate-200'
+                ? 'clay-btn-orange text-white'
+                : 'bg-white text-slate-700 hover:bg-[#FFF8F0] hover:text-[#D96B00] border-2 border-[#FFE8D6]'
             }`}
           >
             {tab.label}

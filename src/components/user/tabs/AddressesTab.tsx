@@ -343,11 +343,11 @@ export function AddressesTab({
             <h2 className="text-lg sm:text-xl font-black text-slate-800">
               Daftar Alamat Pengiriman
             </h2>
-            <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-50 text-rose-600 border border-rose-100">
+            <span className="clay-badge-orange text-xs px-2.5 py-0.5">
               {addresses.length} Alamat
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs font-body font-medium text-slate-500 mt-1">
             Kelola daftar alamat pengiriman pesanan Anda untuk memudahkan proses checkout belanja.
           </p>
         </div>
@@ -358,7 +358,7 @@ export function AddressesTab({
             setEditingAddress(null);
             setIsModalOpen(true);
           }}
-          className="px-5 py-2.5 rounded-2xl bg-rose-500 hover:bg-rose-600 active:scale-98 text-white text-xs font-bold shadow-md shadow-rose-200 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+          className="clay-btn-orange px-5 py-2.5 text-white text-xs font-heading font-bold shadow-md flex items-center justify-center gap-2 shrink-0 cursor-pointer"
         >
           <Plus className="w-4 h-4" />
           <span>Tambah Alamat Baru</span>
@@ -366,17 +366,17 @@ export function AddressesTab({
       </div>
 
       {/* Search & Filter Toolbar */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-100 shadow-xs flex flex-col sm:flex-row items-center gap-3">
+      <div className="bg-white rounded-3xl p-4 border-2 border-[#FFE8D6] shadow-[0_6px_14px_rgba(255,159,67,0.08)] flex flex-col sm:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
           <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-            <Search className="w-4 h-4" />
+            <Search className="w-4 h-4 text-[#FF9F43]" />
           </div>
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Cari berdasarkan nama penerima, label, kota, atau alamat..."
-            className="w-full pl-10 pr-9 py-2 rounded-xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-rose-200 focus:border-rose-500 transition-all"
+            className="w-full pl-10 pr-9 py-2.5 rounded-xl border-2 border-[#FFE8D6] bg-[#FFF8F0] text-xs font-body text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#FF9F43] transition-all"
           />
           {searchQuery && (
             <button

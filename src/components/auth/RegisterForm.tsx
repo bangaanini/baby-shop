@@ -15,9 +15,7 @@ import {
   AlertCircle,
   Loader2,
   CheckCircle2,
-  ShieldCheck,
-  Sparkles,
-  Gift,
+  Store,
 } from 'lucide-react';
 
 function GoogleIcon({ className = 'w-4 h-4' }: { className?: string }) {
@@ -152,38 +150,38 @@ function RegisterFormContent() {
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto">
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-rose-100 shadow-xl shadow-rose-100/40 relative overflow-hidden">
+    <div className="w-full max-w-lg mx-auto py-6">
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#FFE8D6] shadow-[0_16px_36px_rgba(255,159,67,0.14),inset_0_2px_4px_rgba(255,255,255,0.95)] relative overflow-hidden">
         {/* Decorative ambient blur */}
-        <div className="absolute -top-16 -right-16 w-36 h-36 bg-rose-200/50 rounded-full blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-16 -left-16 w-36 h-36 bg-pink-200/40 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -top-16 -right-16 w-36 h-36 bg-[#FFE8D6]/60 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute -bottom-16 -left-16 w-36 h-36 bg-[#87CEEB]/25 rounded-full blur-2xl pointer-events-none" />
 
         <div className="relative">
           {/* Header */}
           <div className="text-center mb-6">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-tr from-rose-500 to-pink-500 text-white shadow-lg shadow-rose-500/25 mb-3 text-2xl font-black">
-              💼
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-[#FF9F43] to-[#EE8A2B] text-white border-2 border-[#F38C26] shadow-[0_6px_14px_rgba(255,159,67,0.35)] mb-3">
+              <Store className="w-7 h-7" />
             </div>
-            <h1 className="text-2xl font-black text-slate-800 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-heading font-black text-slate-800 tracking-tight">
               Daftar Akun Baru
             </h1>
-            <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            <p className="text-xs sm:text-sm font-body font-medium text-slate-500 mt-1">
               Bergabung bersama ribuan Bunda & Ayah hebat di NBusiness
             </p>
           </div>
 
           {/* Feedback Alerts */}
           {errorMessage && (
-            <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs sm:text-sm flex items-start gap-2.5 animate-in fade-in slide-in-from-top-1 duration-200">
+            <div className="mb-5 p-3.5 rounded-2xl bg-rose-50 border-2 border-rose-200 text-rose-700 text-xs sm:text-sm flex items-start gap-2.5 font-heading font-bold">
               <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-              <div className="flex-1 font-medium leading-relaxed">{errorMessage}</div>
+              <div className="flex-1 leading-relaxed">{errorMessage}</div>
             </div>
           )}
 
           {successMessage && (
-            <div className="mb-5 p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs sm:text-sm flex items-start gap-2.5 animate-in fade-in slide-in-from-top-1 duration-200">
-              <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-              <div className="flex-1 font-semibold leading-relaxed">{successMessage}</div>
+            <div className="mb-5 p-3.5 rounded-2xl bg-emerald-50 border-2 border-emerald-200 text-emerald-800 text-xs sm:text-sm flex items-start gap-2.5 font-heading font-bold">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+              <div className="flex-1 leading-relaxed">{successMessage}</div>
             </div>
           )}
 
@@ -193,7 +191,7 @@ function RegisterFormContent() {
               type="button"
               onClick={handleGoogleSignUp}
               disabled={isLoading || isGoogleLoading}
-              className="w-full py-3 px-4 rounded-2xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-bold text-xs sm:text-sm shadow-xs flex items-center justify-center gap-3 transition-all cursor-pointer disabled:opacity-50 active:scale-[0.99]"
+              className="w-full py-3 px-4 rounded-2xl border-2 border-[#FFE8D6] bg-white hover:bg-[#FFF8F0] text-slate-700 font-heading font-bold text-xs sm:text-sm shadow-[0_4px_12px_rgba(255,159,67,0.08)] flex items-center justify-center gap-3 transition-all cursor-pointer disabled:opacity-50 active:scale-[0.99]"
             >
               {isGoogleLoading ? (
                 <>
@@ -211,8 +209,8 @@ function RegisterFormContent() {
 
           {/* Divider */}
           <div className="relative flex items-center justify-center mb-5">
-            <div className="border-t border-slate-200 w-full" />
-            <span className="bg-white px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+            <div className="border-t-2 border-[#FFE8D6] w-full" />
+            <span className="bg-white px-3 text-[11px] font-heading font-bold text-slate-400 uppercase tracking-wider">
               atau dengan email
             </span>
           </div>
@@ -221,12 +219,12 @@ function RegisterFormContent() {
           <form onSubmit={handleRegister} className="space-y-4">
             {/* Full Name */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                Nama Lengkap Bunda / Ayah <span className="text-rose-500">*</span>
+              <label className="block text-xs font-heading font-bold text-slate-700 mb-1.5">
+                Nama Lengkap Bunda / Ayah <span className="text-[#FF9F43]">*</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                  <User className="w-4 h-4" />
+                  <User className="w-4 h-4 text-[#FF9F43]" />
                 </div>
                 <input
                   type="text"
@@ -235,7 +233,7 @@ function RegisterFormContent() {
                   placeholder="Contoh: Bunda Sarah Clarissa"
                   required
                   disabled={isLoading}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-rose-500 focus:ring-2 focus:ring-rose-100 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl border-2 border-[#FFE8D6] bg-[#FFF8F0] text-xs sm:text-sm font-body text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#FF9F43] transition-all"
                 />
               </div>
             </div>
@@ -243,12 +241,12 @@ function RegisterFormContent() {
             {/* Email & Phone Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Email <span className="text-rose-500">*</span>
+                <label className="block text-xs font-heading font-bold text-slate-700 mb-1.5">
+                  Email <span className="text-[#FF9F43]">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Mail className="w-4 h-4" />
+                    <Mail className="w-4 h-4 text-[#FF9F43]" />
                   </div>
                   <input
                     type="email"
@@ -257,18 +255,18 @@ function RegisterFormContent() {
                     placeholder="nama@email.com"
                     required
                     disabled={isLoading}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-rose-500 focus:ring-2 focus:ring-rose-100 transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl border-2 border-[#FFE8D6] bg-[#FFF8F0] text-xs sm:text-sm font-body text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#FF9F43] transition-all"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  No. WhatsApp <span className="text-rose-500">*</span>
+                <label className="block text-xs font-heading font-bold text-slate-700 mb-1.5">
+                  No. WhatsApp <span className="text-[#FF9F43]">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Phone className="w-4 h-4" />
+                    <Phone className="w-4 h-4 text-[#FF9F43]" />
                   </div>
                   <input
                     type="tel"
@@ -277,7 +275,7 @@ function RegisterFormContent() {
                     placeholder="0812-3456-7890"
                     required
                     disabled={isLoading}
-                    className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-rose-500 focus:ring-2 focus:ring-rose-100 transition-all"
+                    className="w-full pl-10 pr-4 py-2.5 rounded-2xl border-2 border-[#FFE8D6] bg-[#FFF8F0] text-xs sm:text-sm font-body text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#FF9F43] transition-all"
                   />
                 </div>
               </div>
@@ -286,12 +284,12 @@ function RegisterFormContent() {
             {/* Password & Confirm Password Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Kata Sandi <span className="text-rose-500">*</span>
+                <label className="block text-xs font-heading font-bold text-slate-700 mb-1.5">
+                  Kata Sandi <span className="text-[#FF9F43]">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Lock className="w-4 h-4" />
+                    <Lock className="w-4 h-4 text-[#FF9F43]" />
                   </div>
                   <input
                     type={showPassword ? 'text' : 'password'}
@@ -300,12 +298,12 @@ function RegisterFormContent() {
                     placeholder="Min. 8 karakter"
                     required
                     disabled={isLoading}
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-rose-500 focus:ring-2 focus:ring-rose-100 transition-all"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-2xl border-2 border-[#FFE8D6] bg-[#FFF8F0] text-xs sm:text-sm font-body text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#FF9F43] transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
                     tabIndex={-1}
                   >
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -314,12 +312,12 @@ function RegisterFormContent() {
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                  Konfirmasi Sandi <span className="text-rose-500">*</span>
+                <label className="block text-xs font-heading font-bold text-slate-700 mb-1.5">
+                  Konfirmasi Sandi <span className="text-[#FF9F43]">*</span>
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                    <Lock className="w-4 h-4" />
+                    <Lock className="w-4 h-4 text-[#FF9F43]" />
                   </div>
                   <input
                     type={showConfirmPassword ? 'text' : 'password'}
@@ -328,12 +326,12 @@ function RegisterFormContent() {
                     placeholder="Ulangi kata sandi"
                     required
                     disabled={isLoading}
-                    className="w-full pl-10 pr-10 py-2.5 rounded-xl border border-slate-200 bg-slate-50/50 text-xs sm:text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-rose-500 focus:ring-2 focus:ring-rose-100 transition-all"
+                    className="w-full pl-10 pr-10 py-2.5 rounded-2xl border-2 border-[#FFE8D6] bg-[#FFF8F0] text-xs sm:text-sm font-body text-slate-800 placeholder-slate-400 focus:outline-none focus:bg-white focus:border-[#FF9F43] transition-all"
                   />
                   <button
                     type="button"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                    className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
                     tabIndex={-1}
                   >
                     {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
@@ -343,26 +341,26 @@ function RegisterFormContent() {
             </div>
 
             {/* Terms & Conditions Notice */}
-            <p className="text-[11px] text-slate-500 leading-relaxed pt-1">
+            <p className="text-[11px] font-body text-slate-500 leading-relaxed pt-1">
               Dengan mendaftar, Anda menyetujui{' '}
-              <span className="text-rose-600 font-medium">Syarat & Ketentuan</span> serta{' '}
-              <span className="text-rose-600 font-medium">Kebijakan Privasi</span> NBusiness Store.
+              <span className="text-[#D96B00] font-heading font-bold">Syarat & Ketentuan</span> serta{' '}
+              <span className="text-[#D96B00] font-heading font-bold">Kebijakan Privasi</span> NBusiness Store.
             </p>
 
             {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-3 py-3 px-4 rounded-xl bg-gradient-to-r from-rose-500 via-pink-500 to-rose-600 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-xs sm:text-sm shadow-md shadow-rose-500/25 hover:shadow-lg transition-all active:scale-[0.99] disabled:opacity-60 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full mt-3 clay-btn-orange py-3.5 px-4 text-xs sm:text-sm text-white font-heading font-black shadow-md cursor-pointer disabled:opacity-60"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
                   <span>Memproses Pendaftaran...</span>
                 </>
               ) : (
                 <>
-                  <UserPlus className="w-4 h-4" />
+                  <UserPlus className="w-4 h-4 mr-2" />
                   <span>Daftar Akun Sekarang</span>
                 </>
               )}
@@ -370,7 +368,7 @@ function RegisterFormContent() {
           </form>
 
           {/* Footer link to Login */}
-          <div className="mt-6 text-center text-xs text-slate-500">
+          <div className="mt-6 text-center text-xs font-body font-medium text-slate-500">
             <span>Sudah memiliki akun NBusiness? </span>
             <Link
               href={
@@ -378,7 +376,7 @@ function RegisterFormContent() {
                   ? `/auth/login?redirect=${encodeURIComponent(redirectParam)}`
                   : '/auth/login'
               }
-              className="font-bold text-rose-600 hover:text-rose-700 hover:underline transition-all"
+              className="font-heading font-bold text-[#D96B00] hover:text-[#FF9F43] underline transition-all"
             >
               Masuk di Sini
             </Link>
@@ -393,9 +391,9 @@ export function RegisterForm() {
   return (
     <Suspense
       fallback={
-        <div className="w-full max-w-lg mx-auto p-8 bg-white rounded-3xl border border-rose-100 flex flex-col items-center justify-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 text-rose-500 animate-spin mb-2" />
-          <p className="text-xs text-slate-500 font-medium">Memuat formulir pendaftaran...</p>
+        <div className="w-full max-w-lg mx-auto p-8 bg-white rounded-3xl border-2 border-[#FFE8D6] flex flex-col items-center justify-center min-h-[400px]">
+          <Loader2 className="w-8 h-8 text-[#FF9F43] animate-spin mb-2" />
+          <p className="text-xs font-heading font-bold text-slate-500">Memuat formulir pendaftaran...</p>
         </div>
       }
     >

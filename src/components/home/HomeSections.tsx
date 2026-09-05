@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { Flame, ArrowRight } from 'lucide-react';
+import { Flame, ArrowRight, Sparkles, Star, Zap } from 'lucide-react';
 import { Product } from '@/types/product';
 import { ProductCard } from '@/components/product/ProductCard';
 
@@ -15,36 +15,36 @@ export function PopularSection({ products }: SectionProps) {
 
   return (
     <section id="populer" className="mb-14 scroll-mt-28">
-      <div className="flex items-end justify-between mb-6 pb-2 border-b border-rose-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shadow-xs">
+      <div className="flex items-end justify-between mb-6 pb-3 border-b-2 border-[#FFE8D6]">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-[#FF9F43] text-white flex items-center justify-center border-2 border-[#F38C26] shadow-[0_6px_14px_rgba(255,159,67,0.35),inset_0_2px_4px_rgba(255,255,255,0.6)]">
             <Flame className="w-6 h-6" />
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-black text-slate-800">
-                Produk Populer
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-xl sm:text-2xl font-heading font-black text-slate-800 tracking-tight">
+                Produk Paling Populer
               </h2>
-              <span className="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                Paling Banyak Dibeli
+              <span className="clay-badge-orange text-[10px] sm:text-[11px] font-heading font-extrabold px-2.5 py-0.5">
+                🔥 Favorit Bunda
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Pilihan favorit orang tua lain dengan penilaian terbaik
+            <p className="text-xs sm:text-sm font-body font-medium text-slate-500 mt-0.5">
+              Pilihan favorit orang tua lain dengan penilaian dan review terbaik
             </p>
           </div>
         </div>
 
         <Link
-          href="/katalog?sort=terlaris"
-          className="text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 group whitespace-nowrap"
+          href="/katalog?sort=terpopuler"
+          className="text-xs sm:text-sm font-heading font-bold text-[#D96B00] hover:text-[#FF9F43] flex items-center gap-1 group whitespace-nowrap bg-white px-3 py-1.5 rounded-xl border border-[#FFD4B2] shadow-xs hover:shadow-sm transition-all"
         >
           <span>Lihat Semua</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-6">
         {popularList.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
@@ -58,36 +58,36 @@ export function NewArrivalsSection({ products }: SectionProps) {
 
   return (
     <section id="terbaru" className="mb-14 scroll-mt-28">
-      <div className="flex items-end justify-between mb-6 pb-2 border-b border-rose-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-sky-500 text-white flex items-center justify-center shadow-xs text-xl">
+      <div className="flex items-end justify-between mb-6 pb-3 border-b-2 border-[#FFE8D6]">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-[#87CEEB] text-[#0A445C] flex items-center justify-center border-2 border-[#6EBEDB] shadow-[0_6px_14px_rgba(135,206,235,0.4),inset_0_2px_4px_rgba(255,255,255,0.7)] text-xl">
             ✨
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-black text-slate-800">
-                Produk Terbaru
-              </h2>
-              <span className="bg-sky-100 text-sky-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-xl sm:text-2xl font-heading font-black text-slate-800 tracking-tight">
                 Koleksi Baru Masuk
+              </h2>
+              <span className="clay-badge-sky text-[10px] sm:text-[11px] font-heading font-extrabold px-2.5 py-0.5">
+                🌟 New Arrival
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Koleksi barang baru yang baru masuk toko untuk buah hati Anda
+            <p className="text-xs sm:text-sm font-body font-medium text-slate-500 mt-0.5">
+              Barang baru masuk toko dengan model kekinian dan stok lengkap
             </p>
           </div>
         </div>
 
         <Link
           href="/katalog?sort=terbaru"
-          className="text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 group whitespace-nowrap"
+          className="text-xs sm:text-sm font-heading font-bold text-[#0E678E] hover:text-[#87CEEB] flex items-center gap-1 group whitespace-nowrap bg-white px-3 py-1.5 rounded-xl border border-[#BCE4F7] shadow-xs hover:shadow-sm transition-all"
         >
           <span>Lihat Semua</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-6">
         {newArrivalList.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
@@ -101,36 +101,36 @@ export function RecommendedSection({ products }: SectionProps) {
 
   return (
     <section id="rekomendasi" className="mb-14 scroll-mt-28">
-      <div className="flex items-end justify-between mb-6 pb-2 border-b border-rose-100">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-indigo-500 text-white flex items-center justify-center shadow-xs text-xl">
-            🌟
+      <div className="flex items-end justify-between mb-6 pb-3 border-b-2 border-[#FFE8D6]">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FF9F43] to-[#87CEEB] text-white flex items-center justify-center border-2 border-white/60 shadow-[0_6px_14px_rgba(255,159,67,0.25)] text-xl">
+            🏆
           </div>
           <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-xl sm:text-2xl font-black text-slate-800">
-                Rekomendasi untuk Anak
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-xl sm:text-2xl font-heading font-black text-slate-800 tracking-tight">
+                Rekomendasi Ahli Tumbuh Kembang
               </h2>
-              <span className="bg-indigo-100 text-indigo-800 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">
-                Pilihan Ahli
+              <span className="clay-badge-orange text-[10px] sm:text-[11px] font-heading font-extrabold px-2.5 py-0.5">
+                SNI Teruji
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-500">
-              Saran produk yang disesuaikan dengan kebutuhan tumbuh kembang si kecil
+            <p className="text-xs sm:text-sm font-body font-medium text-slate-500 mt-0.5">
+              Saran perlengkapan terstandar aman untuk menunjang kenyamanan dan kecerdasan anak
             </p>
           </div>
         </div>
 
         <Link
           href="/katalog?filter=rekomendasi"
-          className="text-xs sm:text-sm font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 group whitespace-nowrap"
+          className="text-xs sm:text-sm font-heading font-bold text-[#D96B00] hover:text-[#FF9F43] flex items-center gap-1 group whitespace-nowrap bg-white px-3 py-1.5 rounded-xl border border-[#FFD4B2] shadow-xs hover:shadow-sm transition-all"
         >
           <span>Lihat Semua</span>
           <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-6">
         {recommendedList.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
@@ -143,38 +143,42 @@ export function PromoSection({ products }: SectionProps) {
   const promoList = products.filter((p) => p.isPromo);
 
   return (
-    <section id="promo" className="mb-14 scroll-mt-28 bg-gradient-to-r from-rose-50 via-pink-50 to-amber-50 p-6 sm:p-8 rounded-3xl border border-rose-200">
+    <section
+      id="promo"
+      className="mb-14 scroll-mt-28 bg-gradient-to-r from-[#FFF2E5] via-[#FFF8F0] to-[#F0F9FD] p-6 sm:p-8 rounded-3xl border-2 border-[#FFD4B2] shadow-[0_14px_30px_-4px_rgba(255,159,67,0.18),inset_0_2px_4px_rgba(255,255,255,0.9)]"
+    >
       <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-rose-600 text-white flex items-center justify-center shadow-xs text-xl animate-bounce">
+        <div className="flex items-center gap-3.5">
+          <div className="w-12 h-12 rounded-2xl bg-[#FF9F43] text-white flex items-center justify-center border-2 border-[#F38C26] shadow-[0_6px_14px_rgba(255,159,67,0.4),inset_0_2px_4px_rgba(255,255,255,0.6)] text-xl animate-bounce">
             ⚡
           </div>
           <div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <h2 className="text-xl sm:text-2xl font-black text-rose-700">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h2 className="text-xl sm:text-2xl font-heading font-black text-[#D96B00] tracking-tight">
                 Promo Hemat Rutin
               </h2>
-              <span className="bg-rose-500 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase animate-pulse">
+              <span className="clay-badge-solid-orange text-[10px] sm:text-[11px] font-heading font-extrabold px-3 py-0.5 animate-pulse">
                 Flash Sale Terbatas
               </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-600">
-              Diskon spesial berkala hingga 50%+ agar belanja kebutuhan anak jadi lebih hemat!
+            <p className="text-xs sm:text-sm font-body font-medium text-slate-600 mt-0.5">
+              Diskon spesial berkala hingga 50%+ agar belanja kebutuhan anak jadi jauh lebih hemat!
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2 bg-white px-3 py-1.5 rounded-xl border border-rose-200 text-xs font-bold text-slate-700 shadow-2xs self-start sm:self-auto">
-          <span className="text-rose-600">Berakhir dalam:</span>
-          <div className="flex items-center gap-1 font-mono text-white">
-            <span className="bg-rose-500 px-1.5 py-0.5 rounded-md">08</span>:
-            <span className="bg-rose-500 px-1.5 py-0.5 rounded-md">45</span>:
-            <span className="bg-rose-500 px-1.5 py-0.5 rounded-md">19</span>
+        {/* Countdown Timer Clay Block */}
+        <div className="flex items-center gap-2.5 bg-white px-4 py-2 rounded-2xl border-2 border-[#FFD4B2] shadow-[0_4px_12px_rgba(255,159,67,0.12),inset_0_2px_3px_rgba(255,255,255,0.9)] text-xs font-heading font-bold text-slate-700 self-start sm:self-auto">
+          <span className="text-[#D96B00]">Berakhir dalam:</span>
+          <div className="flex items-center gap-1 font-mono text-white text-xs">
+            <span className="bg-[#FF9F43] px-2 py-1 rounded-lg border border-[#F38C26] shadow-xs">08</span>:
+            <span className="bg-[#FF9F43] px-2 py-1 rounded-lg border border-[#F38C26] shadow-xs">45</span>:
+            <span className="bg-[#FF9F43] px-2 py-1 rounded-lg border border-[#F38C26] shadow-xs">19</span>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-6">
         {promoList.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}

@@ -1,16 +1,55 @@
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+import localFont from 'next/font/local';
 import { paymentService } from '@/server/services/payment.service';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
+const nunitoHeading = localFont({
+  src: [
+    {
+      path: '../../public/font/Nunito/static/Nunito-Bold.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+    {
+      path: '../../public/font/Nunito/static/Nunito-ExtraBold.ttf',
+      weight: '800',
+      style: 'normal',
+    },
+    {
+      path: '../../public/font/Nunito/static/Nunito-Black.ttf',
+      weight: '900',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-heading',
+  display: 'swap',
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+const quicksandBody = localFont({
+  src: [
+    {
+      path: '../../public/font/Quicksand/static/Quicksand-Medium.ttf',
+      weight: '500',
+      style: 'normal',
+    },
+    {
+      path: '../../public/font/Quicksand/static/Quicksand-Regular.ttf',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: '../../public/font/Quicksand/static/Quicksand-SemiBold.ttf',
+      weight: '600',
+      style: 'normal',
+    },
+    {
+      path: '../../public/font/Quicksand/static/Quicksand-Bold.ttf',
+      weight: '700',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-body',
+  display: 'swap',
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -65,9 +104,9 @@ export default function RootLayout({
   return (
     <html
       lang="id"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased scroll-smooth`}
+      className={`${nunitoHeading.variable} ${quicksandBody.variable} h-full antialiased scroll-smooth`}
     >
-      <body className="min-h-full flex flex-col font-sans bg-slate-50 text-slate-800">{children}</body>
+      <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E]">{children}</body>
     </html>
   );
 }

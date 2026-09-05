@@ -1,26 +1,283 @@
 @import "tailwindcss";
 
+@theme {
+  --font-heading: var(--font-heading), 'Nunito', sans-serif;
+  --font-body: var(--font-body), 'Quicksand', sans-serif;
+  --font-sans: var(--font-body), 'Quicksand', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  /* Playful Warm Color Palette */
+  --color-warm-orange: #FF9F43;
+  --color-warm-orange-hover: #EE8A2B;
+  --color-warm-orange-light: #FFF2E5;
+  --color-warm-orange-dark: #D46B08;
+
+  --color-sky-blue: #87CEEB;
+  --color-sky-blue-hover: #6EBEDB;
+  --color-sky-blue-light: #F0F9FD;
+  --color-sky-blue-dark: #2E86AB;
+
+  --color-warm-cream: #FFF8F0;
+  --color-warm-cream-dark: #F7EFE5;
+  --color-clay-surface: #FFFFFF;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --background: #FFF8F0;
+  --foreground: #2D3748;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #FFF8F0;
+  color: #2D3748;
+  font-family: var(--font-body), 'Quicksand', sans-serif;
+  font-weight: 500;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading), 'Nunito', sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* ===================================================
+   CLAYMORPHISM & VIBRANT BLOCK-BASED UTILITY CLASSES
+   =================================================== */
+
+/* Clay Cards & Surfaces */
+.clay-card {
+  background-color: #FFFFFF;
+  border: 2px solid #FFE8D6;
+  border-radius: 1.5rem;
+  box-shadow:
+    0 10px 24px -4px rgba(255, 159, 67, 0.12),
+    0 4px 8px -2px rgba(0, 0, 0, 0.03),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -3px 6px 0 rgba(255, 159, 67, 0.12);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.clay-card:hover {
+  transform: translateY(-3px);
+  border-color: #FFD4B2;
+  box-shadow:
+    0 16px 32px -4px rgba(255, 159, 67, 0.2),
+    0 6px 14px -2px rgba(0, 0, 0, 0.05),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 1),
+    inset 0 -3px 6px 0 rgba(255, 159, 67, 0.16);
+}
+
+.clay-card-sky {
+  background-color: #FFFFFF;
+  border: 2px solid #DDF2FC;
+  border-radius: 1.5rem;
+  box-shadow:
+    0 10px 24px -4px rgba(135, 206, 235, 0.18),
+    0 4px 8px -2px rgba(0, 0, 0, 0.03),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -3px 6px 0 rgba(135, 206, 235, 0.15);
+  transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.clay-card-sky:hover {
+  transform: translateY(-3px);
+  border-color: #BCE4F7;
+  box-shadow:
+    0 16px 32px -4px rgba(135, 206, 235, 0.26),
+    0 6px 14px -2px rgba(0, 0, 0, 0.05),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 1),
+    inset 0 -3px 6px 0 rgba(135, 206, 235, 0.2);
+}
+
+.clay-card-cream {
+  background-color: #FFF2E5;
+  border: 2px solid #FFDFC2;
+  border-radius: 1.5rem;
+  box-shadow:
+    0 8px 20px -4px rgba(255, 159, 67, 0.15),
+    inset 0 2px 4px rgba(255, 255, 255, 0.85),
+    inset 0 -2px 4px rgba(255, 159, 67, 0.1);
+}
+
+/* Clay Buttons */
+.clay-btn-orange {
+  background-color: #FF9F43;
+  color: #FFFFFF;
+  font-family: var(--font-heading), 'Nunito', sans-serif;
+  font-weight: 700;
+  border: 2px solid #F38C26;
+  border-radius: 1rem;
+  box-shadow:
+    0 8px 18px -2px rgba(255, 159, 67, 0.45),
+    0 3px 6px -1px rgba(255, 159, 67, 0.25),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.6),
+    inset 0 -3px 5px 0 rgba(195, 85, 0, 0.28);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clay-btn-orange:hover {
+  transform: translateY(-2px);
+  background-color: #EE8A2B;
+  box-shadow:
+    0 12px 22px -2px rgba(255, 159, 67, 0.55),
+    0 4px 8px -1px rgba(255, 159, 67, 0.35),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -3px 5px 0 rgba(195, 85, 0, 0.32);
+}
+
+.clay-btn-orange:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 4px 8px -1px rgba(255, 159, 67, 0.4),
+    inset 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.clay-btn-sky {
+  background-color: #87CEEB;
+  color: #0A445C;
+  font-family: var(--font-heading), 'Nunito', sans-serif;
+  font-weight: 700;
+  border: 2px solid #6EBEDB;
+  border-radius: 1rem;
+  box-shadow:
+    0 8px 18px -2px rgba(135, 206, 235, 0.5),
+    0 3px 6px -1px rgba(135, 206, 235, 0.3),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.75),
+    inset 0 -3px 5px 0 rgba(40, 140, 180, 0.28);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clay-btn-sky:hover {
+  transform: translateY(-2px);
+  background-color: #79C5E3;
+  box-shadow:
+    0 12px 22px -2px rgba(135, 206, 235, 0.6),
+    0 4px 8px -1px rgba(135, 206, 235, 0.4),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.85),
+    inset 0 -3px 5px 0 rgba(40, 140, 180, 0.32);
+}
+
+.clay-btn-sky:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 4px 8px -1px rgba(135, 206, 235, 0.4),
+    inset 0 2px 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.clay-btn-white {
+  background-color: #FFFFFF;
+  color: #2D3748;
+  font-family: var(--font-heading), 'Nunito', sans-serif;
+  font-weight: 700;
+  border: 2px solid #FFE8D6;
+  border-radius: 1rem;
+  box-shadow:
+    0 6px 14px -2px rgba(255, 159, 67, 0.14),
+    0 2px 4px -1px rgba(0, 0, 0, 0.04),
+    inset 0 2px 3px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 4px 0 rgba(255, 159, 67, 0.1);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.clay-btn-white:hover {
+  transform: translateY(-2px);
+  border-color: #FFD4B2;
+  box-shadow:
+    0 10px 18px -2px rgba(255, 159, 67, 0.2),
+    inset 0 2px 3px 0 rgba(255, 255, 255, 1),
+    inset 0 -2px 4px 0 rgba(255, 159, 67, 0.15);
+}
+
+.clay-btn-white:active {
+  transform: translateY(1px);
+}
+
+/* Clay Badges */
+.clay-badge-orange {
+  background-color: #FFF2E5;
+  color: #D96B00;
+  border: 2px solid #FFD4B2;
+  font-family: var(--font-heading), 'Nunito', sans-serif;
+  font-weight: 700;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.clay-badge-sky {
+  background-color: #F0F9FD;
+  color: #0E678E;
+  border: 2px solid #BCE4F7;
+  font-family: var(--font-heading), 'Nunito', sans-serif;
+  font-weight: 700;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.8);
+}
+
+.clay-badge-solid-orange {
+  background-color: #FF9F43;
+  color: #FFFFFF;
+  border: 2px solid #F38C26;
+  font-family: var(--font-heading), 'Nunito', sans-serif;
+  font-weight: 700;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(255, 159, 67, 0.35), inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.clay-badge-solid-sky {
+  background-color: #87CEEB;
+  color: #0A445C;
+  border: 2px solid #6EBEDB;
+  font-family: var(--font-heading), 'Nunito', sans-serif;
+  font-weight: 700;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(135, 206, 235, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.6);
+}
+
+/* Clay Inputs */
+.clay-input {
+  background-color: #FFFFFF;
+  border: 2px solid #FFE8D6;
+  border-radius: 1rem;
+  padding: 0.625rem 1rem;
+  color: #2D3748;
+  font-family: var(--font-body), 'Quicksand', sans-serif;
+  font-weight: 500;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.03);
+  transition: all 0.2s ease;
+}
+
+.clay-input:focus {
+  outline: none;
+  border-color: #FF9F43;
+  box-shadow:
+    0 0 0 4px rgba(255, 159, 67, 0.18),
+    inset 0 2px 4px 0 rgba(0, 0, 0, 0.02);
+}
+
+/* Clay Block Container */
+.clay-block {
+  background-color: #FFFFFF;
+  border: 2px solid #FFE8D6;
+  border-radius: 1.75rem;
+  box-shadow:
+    0 12px 28px -4px rgba(255, 159, 67, 0.14),
+    0 4px 10px -2px rgba(0, 0, 0, 0.03),
+    inset 0 2px 4px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -3px 6px 0 rgba(255, 159, 67, 0.1);
 }

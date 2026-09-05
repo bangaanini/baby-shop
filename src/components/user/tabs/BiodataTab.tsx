@@ -336,20 +336,20 @@ export function BiodataTab({
         </div>
       )}
 
-      {/* Main Biodata Diri Container */}
-      <div className="bg-white rounded-3xl border border-rose-100/80 shadow-xs overflow-hidden">
+      {/* Main Biodata Diri Container - Clay Block */}
+      <div className="bg-white rounded-3xl border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] overflow-hidden">
         {/* Header Tokopedia Style */}
-        <div className="px-6 py-5 sm:px-8 sm:py-6 border-b border-slate-100 bg-gradient-to-r from-rose-50/40 via-pink-50/20 to-transparent">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-rose-500 text-white flex items-center justify-center shadow-xs shrink-0">
+        <div className="px-6 py-5 sm:px-8 sm:py-6 border-b-2 border-[#FFE8D6] bg-gradient-to-r from-[#FFF2E5]/70 to-transparent">
+          <div className="flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-2xl bg-[#FF9F43] text-white flex items-center justify-center border-2 border-[#F38C26] shadow-xs shrink-0">
               <User className="w-5 h-5" />
             </div>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold text-slate-900">
+              <h1 className="text-lg sm:text-xl font-heading font-black text-slate-900">
                 Biodata Diri
               </h1>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Kelola informasi profil Anda untuk mengontrol, melindungi dan mengamankan akun
+              <p className="text-xs font-body font-medium text-slate-500 mt-0.5">
+                Kelola informasi profil Anda untuk kenyamanan dan keamanan transaksi belanja
               </p>
             </div>
           </div>

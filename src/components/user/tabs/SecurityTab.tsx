@@ -249,22 +249,22 @@ export function SecurityTab({
         </div>
       )}
 
-      {/* Header Section */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-xs">
+      {/* Header Section - Clay Block */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)]">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-[#FFF2E5] text-[#FF9F43] border-2 border-[#FFD4B2] flex items-center justify-center shrink-0 shadow-xs">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-black text-slate-800">Keamanan Akun</h2>
-                <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <h2 className="text-xl font-heading font-black text-slate-800">Keamanan Akun 🛡️</h2>
+                <span className="hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-heading font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                   <Shield className="w-3 h-3 text-emerald-600" />
                   Terlindungi
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
+              <p className="text-xs sm:text-sm font-body font-medium text-slate-500 mt-0.5">
                 Kelola kata sandi dan pengaturan keamanan akun Anda untuk melindungi transaksi belanja
               </p>
             </div>
@@ -273,19 +273,19 @@ export function SecurityTab({
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Card 1: Ubah Kata Sandi (Password) Form */}
-        <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-xs flex flex-col justify-between">
+        {/* Card 1: Ubah Kata Sandi (Password) Form - Clay Block */}
+        <div className="lg:col-span-7 bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] flex flex-col justify-between">
           <div>
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-6">
+            <div className="flex items-center justify-between pb-4 border-b-2 border-[#FFE8D6] mb-6">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 flex items-center justify-center">
-                  <KeyRound className="w-4 h-4 text-rose-500" />
+                <div className="w-9 h-9 rounded-2xl bg-[#FFF2E5] text-[#FF9F43] flex items-center justify-center border border-[#FFD4B2]">
+                  <KeyRound className="w-4 h-4 text-[#FF9F43]" />
                 </div>
                 <div>
-                  <h3 className="text-sm sm:text-base font-bold text-slate-800">
+                  <h3 className="text-sm sm:text-base font-heading font-black text-slate-800">
                     Ubah Kata Sandi (Password)
                   </h3>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] font-body text-slate-500">
                     Gunakan kombinasi minimal 8 karakter dengan huruf dan angka
                   </p>
                 </div>
@@ -294,16 +294,16 @@ export function SecurityTab({
 
             {/* Success Banner */}
             {successMessage && (
-              <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200 flex items-start gap-3 text-xs text-emerald-800 animate-in fade-in">
+              <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border-2 border-emerald-200 flex items-start gap-3 text-xs text-emerald-800 animate-in fade-in">
                 <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="font-bold text-emerald-900">Kata Sandi Berhasil Diperbarui</p>
+                <div className="flex-1 font-body font-semibold">
+                  <p className="font-heading font-bold text-emerald-900">Kata Sandi Berhasil Diperbarui</p>
                   <p className="mt-0.5 text-emerald-700">{successMessage}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setSuccessMessage(null)}
-                  className="text-emerald-500 hover:text-emerald-800"
+                  className="text-emerald-500 hover:text-emerald-800 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -312,16 +312,16 @@ export function SecurityTab({
 
             {/* Error Banner */}
             {errorMessage && (
-              <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 flex items-start gap-3 text-xs text-rose-800 animate-in fade-in">
+              <div className="mb-6 p-4 rounded-2xl bg-rose-50 border-2 border-rose-200 flex items-start gap-3 text-xs text-rose-800 animate-in fade-in">
                 <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                <div className="flex-1">
-                  <p className="font-bold text-rose-900">Gagal Memperbarui Kata Sandi</p>
+                <div className="flex-1 font-body font-semibold">
+                  <p className="font-heading font-bold text-rose-900">Gagal Memperbarui Kata Sandi</p>
                   <p className="mt-0.5 text-rose-700">{errorMessage}</p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setErrorMessage(null)}
-                  className="text-rose-500 hover:text-rose-800"
+                  className="text-rose-500 hover:text-rose-800 cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>

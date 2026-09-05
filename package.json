@@ -9,7 +9,8 @@
     "lint": "eslint",
     "db:generate": "npx drizzle-kit generate",
     "db:push": "npx drizzle-kit push",
-    "db:seed": "npx tsx src/db/seed.ts"
+    "db:seed": "npx tsx src/db/seed.ts",
+    "set-admin": "npx tsx src/scripts/set-admin.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1126.0",

@@ -140,12 +140,12 @@ export function UserProfileView({ initialTab }: UserProfileViewProps) {
     <div className="py-4">
       {/* Clean Breadcrumb Navigation */}
       <nav
-        className="flex items-center gap-2 text-xs text-slate-500 mb-6 overflow-x-auto pb-1 scrollbar-none"
+        className="flex items-center gap-2 text-xs font-heading font-bold text-[#D96B00] mb-6 overflow-x-auto pb-1 scrollbar-none"
         aria-label="Breadcrumb"
       >
         <Link
           href="/"
-          className="hover:text-rose-600 transition-colors flex items-center gap-1.5 shrink-0"
+          className="hover:text-[#FF9F43] transition-colors flex items-center gap-1.5 shrink-0"
         >
           <Home className="w-3.5 h-3.5" />
           <span>Beranda</span>
@@ -153,30 +153,30 @@ export function UserProfileView({ initialTab }: UserProfileViewProps) {
         <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
         <Link
           href="/user/profil"
-          className="hover:text-rose-600 transition-colors shrink-0"
+          className="hover:text-[#FF9F43] transition-colors shrink-0"
         >
           Akun Saya
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-        <span className="font-semibold text-slate-800 shrink-0">
+        <span className="font-heading font-black text-slate-800 shrink-0">
           {TAB_TITLES[activeTab] || 'Biodata Diri'}
         </span>
       </nav>
 
       {/* Guest Notice (If session is empty / unauthenticated) */}
       {!user && (
-        <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-amber-800 shadow-xs">
-          <div className="flex items-center gap-2.5">
-            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
-            <span>
+        <div className="mb-6 p-5 rounded-3xl bg-[#FFF8F0] border-2 border-[#FFE8D6] shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-700">
+          <div className="flex items-center gap-3">
+            <AlertCircle className="w-5 h-5 text-[#FF9F43] shrink-0" />
+            <span className="font-body font-semibold">
               Anda saat ini belum masuk ke akun. Silakan masuk untuk mengakses fitur akun, pesanan, dan alamat pengiriman Anda secara tersimpan.
             </span>
           </div>
           <Link
             href="/auth/login"
-            className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl flex items-center gap-1.5 transition-colors shrink-0 shadow-xs"
+            className="clay-btn-orange px-4 py-2 text-xs text-white shrink-0"
           >
-            <LogIn className="w-4 h-4" />
+            <LogIn className="w-4 h-4 mr-1.5" />
             <span>Masuk Akun</span>
           </Link>
         </div>

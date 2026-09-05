@@ -12,7 +12,7 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-100/70 text-slate-800 flex flex-col antialiased selection:bg-rose-500 selection:text-white">
+    <div className="min-h-screen bg-[#FFF8F0]/50 text-slate-800 flex flex-col antialiased selection:bg-[#FF9F43]/30 selection:text-[#D96B00]">
       <Suspense fallback={<div className="hidden md:block w-64 bg-slate-900 fixed inset-y-0 z-30" />}>
         <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       </Suspense>

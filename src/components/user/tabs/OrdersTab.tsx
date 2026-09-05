@@ -334,20 +334,20 @@ export function OrdersTab({
         </div>
       )}
 
-      {/* Main Container Card */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-rose-100 shadow-xs space-y-6">
+      {/* Main Container Card - Clay Block */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border-2 border-[#FFE8D6] shadow-[0_10px_24px_-4px_rgba(255,159,67,0.12),inset_0_2px_4px_rgba(255,255,255,0.95)] space-y-6">
         {/* Header Title & Subtitle */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b-2 border-[#FFE8D6] pb-5">
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <span className="p-1.5 bg-rose-50 rounded-lg text-rose-500">
+              <span className="p-2 bg-[#FFF2E5] rounded-xl text-[#FF9F43] border border-[#FFD4B2]">
                 <ShoppingBag className="w-5 h-5" />
               </span>
-              <h2 className="text-lg sm:text-xl font-black text-slate-800 tracking-tight">
-                Daftar Transaksi Pembelian
+              <h2 className="text-lg sm:text-xl font-heading font-black text-slate-800 tracking-tight">
+                Daftar Transaksi Pembelian 📦
               </h2>
             </div>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs font-body font-medium text-slate-500">
               Pantau status pesanan, pembayaran, dan lacak pengiriman kurir
             </p>
           </div>
@@ -357,7 +357,7 @@ export function OrdersTab({
             <button
               type="button"
               onClick={() => fetchOrders()}
-              className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+              className="p-2 text-slate-400 hover:text-[#D96B00] hover:bg-[#FFF2E5] rounded-xl transition-colors cursor-pointer"
               title="Muat Ulang Pesanan"
             >
               <RotateCcw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -365,9 +365,9 @@ export function OrdersTab({
           </div>
         </div>
 
-        {/* Filter Tabs (Tokopedia Style) */}
+        {/* Filter Tabs */}
         <div className="w-full overflow-x-auto pb-2 scrollbar-none">
-          <div className="flex items-center gap-2 min-w-max border-b border-slate-100 pb-2">
+          <div className="flex items-center gap-2 min-w-max border-b-2 border-[#FFE8D6] pb-3">
             {FILTER_TABS.map((tab) => {
               const isActive = activeTab === tab.key;
               const count = statusCounts[tab.key];
@@ -377,19 +377,19 @@ export function OrdersTab({
                   key={tab.key}
                   type="button"
                   onClick={() => setActiveTab(tab.key)}
-                  className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 cursor-pointer ${
+                  className={`px-4 py-2.5 rounded-2xl text-xs font-heading font-bold transition-all whitespace-nowrap flex items-center gap-2 cursor-pointer ${
                     isActive
-                      ? 'bg-rose-500 text-white shadow-xs shadow-rose-200 scale-100'
-                      : 'bg-slate-50 text-slate-600 hover:bg-rose-50/70 hover:text-rose-600 border border-slate-200/60'
+                      ? 'clay-btn-orange text-white'
+                      : 'bg-white text-slate-700 hover:bg-[#FFF8F0] hover:text-[#D96B00] border-2 border-[#FFE8D6]'
                   }`}
                 >
                   <span>{tab.label}</span>
                   {count !== undefined && count > 0 && (
                     <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-heading font-black ${
                         isActive
-                          ? 'bg-white/20 text-white'
-                          : 'bg-slate-200 text-slate-600'
+                          ? 'bg-white text-[#D96B00]'
+                          : 'bg-[#FFF2E5] text-[#D96B00]'
                       }`}
                     >
                       {count}
@@ -408,9 +408,9 @@ export function OrdersTab({
             placeholder="Cari nomor invoice (BK-...) atau nama produk..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-10 py-2.5 text-xs rounded-2xl border border-slate-200 focus:outline-none focus:border-rose-500 focus:ring-2 focus:ring-rose-100 transition-all bg-slate-50/50 focus:bg-white"
+            className="w-full pl-10 pr-10 py-2.5 text-xs font-body rounded-2xl border-2 border-[#FFE8D6] focus:outline-none focus:border-[#FF9F43] transition-all bg-[#FFF8F0] text-slate-800"
           />
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#FF9F43] absolute left-3.5 top-1/2 -translate-y-1/2" />
           {searchQuery && (
             <button
               type="button"
