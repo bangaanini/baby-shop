@@ -177,8 +177,8 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-[#FFF8F0]/95 backdrop-blur-md border-b-2 border-[#FFE8D6] shadow-[0_4px_20px_rgba(255,159,67,0.08)]">
-      {/* Top Banner Info - Vibrant Playful Warm Tone (dynamic from /api/settings/public) */}
+    <>
+      {/* Top Banner Info - Scrolls naturally (dynamic from /api/settings/public) */}
       {announcement?.enabled !== false && (
         <>
           {announcement?.link ? (
@@ -206,8 +206,9 @@ export function Navbar() {
         </>
       )}
 
-      {/* Main Header */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Main Sticky Header: Logo, Search, Cart, Account */}
+      <header className="sticky top-0 z-50 bg-[#FFF8F0]/95 backdrop-blur-md border-b-2 border-[#FFE8D6] shadow-[0_4px_20px_rgba(255,159,67,0.08)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-6 min-w-0">
           {/* Brand Logo - Playful Claymorphic Block */}
           <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0 group">
@@ -420,33 +421,34 @@ export function Navbar() {
           </div>
         </form>
       </div>
+    </header>
 
-      {/* Category Quick Links Strip */}
-      <div className="bg-[#FFF2E5]/80 border-t border-[#FFE8D6]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between text-xs text-slate-700 overflow-x-auto gap-4 scrollbar-none">
-          <div className="flex items-center gap-4 sm:gap-6 font-heading font-bold whitespace-nowrap">
-            <Link
-              href="/katalog"
-              className="px-3 py-1 rounded-xl bg-white border border-[#FFD4B2] text-[#D96B00] shadow-[0_2px_6px_rgba(255,159,67,0.15)] hover:bg-[#FF9F43] hover:text-white transition-all flex items-center gap-1"
-            >
-              🛍️ <span>Semua Katalog</span>
-            </Link>
-            <Link href="/katalog?sort=terpopuler" className="hover:text-[#D96B00] transition-colors">🔥 Populer</Link>
-            <Link href="/katalog?sort=terbaru" className="hover:text-[#D96B00] transition-colors">✨ Baru Masuk</Link>
-            <Link href="/katalog?sort=rekomendasi" className="hover:text-[#D96B00] transition-colors">🌟 Pilihan Ahli</Link>
-            <span className="text-[#FFD4B2]">|</span>
-            <Link href="/kategori/perlengkapan" className="hover:text-[#D96B00] transition-colors">🍼 Perlengkapan</Link>
-            <Link href="/kategori/pakaian" className="hover:text-[#D96B00] transition-colors">👕 Pakaian</Link>
-            <Link href="/kategori/mainan" className="hover:text-[#D96B00] transition-colors">🧸 Mainan Edukasi</Link>
-          </div>
-          <div className="hidden sm:flex items-center gap-4 text-slate-600 text-[11px] font-heading font-bold whitespace-nowrap">
-            <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Standar SNI Aman</span>
-            <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5 text-[#2E86AB]" /> Kirim Se-Indonesia</span>
-          </div>
+    {/* Category Quick Links Strip (Scrolls naturally with page) */}
+    <nav aria-label="Kategori Cepat" className="bg-[#FFF2E5]/80 border-b border-[#FFE8D6]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5 flex items-center justify-between text-xs text-slate-700 overflow-x-auto gap-4 scrollbar-none">
+        <div className="flex items-center gap-4 sm:gap-6 font-heading font-bold whitespace-nowrap">
+          <Link
+            href="/katalog"
+            className="px-3 py-1 rounded-xl bg-white border border-[#FFD4B2] text-[#D96B00] shadow-[0_2px_6px_rgba(255,159,67,0.15)] hover:bg-[#FF9F43] hover:text-white transition-all flex items-center gap-1"
+          >
+            🛍️ <span>Semua Katalog</span>
+          </Link>
+          <Link href="/katalog?sort=terpopuler" className="hover:text-[#D96B00] transition-colors">🔥 Populer</Link>
+          <Link href="/katalog?sort=terbaru" className="hover:text-[#D96B00] transition-colors">✨ Baru Masuk</Link>
+          <Link href="/katalog?sort=rekomendasi" className="hover:text-[#D96B00] transition-colors">🌟 Pilihan Ahli</Link>
+          <span className="text-[#FFD4B2]">|</span>
+          <Link href="/kategori/perlengkapan" className="hover:text-[#D96B00] transition-colors">🍼 Perlengkapan</Link>
+          <Link href="/kategori/pakaian" className="hover:text-[#D96B00] transition-colors">👕 Pakaian</Link>
+          <Link href="/kategori/mainan" className="hover:text-[#D96B00] transition-colors">🧸 Mainan Edukasi</Link>
+        </div>
+        <div className="hidden sm:flex items-center gap-4 text-slate-600 text-[11px] font-heading font-bold whitespace-nowrap">
+          <span className="flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Standar SNI Aman</span>
+          <span className="flex items-center gap-1"><Truck className="w-3.5 h-3.5 text-[#2E86AB]" /> Kirim Se-Indonesia</span>
         </div>
       </div>
-    </header>
-  );
+    </nav>
+  </>
+);
 }
 
 export function Footer() {
