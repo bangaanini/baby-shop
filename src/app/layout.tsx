@@ -1,8 +1,15 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import { paymentService } from '@/server/services/payment.service';
 import { FloatingWhatsApp } from '@/components/layout/FloatingWhatsApp';
 import './globals.css';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: '#FF9F43',
+};
 
 const nunitoHeading = localFont({
   src: [
@@ -168,7 +175,7 @@ export default async function RootLayout({
   return (
     <html
       lang="id"
-      className={`${nunitoHeading.variable} ${quicksandBody.variable} h-full antialiased scroll-smooth`}
+      className={`${nunitoHeading.variable} ${quicksandBody.variable} h-full antialiased scroll-smooth overflow-x-hidden`}
     >
       <head>
         <script
@@ -176,7 +183,7 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E]">
+      <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E] overflow-x-hidden max-w-full">
         {children}
         <FloatingWhatsApp />
       </body>

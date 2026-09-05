@@ -208,16 +208,16 @@ export function Navbar() {
 
       {/* Main Header */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-20 gap-3 sm:gap-6">
+        <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-6 min-w-0">
           {/* Brand Logo - Playful Claymorphic Block */}
-          <Link href="/" className="flex items-center gap-3 shrink-0 group">
+          <Link href="/" className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0 group">
             {storeInfo.logoUrl ? (
               <div
                 className={`${
                   storeInfo.headerLogoDisplay === 'logo_only'
-                    ? 'h-11 sm:h-14 w-auto'
-                    : 'w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-white border-2 border-[#FFE8D6] shadow-[0_4px_12px_rgba(255,159,67,0.12)] p-1'
-                } flex items-center justify-center overflow-hidden group-hover:scale-105 transition-all`}
+                    ? 'h-10 sm:h-14 w-auto'
+                    : 'w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white border-2 border-[#FFE8D6] shadow-[0_4px_12px_rgba(255,159,67,0.12)] p-1'
+                } flex items-center justify-center overflow-hidden group-hover:scale-105 transition-all shrink-0`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -227,16 +227,16 @@ export function Navbar() {
                 />
               </div>
             ) : (
-              <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#FF9F43] to-[#EE8A2B] text-white flex items-center justify-center font-heading font-black text-2xl border-2 border-[#F38C26] shadow-[0_6px_14px_rgba(255,159,67,0.35),inset_0_2px_4px_rgba(255,255,255,0.6)] group-hover:scale-105 group-hover:rotate-2 transition-all duration-200">
-                <Store className="w-6 h-6 drop-shadow-xs" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#FF9F43] to-[#EE8A2B] text-white flex items-center justify-center font-heading font-black text-xl sm:text-2xl border-2 border-[#F38C26] shadow-[0_6px_14px_rgba(255,159,67,0.35),inset_0_2px_4px_rgba(255,255,255,0.6)] group-hover:scale-105 group-hover:rotate-2 transition-all duration-200 shrink-0">
+                <Store className="w-5 h-5 sm:w-6 sm:h-6 drop-shadow-xs" />
               </div>
             )}
             {storeInfo.headerLogoDisplay !== 'logo_only' && (
-              <div>
-                <span className="text-2xl sm:text-3xl font-heading font-black text-[#D96B00] tracking-tight group-hover:text-[#FF9F43] transition-colors drop-shadow-xs">
+              <div className="min-w-0">
+                <span className="text-xl sm:text-2xl md:text-3xl font-heading font-black text-[#D96B00] tracking-tight group-hover:text-[#FF9F43] transition-colors drop-shadow-xs truncate block max-w-[130px] xs:max-w-[190px] sm:max-w-none">
                   {storeInfo.name}
                 </span>
-                <span className="text-[11px] block font-body font-semibold text-slate-500 -mt-1">
+                <span className="text-[10px] sm:text-[11px] block font-body font-semibold text-slate-500 -mt-1 hidden xs:block truncate max-w-[150px] sm:max-w-none">
                   {storeInfo.tagline}
                 </span>
               </div>
@@ -264,11 +264,11 @@ export function Navbar() {
           </form>
 
           {/* User & Cart Action Buttons */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
             {/* Cart Button - Claymorphic Puffy Pill */}
             <Link
               href="/keranjang"
-              className="relative p-2.5 sm:px-4 sm:py-2.5 rounded-2xl bg-white border-2 border-[#FFE8D6] hover:border-[#FF9F43] text-slate-700 hover:text-[#D96B00] flex items-center gap-2 shadow-[0_4px_12px_rgba(255,159,67,0.1),inset_0_2px_3px_rgba(255,255,255,0.9)] active:translate-y-0.5 transition-all group"
+              className="relative p-2 sm:px-4 sm:py-2.5 rounded-2xl bg-white border-2 border-[#FFE8D6] hover:border-[#FF9F43] text-slate-700 hover:text-[#D96B00] flex items-center gap-1.5 sm:gap-2 shadow-[0_4px_12px_rgba(255,159,67,0.1),inset_0_2px_3px_rgba(255,255,255,0.9)] active:translate-y-0.5 transition-all group shrink-0"
               title="Keranjang Belanja"
             >
               <ShoppingBag className="w-5 h-5 text-[#FF9F43] group-hover:scale-110 transition-transform" />
@@ -282,11 +282,11 @@ export function Navbar() {
 
             {/* User Auth Section */}
             {user ? (
-              <div className="relative" ref={userMenuRef}>
+              <div className="relative shrink-0" ref={userMenuRef}>
                 <button
                   type="button"
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
-                  className="flex items-center gap-2 p-1.5 sm:px-3 sm:py-2 rounded-2xl bg-white border-2 border-[#FFE8D6] hover:border-[#FF9F43] text-slate-700 text-xs font-heading font-bold shadow-[0_4px_12px_rgba(255,159,67,0.1)] transition-all cursor-pointer"
+                  className="flex items-center gap-1.5 sm:gap-2 p-1.5 sm:px-3 sm:py-2 rounded-2xl bg-white border-2 border-[#FFE8D6] hover:border-[#FF9F43] text-slate-700 text-xs font-heading font-bold shadow-[0_4px_12px_rgba(255,159,67,0.1)] transition-all cursor-pointer"
                 >
                   <div className="w-7 h-7 rounded-xl bg-gradient-to-tr from-[#87CEEB] to-[#FF9F43] text-white flex items-center justify-center font-heading font-bold text-xs border border-white shadow-xs">
                     {user.name ? user.name.charAt(0).toUpperCase() : 'U'}
@@ -379,10 +379,11 @@ export function Navbar() {
             ) : (
               <Link
                 href="/auth/login"
-                className="clay-btn-orange px-4 py-2 text-xs text-white"
+                className="clay-btn-orange px-2.5 sm:px-4 py-2 text-xs text-white shrink-0"
               >
-                <LogIn className="w-3.5 h-3.5 mr-1.5" />
-                <span>Masuk / Daftar</span>
+                <LogIn className="w-3.5 h-3.5 sm:mr-1.5" />
+                <span className="hidden xs:inline">Masuk / Daftar</span>
+                <span className="xs:hidden ml-1">Masuk</span>
               </Link>
             )}
 
