@@ -20,6 +20,9 @@ import {
   Loader2,
   AlertCircle,
   Zap,
+  Copy,
+  MessageCircle,
+  X,
 } from 'lucide-react';
 import { Product, ProductVariant } from '@/types/product';
 import { formatRupiah } from '@/lib/format';
@@ -44,6 +47,7 @@ export function ProductDetailView({
   const [isBuyingNow, setIsBuyingNow] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
+  const [isShareModalOpen, setIsShareModalOpen] = useState<boolean>(false);
 
   // Variant selections
   const hasVariants = Boolean(product.varian && product.varian.length > 0);
@@ -215,6 +219,70 @@ export function ProductDetailView({
     setSelectedSize(ukuran);
   };
 
+  const handleShare = async () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const shareTitle = `${product.nama} — Beli di Toko Kami`;
+    const shareText = `Lihat ${product.nama} dengan harga ${formatRupiah(currentPrice)}! Kualitas terstandar SNI dan ramah anak.`;
+
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: shareUrl,
+        });
+        return;
+      } catch (err: any) {
+        // User aborted or unsupported, fallback to modal
+        if (err.name !== 'AbortError') {
+          setIsShareModalOpen(true);
+        }
+      }
+    } else {
+      setIsShareModalOpen(true);
+    }
+  };
+
+  const handleCopyLink = async () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    try {
+      if (navigator.clipboard) {
+        await navigator.clipboard.writeText(shareUrl);
+      } else {
+        const input = document.createElement('input');
+        input.value = shareUrl;
+        document.body.appendChild(input);
+        input.select();
+        document.execCommand('copy');
+        document.body.removeChild(input);
+      }
+      showToast('Tautan produk berhasil disalin!', 'success');
+      setIsShareModalOpen(false);
+    } catch {
+      showToast('Gagal menyalin tautan', 'error');
+    }
+  };
+
+  const handleShareWhatsapp = () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const text = `Halo, saya menemukan produk bagus: *${product.nama}* seharga ${formatRupiah(currentPrice)}.\nYuk cek di sini: ${shareUrl}`;
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+    setIsShareModalOpen(false);
+  };
+
+  const handleShareFacebook = () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`, '_blank');
+    setIsShareModalOpen(false);
+  };
+
+  const handleShareTwitter = () => {
+    const shareUrl = typeof window !== 'undefined' ? window.location.href : '';
+    const text = `Beli ${product.nama} berkualitas SNI seharga ${formatRupiah(currentPrice)}!`;
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(shareUrl)}`, '_blank');
+    setIsShareModalOpen(false);
+  };
+
   return (
     <div className="space-y-8">
       {/* Toast Notification */}
@@ -286,18 +354,28 @@ export function ProductDetailView({
                 Hemat {discountPercent}%
               </div>
             )}
-            <button
-              type="button"
-              onClick={() => setIsWishlist(!isWishlist)}
-              className={`absolute top-4 right-4 p-2.5 rounded-2xl backdrop-blur-md border border-white/60 shadow-md transition-all cursor-pointer ${
-                isWishlist
-                  ? 'bg-[#FF9F43] text-white border-[#F38C26]'
-                  : 'bg-white/90 hover:bg-white text-slate-600'
-              }`}
-              title="Tambah ke Favorit"
-            >
-              <Heart className={`w-5 h-5 ${isWishlist ? 'fill-white' : ''}`} />
-            </button>
+            <div className="absolute top-4 right-4 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={handleShare}
+                className="p-2.5 rounded-2xl backdrop-blur-md bg-white/90 hover:bg-white text-slate-700 border border-white/60 shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95"
+                title="Bagikan Produk"
+              >
+                <Share2 className="w-5 h-5 text-slate-700" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsWishlist(!isWishlist)}
+                className={`p-2.5 rounded-2xl backdrop-blur-md border border-white/60 shadow-md transition-all cursor-pointer hover:scale-105 active:scale-95 ${
+                  isWishlist
+                    ? 'bg-[#FF9F43] text-white border-[#F38C26]'
+                    : 'bg-white/90 hover:bg-white text-slate-600'
+                }`}
+                title="Tambah ke Favorit"
+              >
+                <Heart className={`w-5 h-5 ${isWishlist ? 'fill-white' : ''}`} />
+              </button>
+            </div>
           </div>
 
           {/* Thumbnail Strip */}
@@ -371,19 +449,31 @@ export function ProductDetailView({
               {product.nama}
             </h1>
 
-            {/* Rating & Sold count */}
-            <div className="flex items-center gap-4 text-xs font-body font-semibold text-slate-500 pb-4 border-b-2 border-[#FFE8D6] mb-5">
-              <div className="flex items-center gap-1 text-amber-500">
-                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <span className="font-heading font-bold text-slate-700 text-sm">
-                  {product.rating.toFixed(1)}
-                </span>
-                <span className="text-slate-400">({product.reviewCount} ulasan pembeli)</span>
+            {/* Rating, Sold count & Share Action */}
+            <div className="flex items-center justify-between gap-3 pb-4 border-b-2 border-[#FFE8D6] mb-5 flex-wrap">
+              <div className="flex items-center gap-3 sm:gap-4 text-xs font-body font-semibold text-slate-500 flex-wrap">
+                <div className="flex items-center gap-1 text-amber-500">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <span className="font-heading font-bold text-slate-700 text-sm">
+                    {product.rating.toFixed(1)}
+                  </span>
+                  <span className="text-slate-400">({product.reviewCount} ulasan)</span>
+                </div>
+                <span className="text-slate-300">•</span>
+                <span className="text-slate-600 font-medium">Terjual {product.terjual} pcs</span>
+                <span className="text-slate-300">•</span>
+                <span className="text-emerald-600 font-heading font-bold">Stok Ready</span>
               </div>
-              <span className="text-slate-300">•</span>
-              <span className="text-slate-600 font-medium">Terjual {product.terjual} pcs</span>
-              <span className="text-slate-300">•</span>
-              <span className="text-emerald-600 font-heading font-bold">Stok Ready</span>
+
+              <button
+                type="button"
+                onClick={handleShare}
+                className="inline-flex items-center gap-1.5 text-xs font-heading font-bold text-slate-600 hover:text-[#D96B00] bg-[#FFF2E5] hover:bg-[#FFE8D6] px-3 py-1.5 rounded-xl border border-[#FFD4B2] transition-all cursor-pointer hover:scale-105 active:scale-95 shadow-2xs"
+                title="Bagikan Produk"
+              >
+                <Share2 className="w-3.5 h-3.5 text-[#FF9F43]" />
+                <span>Bagikan</span>
+              </button>
             </div>
 
             {/* Price Box - Clay Highlight Container */}
@@ -664,6 +754,106 @@ export function ProductDetailView({
             ))}
           </div>
         </section>
+      )}
+
+      {/* Share Modal Dialog */}
+      {isShareModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+          <div
+            className="bg-white rounded-3xl max-w-md w-full p-6 sm:p-7 border-2 border-[#FFE8D6] shadow-[0_20px_40px_-8px_rgba(255,159,67,0.25),inset_0_2px_4px_rgba(255,255,255,0.95)] animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between pb-4 border-b-2 border-[#FFE8D6] mb-5">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-[#FFF2E5] text-[#FF9F43] flex items-center justify-center">
+                  <Share2 className="w-4 h-4" />
+                </div>
+                <h3 className="font-heading font-black text-slate-800 text-lg">
+                  Bagikan Produk
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsShareModalOpen(false)}
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Product Preview Card */}
+            <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-[#FFF8F0] border border-[#FFE8D6] mb-5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={selectedImage}
+                alt={product.nama}
+                className="w-14 h-14 rounded-xl object-cover border border-[#FFD4B2] shrink-0"
+              />
+              <div className="min-w-0 flex-1">
+                <h4 className="text-xs font-heading font-bold text-slate-800 truncate">
+                  {product.nama}
+                </h4>
+                <p className="text-xs font-heading font-black text-[#D96B00] mt-0.5">
+                  {formatRupiah(currentPrice)}
+                </p>
+                <p className="text-[11px] font-body text-slate-400 truncate">
+                  {product.kategoriLabel} • Terstandar SNI
+                </p>
+              </div>
+            </div>
+
+            {/* Share Target Options */}
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <button
+                type="button"
+                onClick={handleShareWhatsapp}
+                className="p-3.5 rounded-2xl bg-emerald-50 hover:bg-emerald-100/80 border-2 border-emerald-200/80 flex flex-col items-center justify-center gap-2 text-emerald-800 transition-all hover:scale-[1.02] cursor-pointer group"
+              >
+                <div className="w-10 h-10 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                  <MessageCircle className="w-5 h-5" />
+                </div>
+                <span className="font-heading font-bold text-xs">WhatsApp</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleCopyLink}
+                className="p-3.5 rounded-2xl bg-[#FFF2E5] hover:bg-[#FFE8D6] border-2 border-[#FFD4B2] flex flex-col items-center justify-center gap-2 text-[#D96B00] transition-all hover:scale-[1.02] cursor-pointer group"
+              >
+                <div className="w-10 h-10 rounded-full bg-[#FF9F43] text-white flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                  <Copy className="w-5 h-5" />
+                </div>
+                <span className="font-heading font-bold text-xs">Salin Tautan</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleShareFacebook}
+                className="p-3 rounded-2xl bg-blue-50 hover:bg-blue-100/80 border-2 border-blue-200/80 flex items-center justify-center gap-2 text-blue-700 transition-all hover:scale-[1.02] cursor-pointer"
+              >
+                <span className="font-heading font-black text-sm">f</span>
+                <span className="font-heading font-bold text-xs">Facebook</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={handleShareTwitter}
+                className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 border-2 border-slate-200 flex items-center justify-center gap-2 text-slate-800 transition-all hover:scale-[1.02] cursor-pointer"
+              >
+                <span className="font-heading font-black text-xs">𝕏</span>
+                <span className="font-heading font-bold text-xs">Twitter / X</span>
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsShareModalOpen(false)}
+              className="w-full py-2.5 rounded-xl text-xs font-heading font-bold text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+            >
+              Tutup
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );
