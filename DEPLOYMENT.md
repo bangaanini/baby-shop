@@ -116,19 +116,67 @@ R2_PUBLIC_URL="https://images.nbusiness.id"
 
 ## 3. Konfigurasi & Persiapan Database (PostgreSQL)
 
-### A. Rekomendasi Managed Database Provider (Free / Serverless):
-1. **Neon Serverless PostgreSQL** (*https://neon.tech*) — Sangat direkomendasikan untuk Next.js Vercel.
+### A. Panduan Setup PostgreSQL Lokal di VPS (Ubuntu / Debian):
+Jika Anda menginstal PostgreSQL langsung di server VPS Anda:
+
+#### 1. Install PostgreSQL & Ekstensi Kontribusi:
+```bash
+sudo apt update
+sudo apt install -y postgresql postgresql-contrib
+```
+
+#### 2. Buat User & Database Baru:
+Masuk ke terminal PostgreSQL (`psql`) sebagai user `postgres`:
+```bash
+sudo -u postgres psql
+```
+
+Jalankan perintah SQL berikut di dalam console `psql` (ganti `password_rahasia_anda` dengan password kuat Anda):
+```sql
+-- 1. Buat database untuk NBusiness
+CREATE DATABASE nbusiness_db;
+
+-- 2. Buat user database dengan password
+CREATE USER nbusiness_user WITH ENCRYPTED PASSWORD 'password_rahasia_anda';
+
+-- 3. Berikan seluruh hak akses database ke user tersebut
+GRANT ALL PRIVILEGES ON DATABASE nbusiness_db TO nbusiness_user;
+
+-- 4. Berikan izin schema public (PostgreSQL 15+)
+\c nbusiness_db
+GRANT ALL ON SCHEMA public TO nbusiness_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO nbusiness_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO nbusiness_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO nbusiness_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO nbusiness_user;
+
+-- Keluar dari psql
+\q
+```
+
+#### 3. Format `DATABASE_URL` di file `.env`:
+```bash
+DATABASE_URL="postgres://nbusiness_user:password_rahasia_anda@127.0.0.1:5432/nbusiness_db"
+```
+
+---
+
+### B. Rekomendasi Managed Database Provider (Cloud / Serverless):
+Jika Anda memilih menggunakan database cloud terkelola:
+1. **Neon Serverless PostgreSQL** (*https://neon.tech*) — Sangat direkomendasikan untuk Next.js Vercel / serverless.
 2. **Supabase** (*https://supabase.com*) — Mendukung PostgreSQL connection pooling (port `6543` / `5432`).
 3. **Railway** (*https://railway.app*) — PostgreSQL mandiri dengan latensi rendah.
 
-### B. Menjalankan Migrasi Skema Database:
+---
+
+### C. Menjalankan Migrasi Skema Database:
 Setelah `DATABASE_URL` terhubung, jalankan perintah sinkronisasi skema tabel Drizzle:
 ```bash
 # Sinkronkan seluruh tabel (users, products, orders, vouchers, carts, store_settings, dll)
 npm run db:push
 ```
 
-### C. Melakukan Seeding Data Awal (Katalog & Akun Admin):
+### D. Melakukan Seeding Data Awal (Katalog & Akun Admin):
 ```bash
 # Men-seed kategori, produk awal berstandar SNI, akun admin, dan pengaturan default
 npm run db:seed
@@ -268,17 +316,36 @@ Platform **Vercel** adalah platform hosting resmi untuk Next.js dengan dukungan 
 
 Jika Anda menggunakan VPS pribadi (DigitalOcean, AWS EC2, Linode, IDCloudHost, Biznet):
 
-### 1. Persiapan Server Ubuntu:
+### 1. Persiapan Server Ubuntu & PostgreSQL:
 ```bash
 # Update paket sistem
 sudo apt update && sudo apt upgrade -y
 
-# Install Node.js 20 LTS & Git
+# Install Node.js 20 LTS, Git, Nginx, dan PostgreSQL Lokal
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt install -y nodejs git nginx
+sudo apt install -y nodejs git nginx postgresql postgresql-contrib
 
 # Install PM2 Process Manager secara global
 sudo npm install -g pm2
+```
+
+#### Setup Database PostgreSQL Lokal di VPS:
+```bash
+# Masuk ke console psql
+sudo -u postgres psql
+```
+Jalankan perintah SQL berikut:
+```sql
+CREATE DATABASE nbusiness_db;
+CREATE USER nbusiness_user WITH ENCRYPTED PASSWORD 'buat_password_kuat_anda';
+GRANT ALL PRIVILEGES ON DATABASE nbusiness_db TO nbusiness_user;
+\c nbusiness_db
+GRANT ALL ON SCHEMA public TO nbusiness_user;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO nbusiness_user;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO nbusiness_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO nbusiness_user;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO nbusiness_user;
+\q
 ```
 
 ### 2. Clone Repository & Install Dependencies:
