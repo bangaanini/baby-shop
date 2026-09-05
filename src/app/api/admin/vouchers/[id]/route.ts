@@ -8,36 +8,17 @@ export const dynamic = 'force-dynamic';
 async function verifyAdmin(request: NextRequest): Promise<{ authorized: boolean; response?: NextResponse }> {
   try {
     const session = await auth.api.getSession({ headers: request.headers });
-    if (session?.user && (session.user as any).role === 'admin') {
-      return { authorized: true };
-    }
+    if (session?.user && (session.user as any).role === 'admin') return { authorized: true };
   } catch (err) {
-    console.warn('Session verification warning in admin vouchers [id] route:', err);
+    console.warn('Session verification warning:', err);
   }
-
-  // Non-production development bypass/headers
   if (process.env.NODE_ENV !== 'production') {
-    const roleHeader = request.headers.get('x-user-role');
-    if (roleHeader === 'admin') {
-      return { authorized: true };
-    }
-    const devBypass = request.headers.get('x-dev-admin');
-    if (devBypass === 'true') {
-      return { authorized: true };
-    }
+    if (request.headers.get('x-user-role') === 'admin') return { authorized: true };
+    if (request.headers.get('x-dev-admin') === 'true') return { authorized: true };
   }
-
-  return {
-    authorized: false,
-    response: NextResponse.json(
-      {
-        success: false,
-        error: 'Akses ditolak: Hanya akun dengan role admin yang diizinkan.',
-      },
-      { status: 403 }
-    ),
-  };
+  return { authorized: false, response: NextResponse.json({ success: false, error: 'Akses ditolak: Hanya akun dengan role admin yang diizinkan.' }, { status: 403 }) };
 }
+
 
 export async function PATCH(
   request: NextRequest,

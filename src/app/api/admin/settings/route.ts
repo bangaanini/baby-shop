@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { auth } from '@/server/auth';
 import { storageService } from '@/server/services/storage.service';
 import { shippingService } from '@/server/services/shipping.service';
 import { paymentService } from '@/server/services/payment.service';
@@ -12,8 +13,24 @@ function maskSecret(key: string | null | undefined, visiblePrefix = 8): string {
   return `${key.slice(0, visiblePrefix)}••••••••`;
 }
 
-export async function GET() {
+async function verifyAdmin(request: NextRequest): Promise<{ authorized: boolean; response?: NextResponse }> {
   try {
+    const session = await auth.api.getSession({ headers: request.headers });
+    if (session?.user && (session.user as any).role === 'admin') return { authorized: true };
+  } catch (err) {
+    console.warn('Session verification warning:', err);
+  }
+  if (process.env.NODE_ENV !== 'production') {
+    if (request.headers.get('x-user-role') === 'admin') return { authorized: true };
+    if (request.headers.get('x-dev-admin') === 'true') return { authorized: true };
+  }
+  return { authorized: false, response: NextResponse.json({ success: false, error: 'Akses ditolak: Hanya akun dengan role admin yang diizinkan.' }, { status: 403 }) };
+}
+
+export async function GET(request: NextRequest) {
+  try {
+    const authCheck = await verifyAdmin(request);
+    if (!authCheck.authorized) return authCheck.response!;
     const isR2Configured = storageService.isR2Configured();
     const bucketName = process.env.R2_BUCKET_NAME || 'baby-shop-products';
     const publicUrl = process.env.R2_PUBLIC_URL || 'https://pub-xxxxxx.r2.dev';
@@ -123,6 +140,8 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const authCheck = await verifyAdmin(request);
+    if (!authCheck.authorized) return authCheck.response!;
     const body = await request.json().catch(() => ({}));
 
     // Support both direct Partial<NewStoreSettings> and nested objects from form
