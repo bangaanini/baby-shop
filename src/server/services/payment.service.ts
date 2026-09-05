@@ -159,6 +159,9 @@ export async function getStoreSettings(): Promise<StoreSettings> {
         'pay-gopay',
       ],
       enabled_couriers: ['sicepat', 'jne', 'jnt', 'anteraja', 'cargo'],
+      flash_sale_is_active: true,
+      flash_sale_title: 'Promo Hemat Rutin',
+      flash_sale_end_time: null,
       updated_at: new Date(),
     };
 
@@ -213,6 +216,9 @@ export async function getStoreSettings(): Promise<StoreSettings> {
         'pay-gopay',
       ],
       enabled_couriers: ['sicepat', 'jne', 'jnt', 'anteraja', 'cargo'],
+      flash_sale_is_active: true,
+      flash_sale_title: 'Promo Hemat Rutin',
+      flash_sale_end_time: null,
       updated_at: new Date(),
     };
   }

@@ -90,6 +90,8 @@ export function mapDbProductToProduct(item: any): Product {
         ? Boolean(item.is_recommended)
         : Boolean(item.isRekomendasi),
     isPromo: item.is_promo !== undefined ? Boolean(item.is_promo) : Boolean(item.isPromo),
+    isFlashSale: Boolean(item.is_flash_sale || item.isFlashSale),
+    hargaFlashSale: item.flash_sale_price ? Number(item.flash_sale_price) : undefined,
     tag: item.tag || undefined,
     weightGram: item.weight_gram ?? item.weightGram ?? 500,
     dimensionLength: item.dimension_length ?? item.dimensionLength ?? 10,

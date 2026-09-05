@@ -35,6 +35,8 @@ export interface Product {
   isTerbaru?: boolean;
   isRekomendasi?: boolean;
   isPromo?: boolean;
+  isFlashSale?: boolean;
+  hargaFlashSale?: number;
   tag?: string;
   weightGram?: number;
   dimensionLength?: number;

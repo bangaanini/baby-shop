@@ -24,6 +24,8 @@ export const productsTable = pgTable('products', {
   is_new_arrival: boolean('is_new_arrival').default(false).notNull(),
   is_recommended: boolean('is_recommended').default(false).notNull(),
   is_promo: boolean('is_promo').default(false).notNull(),
+  is_flash_sale: boolean('is_flash_sale').default(false).notNull(),
+  flash_sale_price: integer('flash_sale_price'),
   tag: varchar('tag', { length: 100 }),
   weight_gram: integer('weight_gram').default(500).notNull(),
   dimension_length: integer('dimension_length').default(10).notNull(),

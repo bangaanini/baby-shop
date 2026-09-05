@@ -26,6 +26,9 @@ export const storeSettingsTable = pgTable('store_settings', {
   xendit_is_production: boolean('xendit_is_production').default(false).notNull(),
   enabled_payment_methods: json('enabled_payment_methods').$type<string[]>().default(['pay-qris', 'pay-bca-va', 'pay-mandiri-va', 'pay-bri-va', 'pay-gopay']).notNull(),
   enabled_couriers: json('enabled_couriers').$type<string[]>().default(['sicepat', 'jne', 'jnt', 'anteraja', 'cargo']).notNull(),
+  flash_sale_is_active: boolean('flash_sale_is_active').default(true).notNull(),
+  flash_sale_title: varchar('flash_sale_title', { length: 150 }).default('Promo Hemat Rutin'),
+  flash_sale_end_time: timestamp('flash_sale_end_time'),
   updated_at: timestamp('updated_at').defaultNow().notNull(),
 });
 
