@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import localFont from 'next/font/local';
 import { paymentService } from '@/server/services/payment.service';
 import { FloatingWhatsApp } from '@/components/layout/FloatingWhatsApp';
+import { MobileBottomNav } from '@/components/layout/MobileBottomNav';
 import './globals.css';
 
 export const viewport: Viewport = {
@@ -183,9 +184,10 @@ export default async function RootLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       </head>
-      <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E] overflow-x-hidden max-w-full">
+      <body className="min-h-full flex flex-col font-body bg-[#FFF8F0] text-slate-800 selection:bg-[#FF9F43]/30 selection:text-[#E07A1E] overflow-x-hidden max-w-full pb-16 md:pb-0">
         {children}
         <FloatingWhatsApp />
+        <MobileBottomNav />
       </body>
     </html>
   );

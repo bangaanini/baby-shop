@@ -52,7 +52,7 @@ export function FloatingWhatsApp({
   return (
     <aside
       aria-label="Bantuan WhatsApp"
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-5 duration-300"
+      className="fixed bottom-20 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2.5 animate-in fade-in slide-in-from-bottom-5 duration-300"
     >
       {/* Playful Floating Message Pill */}
       {showTooltip && (
