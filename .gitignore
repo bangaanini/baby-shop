@@ -1,6 +1,8 @@
-# Next.js
+# Next.js build output
 .next/
 out/
+build/
+dist/
 
 # Dependencies
 node_modules/
@@ -9,16 +11,32 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Environment
+# Environment files
 .env
-.env.local
+.env*.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# TypeScript
+# TypeScript & Cache
 *.tsbuildinfo
 next-env.d.ts
 
-# Superpowers & Claude
+# Turbopack cache
+.turbo/
+
+# Claude & Superpowers local files
 .superpowers/
+.claude/skills/banner-design/
+.claude/skills/brand/
+.claude/skills/design/
+.claude/skills/design-system/
+.claude/skills/slides/
+.claude/skills/ui-styling/
+.claude/skills/ui-ux-pro-max/
+
+# OS and IDE files
+.DS_Store
+*.pem
+.vscode/
+.idea/
