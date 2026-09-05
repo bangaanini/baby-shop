@@ -436,7 +436,7 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-heading font-bold text-[#FF9F43] mb-3.5">Mitra Logistik & Pembayaran</h4>
             <p className="text-xs font-body text-slate-400 mb-3 leading-relaxed">
-              Mendukung kurir tepercaya (JNE, SiCepat, J&T, Anteraja) & metode pembayaran instan (QRIS, VA Bank, Midtrans, Xendit).
+              Mendukung kurir tepercaya (JNE, SiCepat, J&T, Anteraja) & metode pembayaran instan (QRIS, Virtual Account Bank, E-Wallet, dan COD).
             </p>
             <div className="p-3.5 rounded-2xl bg-slate-800 border border-slate-700">
               <div className="flex items-center gap-2 text-xs font-heading font-bold text-white mb-1">

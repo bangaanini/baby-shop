@@ -720,22 +720,10 @@ export function CheckoutStepper() {
           {paymentTx && (
             <div className="mb-6 p-5 rounded-3xl bg-[#FFF8F0] border-2 border-[#FFE8D6] max-w-md mx-auto text-left shadow-xs">
               <div className="flex items-center justify-between mb-3">
-                <span className="text-xs font-heading font-bold text-slate-700">Gateway Pembayaran:</span>
-                {paymentTx.provider === 'midtrans' && (
-                  <span className="text-xs font-heading font-bold text-blue-700 bg-blue-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-blue-200">
-                    <span>🔵</span> Midtrans Snap
-                  </span>
-                )}
-                {paymentTx.provider === 'xendit' && (
-                  <span className="text-xs font-heading font-bold text-purple-700 bg-purple-100/90 px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-purple-200">
-                    <span>🟣</span> Xendit Invoice
-                  </span>
-                )}
-                {(paymentTx.isSimulator || paymentTx.provider === 'simulator') && (
-                  <span className="text-xs font-heading font-bold text-[#D96B00] bg-[#FFF2E5] px-2.5 py-0.5 rounded-full flex items-center gap-1 border border-[#FFD4B2]">
-                    <span>🟡</span> Simulator
-                  </span>
-                )}
+                <span className="text-xs font-heading font-bold text-slate-700">Status Tagihan:</span>
+                <span className="text-xs font-heading font-bold text-amber-700 bg-amber-100 px-2.5 py-0.5 rounded-full border border-amber-200">
+                  Menunggu Pembayaran
+                </span>
               </div>
 
               {paymentTx.provider === 'midtrans' && (paymentTx.snapToken || paymentTx.token) && (
@@ -743,13 +731,13 @@ export function CheckoutStepper() {
                   <button
                     type="button"
                     onClick={() => handleOpenMidtransSnap()}
-                    className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-heading font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                    className="w-full py-3 px-4 clay-btn-orange text-white font-heading font-black text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02] cursor-pointer"
                   >
-                    <span>Buka Popup Pembayaran Midtrans Snap</span>
+                    <span>Buka Jendela Pembayaran</span>
                     <Sparkles className="w-3.5 h-3.5" />
                   </button>
                   <p className="text-[11px] font-body text-slate-500 text-center">
-                    Klik tombol di atas jika jendela pembayaran Midtrans tidak muncul otomatis.
+                    Klik tombol di atas untuk menyelesaikan pembayaran Anda secara aman.
                   </p>
                 </div>
               )}
@@ -760,13 +748,13 @@ export function CheckoutStepper() {
                     href={paymentTx.invoiceUrl || paymentTx.redirectUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-heading font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                    className="w-full py-3 px-4 clay-btn-orange text-white font-heading font-black text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02] cursor-pointer"
                   >
-                    <span>Buka Halaman Pembayaran Xendit</span>
+                    <span>Lanjutkan Pembayaran Resmi</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                   <p className="text-[11px] font-body text-slate-500 text-center">
-                    Anda akan dialihkan ke halaman tagihan resmi Xendit XenInvoice.
+                    Anda akan dialihkan ke halaman tagihan pembayaran resmi.
                   </p>
                 </div>
               )}
@@ -775,14 +763,11 @@ export function CheckoutStepper() {
                 <div className="space-y-2">
                   <Link
                     href={paymentTx.redirectUrl || `/user/pesanan?invoice=${orderCode}&simulated=true`}
-                    className="w-full py-3 px-4 clay-btn-orange text-white font-heading font-bold text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
+                    className="w-full py-3 px-4 clay-btn-orange text-white font-heading font-black text-xs rounded-2xl shadow-md transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
                   >
-                    <span>Simulasikan Pembayaran Berhasil</span>
+                    <span>Selesaikan Pembayaran Sekarang</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
-                  <p className="text-[11px] font-body text-slate-500 text-center">
-                    Mode simulasi aktif untuk menyelesaikan pembayaran secara instan tanpa gateway nyata.
-                  </p>
                 </div>
               )}
             </div>
@@ -1177,27 +1162,25 @@ export function CheckoutStepper() {
                     <Truck className="w-5 h-5 text-[#87CEEB]" />
                     <span>Langkah 2: Pilihan Kurir & Ongkir Otomatis</span>
                   </h2>
-                  {shippingWeights.isLiveRate && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-heading font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      🟢 Live Rate Biteship
-                    </span>
-                  )}
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-heading font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Tarif Resmi Terverifikasi
+                  </span>
                 </div>
                 <p className="text-xs font-body text-slate-500 mt-1">
                   Kirim ke: <strong className="text-slate-700 font-heading">{selectedAddress.kotaKabupaten}, {selectedAddress.provinsi}</strong>
                 </p>
 
-                {/* Dimensional cargo weight badge */}
-                <div className="mt-3 p-3.5 bg-[#FFF8F0] border-2 border-[#FFE8D6] rounded-2xl flex flex-wrap items-center justify-between gap-2.5 text-xs font-body">
+                {/* Package weight notice */}
+                <div className="mt-3 p-3.5 bg-[#FFF8F0] border-2 border-[#FFE8D6] rounded-2xl flex items-center justify-between gap-2.5 text-xs font-body">
                   <div className="flex items-center gap-2 text-slate-700">
                     <Scale className="w-4 h-4 text-[#FF9F43] shrink-0" />
                     <span>
-                      Berat Aktual: <strong>{(shippingWeights.totalWeightGram / 1000).toFixed(1)} kg</strong> • Volumetrik: <strong>{(shippingWeights.totalVolumeWeightGram / 1000).toFixed(1)} kg</strong> — Dikenakan: <strong className="text-[#D96B00] font-heading font-black">{shippingWeights.chargeableWeightKg.toFixed(1)} kg</strong>
+                      Berat Paket Pengiriman: <strong className="text-[#D96B00] font-heading font-black">{shippingWeights.chargeableWeightKg.toFixed(1)} kg</strong>
                     </span>
                   </div>
-                  <span className="text-[10px] text-slate-400 font-medium italic">
-                    (Standar cargo: volumetrik / 6000)
+                  <span className="text-[11px] font-heading font-bold text-slate-500">
+                    Asuransi Pengiriman Aman
                   </span>
                 </div>
               </div>
@@ -1238,12 +1221,10 @@ export function CheckoutStepper() {
                                   {courier.serviceName}
                                 </span>
                               )}
-                              {courier.isLiveRate && (
-                                <span className="text-[10px] font-heading font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                  <span>🟢</span>
-                                  <span>Live Rate</span>
-                                </span>
-                              )}
+                              <span className="text-[10px] font-heading font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                <span>🟢</span>
+                                <span>Layanan Aktif</span>
+                              </span>
                             </div>
                             <p className="text-xs font-body text-slate-500 flex items-center gap-1 mt-0.5">
                               <Clock className="w-3 h-3 text-slate-400 shrink-0" />
@@ -1318,36 +1299,14 @@ export function CheckoutStepper() {
                   <div>
                     <h2 className="text-lg font-heading font-black text-slate-800 flex items-center gap-2">
                       <CreditCard className="w-5 h-5 text-[#FF9F43]" />
-                      <span>Langkah 3: Pilih Metode Pembayaran Terverifikasi</span>
+                      <span>Langkah 3: Pilih Metode Pembayaran</span>
                     </h2>
                     <p className="text-xs font-body font-medium text-slate-500">Semua transaksi diamankan dengan enkripsi SSL 256-bit standar perbankan</p>
                   </div>
 
-                  <div>
-                    {activeGateway === 'midtrans' && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-heading font-bold bg-blue-50 text-blue-700 border border-blue-200">
-                        <span>🔵 Midtrans Snap</span>
-                        <span className="text-[10px] font-semibold bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">
-                          {isMidtransProduction ? 'Production' : 'Sandbox'}
-                        </span>
-                      </span>
-                    )}
-                    {activeGateway === 'xendit' && (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-heading font-bold bg-purple-50 text-purple-700 border border-purple-200">
-                        <span>🟣 Xendit</span>
-                        <span className="text-[10px] font-semibold bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">
-                          XenInvoice
-                        </span>
-                      </span>
-                    )}
-                    {activeGateway === 'simulator' && (
-                      <span className="clay-badge-orange text-xs px-3 py-1">
-                        <span>🟡 Simulator</span>
-                        <span className="text-[10px] font-semibold bg-amber-100 text-amber-800 px-1.5 py-0.5 rounded ml-1">
-                          Lokal
-                        </span>
-                      </span>
-                    )}
+                  <div className="flex items-center gap-1.5 text-xs font-heading font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1 rounded-full">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Pembayaran Otomatis & Aman</span>
                   </div>
                 </div>
               </div>
@@ -1381,24 +1340,6 @@ export function CheckoutStepper() {
                             <span className="clay-badge-sky text-[10px] px-2 py-0.5 uppercase">
                               {pay.kategori.replace('_', ' ')}
                             </span>
-                            {/* Provider Badge */}
-                            {activeGateway === 'midtrans' && (
-                              <span className="text-[10px] font-heading font-bold text-blue-700 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <span>🔵</span>
-                                <span>Midtrans Snap</span>
-                              </span>
-                            )}
-                            {activeGateway === 'xendit' && (
-                              <span className="text-[10px] font-heading font-bold text-purple-700 bg-purple-50 border border-purple-200 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <span>🟣</span>
-                                <span>Xendit</span>
-                              </span>
-                            )}
-                            {activeGateway === 'simulator' && (
-                              <span className="clay-badge-orange text-[10px] px-2 py-0.5">
-                                <span>🟡 Instant Settlement</span>
-                              </span>
-                            )}
                           </div>
                           <p className="text-xs font-body text-slate-500 mt-1 leading-relaxed">
                             {pay.deskripsi}
@@ -1594,10 +1535,22 @@ export function CheckoutStepper() {
             {currentStep < 4 ? (
               <button
                 type="button"
-                onClick={() => setCurrentStep((Math.min(4, currentStep + 1) as Step))}
-                className="w-full clay-btn-orange py-3.5 text-xs text-white flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                disabled={currentStep === 1 && !isAddressValid}
+                onClick={() => {
+                  if (currentStep === 1 && !isAddressValid) {
+                    setErrorMessage('Mohon lengkapi alamat tujuan pengiriman Anda terlebih dahulu.');
+                    return;
+                  }
+                  setErrorMessage(null);
+                  setCurrentStep((Math.min(4, currentStep + 1) as Step));
+                }}
+                className={`w-full py-3.5 text-xs font-heading font-black rounded-2xl flex items-center justify-center gap-2 transition-all ${
+                  currentStep === 1 && !isAddressValid
+                    ? 'bg-slate-200 text-slate-400 border-2 border-slate-300 cursor-not-allowed shadow-none'
+                    : 'clay-btn-orange text-white shadow-md cursor-pointer hover:scale-[1.02]'
+                }`}
               >
-                <span>Langkah Selanjutnya</span>
+                <span>{currentStep === 1 && !isAddressValid ? 'Lengkapi Alamat Dahulu' : 'Langkah Selanjutnya'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             ) : (

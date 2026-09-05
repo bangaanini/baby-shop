@@ -852,15 +852,15 @@ export function OrdersTab({
               </div>
             </div>
 
-            {/* Simulation Gateway Callout */}
+            {/* Confirmation Callout */}
             <div className="p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-2xl flex items-start gap-3">
               <div className="w-7 h-7 rounded-lg bg-amber-500 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
                 <Zap className="w-4 h-4 fill-white" />
               </div>
               <div className="text-xs">
-                <p className="font-bold text-slate-800">Simulasi Payment Gateway</p>
+                <p className="font-bold text-slate-800">Konfirmasi Pembayaran</p>
                 <p className="text-[11px] text-slate-600 mt-0.5 leading-relaxed">
-                  Gunakan tombol di bawah untuk mensimulasikan notifikasi pelunasan (<em>settlement</em>) otomatis dari payment gateway (Midtrans / Xendit).
+                  Gunakan tombol di bawah untuk menyelesaikan pembayaran pesanan Anda secara instan.
                 </p>
               </div>
             </div>
